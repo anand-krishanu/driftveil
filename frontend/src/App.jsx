@@ -6,6 +6,8 @@ import { Footer } from './components/layout/Footer'
 import { OperatorView }      from './views/OperatorView'
 import { EngineerView }      from './views/EngineerView'
 import { MachineDetailView } from './views/MachineDetailView'
+import { ArchitectureView }  from './views/ArchitectureView'
+import { FeaturesView }      from './views/FeaturesView'
 import './index.css'
 
 function Breadcrumb() {
@@ -13,6 +15,8 @@ function Breadcrumb() {
   const label =
     location.pathname.startsWith('/machine') ? 'Machine Detail View' :
     location.pathname === '/engineer'         ? 'Maintenance Engineer View' :
+    location.pathname === '/architecture'     ? 'Backend Architecture' :
+    location.pathname === '/features'         ? 'Why DriftVeil — Competitive Analysis' :
     'Plant Operator View'
 
   return (
@@ -54,6 +58,8 @@ function AppShell({ theme, onToggleTheme }) {
           <Route path="/"                    element={<OperatorView />} />
           <Route path="/engineer"            element={<EngineerView />} />
           <Route path="/machine/:machineId"  element={<MachineDetailView />} />
+          <Route path="/architecture"        element={<ArchitectureView />} />
+          <Route path="/features"            element={<FeaturesView />} />
         </Routes>
       </main>
       <Footer />
