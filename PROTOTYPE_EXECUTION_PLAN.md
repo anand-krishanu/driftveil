@@ -3,7 +3,7 @@
 This is a ruthless 48-hour hackathon execution plan explicitly designed for a 2-person team skipping heavy AWS infrastructure in favor of a local prototype.
 
 **Roles:**
-*   **Developer A (Frontend):** Next.js, shadcn/ui, Recharts, Dashboard Polish
+*   **Developer A (Frontend):** React (Vite), shadcn/ui, Recharts, Dashboard Polish
 *   **Developer B (Backend):** Python, FastAPI, MCP, OpenAI API Integration
 
 ---
@@ -11,7 +11,7 @@ This is a ruthless 48-hour hackathon execution plan explicitly designed for a 2-
 ## 🕒 Phase 1: Environment & Repository Setup (Hour 1)
 **Developer A (Frontend):**
 1. Create a `driftveil-prototype` root folder. Inside it, create the `/frontend` directory.
-2. Initialize app: `npx create-next-app@latest .`
+2. Initialize app: `npm create vite@latest . -- --template react-ts`
 3. Initialize UI library: `npx shadcn@latest init`
 4. Install charting library: `npm install recharts`
 
