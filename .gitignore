@@ -1,0 +1,17 @@
+# Environments
+venv/
+env/
+.env
+
+# Python caches
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+
+# Node (for Developer A later)
+node_modules/
+dist/
+.DS_Store

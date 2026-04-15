@@ -1,0 +1,42 @@
+[
+  {
+    "id": "FP-001",
+    "issue": "Early Bearing Wear",
+    "pattern": "temperature and vibration increasing simultaneously over time, gradual slope over 30+ minutes",
+    "severity": "medium",
+    "eta_days_range": "7-14",
+    "recommended_action": "Schedule bearing inspection within 48 hours. Apply lubrication and check alignment. Order replacement bearing as precaution."
+  },
+  {
+    "id": "FP-002",
+    "issue": "Thermal Overload – Cooling Failure",
+    "pattern": "temperature rising sharply while vibration remains relatively stable, steep temperature slope",
+    "severity": "high",
+    "eta_days_range": "1-3",
+    "recommended_action": "Immediately inspect cooling system and fans. Check for blockages. Reduce machine load by 30% until cooling is restored."
+  },
+  {
+    "id": "FP-003",
+    "issue": "Rotor Imbalance",
+    "pattern": "vibration increasing significantly faster than temperature, asymmetric oscillation pattern",
+    "severity": "medium",
+    "eta_days_range": "5-10",
+    "recommended_action": "Perform dynamic balancing of rotor at next scheduled downtime. Inspect mounting bolts and shaft alignment."
+  },
+  {
+    "id": "FP-004",
+    "issue": "Lubrication Degradation",
+    "pattern": "both temperature and vibration slowly creeping upward over several hours, temperature leads vibration",
+    "severity": "low",
+    "eta_days_range": "14-21",
+    "recommended_action": "Flush and replace lubricant. Sample existing lubricant for contamination analysis. Check oil seals."
+  },
+  {
+    "id": "FP-005",
+    "issue": "Resonance / Structural Looseness",
+    "pattern": "vibration spikes periodically, temperature mildly elevated, erratic vibration signature",
+    "severity": "medium",
+    "eta_days_range": "3-7",
+    "recommended_action": "Inspect all mounting hardware and structural supports. Perform resonance frequency analysis. Tighten or add isolation mounts."
+  }
+]
