@@ -1,10 +1,18 @@
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { C } from '../../theme'
 import { MACHINES } from '../../data/machines'
 
 export function TopNav({ theme, onToggleTheme }) {
   const location = useLocation()
-  const now = new Date().toLocaleTimeString('en-GB', { hour12: false })
+  const [now, setNow] = useState(new Date().toLocaleTimeString('en-GB', { hour12: false }))
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date().toLocaleTimeString('en-GB', { hour12: false }))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
     <header style={{
@@ -25,7 +33,8 @@ export function TopNav({ theme, onToggleTheme }) {
       </Link>
 
       {/* Nav Links */}
-      <nav style={{ display: 'flex', height: 52 }}>
+      <nav style={{ display: 'flex', height: 52, alignItems: 'center' }}>
+        {/* Role Views */}
         {[
           { to: '/',         label: 'Plant Operator' },
           { to: '/engineer', label: 'Maintenance Engineer' },
@@ -36,11 +45,38 @@ export function TopNav({ theme, onToggleTheme }) {
               key={to}
               to={to}
               style={{
-                padding: '0 20px',
+                padding: '0 18px', height: '100%',
                 display: 'flex', alignItems: 'center',
                 fontSize: 12, fontWeight: 500, textDecoration: 'none',
                 borderBottom: active ? `2px solid ${C.warn}` : '2px solid transparent',
                 color: active ? C.heading : C.subtle,
+                transition: 'all 0.15s',
+              }}
+            >
+              {label}
+            </Link>
+          )
+        })}
+
+        {/* Separator */}
+        <div style={{ width: 1, height: 24, background: C.border, margin: '0 8px' }} />
+
+        {/* Info Pages */}
+        {[
+          { to: '/architecture', label: 'Architecture' },
+          { to: '/features',     label: 'Why DriftVeil' },
+        ].map(({ to, label }) => {
+          const active = location.pathname === to
+          return (
+            <Link
+              key={to}
+              to={to}
+              style={{
+                padding: '0 14px', height: '100%',
+                display: 'flex', alignItems: 'center',
+                fontSize: 11, fontWeight: 500, textDecoration: 'none',
+                borderBottom: active ? `2px solid ${C.safe}` : '2px solid transparent',
+                color: active ? C.safe : C.muted,
                 transition: 'all 0.15s',
               }}
             >
