@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* ─── DARK THEME (default) ─────────────────────────────────────────────────── */
+:root {
+  --bg-base:        #0d0d10;
+  --bg-surface-1:   #141417;
+  --bg-surface-2:   #1a1a1f;
+  --bg-surface-3:   #202026;
+  --bg-alert:       #1a0e0e;
+
+  --border:         #2e2e36;
+  --border-subtle:  #1f1f26;
+
+  --text-heading:   #f0f0f3;
+  --text-body:      #b0b0bc;
+  --text-subtle:    #6b6b7a;
+  --text-muted:     #44444f;
+
+  --accent-warn:        #d97706;
+  --accent-warn-dim:    #92400e;
+  --accent-critical:    #dc2626;
+  --accent-critical-dim:#7f1d1d;
+  --accent-safe:        #16a34a;
+  --accent-safe-dim:    #14532d;
+
+  --chart-temp:   #e09040;
+  --chart-vib:    #8080a0;
+  --chart-grid:   #1f1f26;
+
+  color-scheme: dark;
+}
+
+/* ─── LIGHT THEME ──────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base:        #f4f4f6;
+  --bg-surface-1:   #ffffff;
+  --bg-surface-2:   #f0f0f3;
+  --bg-surface-3:   #e8e8ed;
+  --bg-alert:       #fff5f5;
+
+  --border:         #d4d4dc;
+  --border-subtle:  #e2e2ea;
+
+  --text-heading:   #111118;
+  --text-body:      #3c3c4a;
+  --text-subtle:    #7070808;
+  --text-muted:     #9090a0;
+
+  --accent-warn:        #b45309;
+  --accent-warn-dim:    #fef3c7;
+  --accent-critical:    #b91c1c;
+  --accent-critical-dim:#fee2e2;
+  --accent-safe:        #15803d;
+  --accent-safe-dim:    #dcfce7;
+
+  --chart-temp:   #c2730a;
+  --chart-vib:    #6060a0;
+  --chart-grid:   #e2e2ea;
+
+  color-scheme: light;
+}
+
+/* ─── RESETS ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-body);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+p { margin: 0; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-surface-1); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
