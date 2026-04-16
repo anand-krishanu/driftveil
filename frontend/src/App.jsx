@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { C } from './theme'
 import { TopNav } from './components/layout/TopNav'
 import { Footer } from './components/layout/Footer'
 import { OperatorView }      from './views/OperatorView'
@@ -20,18 +19,14 @@ function Breadcrumb() {
     'Plant Operator View'
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '6px 24px', borderBottom: `1px solid ${C.border}`,
-      background: C.bgBase, flexShrink: 0,
-    }}>
-      <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: C.muted }}>
-        DriftVeil · {label} · Bottling Plant — Lines 1–4
+    <div className="flex items-center justify-between px-6 py-2 border-b border-borderPrimary bg-bgBase shrink-0 shadow-sm z-10">
+      <p className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted">
+        DriftVeil <span className="mx-1 text-borderPrimary">·</span> {label} <span className="mx-1 text-borderPrimary">·</span> Bottling Plant — Lines 1–4
       </p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 10, color: C.muted }}>
+      <div className="flex items-center gap-3 text-[10px] text-muted font-medium tracking-wide">
         {['CUSUM Drift Detection', 'MCP Agent Pipeline', 'Amazon Bedrock', 'AWS Strands Agents'].map((tag, i) => (
-          <span key={tag} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {i > 0 && <span style={{ color: C.border }}>·</span>}
+          <span key={tag} className="flex items-center gap-3">
+            {i > 0 && <span className="text-borderPrimary/50">·</span>}
             {tag}
           </span>
         ))}
@@ -44,16 +39,11 @@ function AppShell({ theme, onToggleTheme }) {
   return (
     <div
       data-theme={theme}
-      style={{
-        display: 'flex', flexDirection: 'column', height: '100%',
-        background: C.bgBase, color: C.body,
-        fontFamily: 'Inter, system-ui, sans-serif',
-        transition: 'background 0.2s, color 0.2s',
-      }}
+      className="flex flex-col h-full bg-bgBase text-body font-sans transition-colors duration-200"
     >
       <TopNav theme={theme} onToggleTheme={onToggleTheme} />
       <Breadcrumb />
-      <main style={{ flex: 1, overflow: 'auto' }}>
+      <main className="flex-1 overflow-auto bg-bgBase selection:bg-warn/20 selection:text-warn">
         <Routes>
           <Route path="/"                    element={<OperatorView />} />
           <Route path="/engineer"            element={<EngineerView />} />
@@ -63,12 +53,6 @@ function AppShell({ theme, onToggleTheme }) {
         </Routes>
       </main>
       <Footer />
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.4; }
-        }
-      `}</style>
     </div>
   )
 }

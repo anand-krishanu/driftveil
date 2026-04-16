@@ -1,12 +1,5 @@
-import { C } from '../../theme'
-
 export function Divider({ vertical = false }) {
   return (
-    <div style={{
-      background: C.border,
-      [vertical ? 'width' : 'height']: 1,
-      [vertical ? 'height' : 'width']: '100%',
-      flexShrink: 0,
-    }} />
+    <div className={`bg-borderPrimary shrink-0 ${vertical ? 'w-px h-full' : 'h-px w-full'}`} />
   )
 }

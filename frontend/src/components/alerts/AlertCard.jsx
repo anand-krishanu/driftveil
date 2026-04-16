@@ -1,44 +1,35 @@
-import { C } from '../../theme'
 import { Divider } from '../ui/Divider'
 
 export function AlertCard({ alert }) {
   const { eventId, machine, title, confidence, eta, score, sensors, action, fingerprint } = alert
   return (
-    <div style={{
-      borderTop: `2px solid ${C.critical}`,
-      background: C.bgAlert,
-      padding: 16,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 10,
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <span style={{ fontSize: 10, fontWeight: 600, color: C.critical, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+    <div className="bg-bgAlert border-t-2 border-t-critical p-4 flex flex-col gap-2.5 animate-pulse-glow backdrop-blur-md shadow-[0_0_20px_rgba(220,38,38,0.1)]">
+      <div className="flex justify-between items-start">
+        <span className="text-[10px] font-semibold text-critical tracking-widest uppercase">
           Drift Alert
         </span>
-        <span style={{ fontSize: 10, color: C.subtle, fontFamily: 'JetBrains Mono' }}>{eventId}</span>
+        <span className="text-[10px] text-subtle font-mono">{eventId}</span>
       </div>
 
       <div>
-        <p style={{ fontSize: 14, fontWeight: 600, color: C.heading }}>{title}</p>
-        <p style={{ fontSize: 11, color: C.body, marginTop: 2 }}>{machine}</p>
+        <p className="text-sm font-semibold text-heading">{title}</p>
+        <p className="text-[11px] text-body mt-0.5">{machine}</p>
       </div>
 
       <Divider />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
+      <div className="grid grid-cols-2 gap-y-2 gap-x-4">
         {[
-          { label: 'AI Confidence', value: confidence, color: C.heading, mono: true },
-          { label: 'Est. Failure',  value: eta,        color: C.critical, mono: true },
-          { label: 'Drift Score',   value: score,      color: C.heading,  mono: true },
-          { label: 'Sensors',       value: sensors,    color: C.body,     mono: false },
+          { label: 'AI Confidence', value: confidence, color: 'text-heading', mono: true },
+          { label: 'Est. Failure',  value: eta,        color: 'text-critical', mono: true },
+          { label: 'Drift Score',   value: score,      color: 'text-heading',  mono: true },
+          { label: 'Sensors',       value: sensors,    color: 'text-body',     mono: false },
         ].map(({ label, value, color, mono }) => (
           <div key={label}>
-            <p style={{ fontSize: 10, color: C.subtle, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</p>
-            <p style={{
-              fontSize: 12, fontWeight: 500, color, marginTop: 2,
-              fontFamily: mono ? 'JetBrains Mono, monospace' : 'inherit',
-            }}>{value}</p>
+            <p className="text-[10px] text-subtle uppercase tracking-wider">{label}</p>
+            <p className={`text-xs font-medium mt-0.5 ${color} ${mono ? 'font-mono' : ''}`}>
+              {value}
+            </p>
           </div>
         ))}
       </div>
@@ -46,26 +37,18 @@ export function AlertCard({ alert }) {
       <Divider />
 
       <div>
-        <p style={{ fontSize: 10, color: C.subtle, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+        <p className="text-[10px] text-subtle uppercase tracking-wider mb-1">
           Prescribed Action
         </p>
-        <p style={{ fontSize: 12, color: C.body, lineHeight: 1.6 }}>{action}</p>
+        <p className="text-xs text-body leading-relaxed">{action}</p>
       </div>
-      <p style={{ fontSize: 11, color: C.subtle }}>{fingerprint}</p>
+      <p className="text-[11px] text-subtle">{fingerprint}</p>
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-        <button style={{
-          flex: 1, padding: '7px 0', fontSize: 11, fontWeight: 500,
-          border: `1px solid ${C.critical}`, color: C.critical,
-          background: 'transparent', cursor: 'pointer',
-        }}>
+      <div className="flex gap-2 mt-1">
+        <button className="flex-1 py-1.5 text-[11px] font-medium border border-critical text-critical bg-critical/5 hover:bg-critical/15 transition-colors cursor-pointer rounded-sm">
           Escalate
         </button>
-        <button style={{
-          flex: 1, padding: '7px 0', fontSize: 11, fontWeight: 500,
-          border: `1px solid ${C.border}`, color: C.subtle,
-          background: 'transparent', cursor: 'pointer',
-        }}>
+        <button className="flex-1 py-1.5 text-[11px] font-medium border border-borderSubtle text-subtle hover:bg-surface2 transition-colors cursor-pointer rounded-sm">
           Acknowledge
         </button>
       </div>

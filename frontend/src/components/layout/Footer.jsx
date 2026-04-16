@@ -1,17 +1,8 @@
-import { C } from '../../theme'
-
 export function Footer() {
   return (
-    <footer style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '6px 24px',
-      borderTop: `1px solid ${C.border}`,
-      background: C.bgS1,
-      fontSize: 10, color: C.muted,
-      flexShrink: 0,
-    }}>
+    <footer className="flex items-center justify-between px-6 py-1.5 border-t border-borderPrimary bg-surface1 text-[10px] text-muted shrink-0">
       <span>DriftVeil Prototype · Hackathon Build · Predictive Maintenance</span>
-      <span style={{ fontFamily: 'JetBrains Mono' }}>
+      <span className="font-mono">
         CUSUM · z-score · Amazon Bedrock · MCP · AWS Strands Agents
       </span>
     </footer>

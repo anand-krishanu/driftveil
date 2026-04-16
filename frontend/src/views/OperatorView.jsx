@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { C } from '../theme'
 import { MACHINES } from '../data/machines'
 import { SensorChart } from '../components/charts/SensorChart'
 import { AlertCard } from '../components/alerts/AlertCard'
@@ -18,46 +17,40 @@ export function OperatorView() {
   const warnCount   = MACHINES.filter(m => m.status === 'WARN').length
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="flex flex-col h-full bg-bgBase">
       {/* KPI Strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', borderBottom: `1px solid ${C.border}` }}>
+      <div className="grid grid-cols-4 border-b border-borderPrimary divide-x divide-borderPrimary bg-surface1/30 backdrop-blur-sm">
         {[
-          { label: 'Active Nodes',   value: MACHINES.length, sub: 'Monitoring',      color: C.heading  },
-          { label: 'Healthy',        value: normalCount,      sub: 'No drift',        color: C.safe     },
-          { label: 'Warning',        value: warnCount,        sub: 'Monitor closely', color: C.warn     },
-          { label: 'Drift Detected', value: driftCount,       sub: 'Action needed',  color: C.critical },
+          { label: 'Active Nodes',   value: MACHINES.length, sub: 'Monitoring',      color: 'text-heading'  },
+          { label: 'Healthy',        value: normalCount,      sub: 'No drift',        color: 'text-safe'     },
+          { label: 'Warning',        value: warnCount,        sub: 'Monitor closely', color: 'text-warn'     },
+          { label: 'Drift Detected', value: driftCount,       sub: 'Action needed',  color: 'text-critical' },
         ].map((kpi, i) => (
-          <div key={i} style={{
-            padding: '16px 24px',
-            borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
-          }}>
-            <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: C.subtle }}>{kpi.label}</p>
-            <p style={{ fontSize: 32, fontWeight: 700, color: kpi.color, margin: '4px 0 2px', fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</p>
-            <p style={{ fontSize: 11, color: C.subtle }}>{kpi.sub}</p>
+          <div key={i} className="px-6 py-4">
+            <p className="text-[10px] uppercase tracking-widest text-subtle">{kpi.label}</p>
+            <p className={`text-[32px] font-bold my-1 tabular-nums ${kpi.color} drop-shadow-sm`}>{kpi.value}</p>
+            <p className="text-[11px] text-subtle">{kpi.sub}</p>
           </div>
         ))}
       </div>
 
       {/* Main Content */}
-      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+      <div className="flex flex-1 min-h-0">
         {/* Chart Panel */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid ${C.border}` }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '12px 24px', borderBottom: `1px solid ${C.border}`,
-          }}>
+        <div className="flex-1 flex flex-col border-r border-borderPrimary">
+          <div className="flex items-center justify-between px-6 py-3 border-b border-borderPrimary bg-surface1/20 backdrop-blur-sm">
             <div>
-              <h3 style={{ fontSize: 14, color: C.heading }}>{activeId} — Live Sensor Feed</h3>
-              <p style={{ fontSize: 11, color: C.subtle, marginTop: 2 }}>
+              <h3 className="text-sm text-heading">{activeId} — Live Sensor Feed</h3>
+              <p className="text-[11px] text-subtle mt-1">
                 Temperature · Vibration · SCADA Threshold
               </p>
             </div>
             <FeedControls isRunning={isRunning} chartData={chartData} onStart={startFeed} onReset={resetFeed} />
           </div>
-          <div style={{ padding: 16, flex: 1 }}>
+          <div className="p-4 flex-1">
             <SensorChart data={chartData} height={340} />
             {chartData.length === 0 && (
-              <p style={{ textAlign: 'center', color: C.muted, fontSize: 12, marginTop: 12 }}>
+              <p className="text-center text-muted text-xs mt-3">
                 Click "Start Factory Feed" to begin simulation
               </p>
             )}
@@ -65,34 +58,36 @@ export function OperatorView() {
         </div>
 
         {/* Right Panel: Machine List + Alert */}
-        <div style={{ width: 300, display: 'flex', flexDirection: 'column', background: C.bgS1 }}>
-          <div style={{ padding: '10px 16px', borderBottom: `1px solid ${C.border}` }}>
-            <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: C.subtle }}>
+        <div className="w-[300px] flex flex-col bg-surface1/50 backdrop-blur-xl border-l border-borderPrimary">
+          <div className="px-4 py-2 border-b border-borderSubtle bg-surface1/80">
+            <p className="text-[10px] uppercase tracking-widest text-subtle">
               Line Overview — Click to Drill In
             </p>
           </div>
-          {MACHINES.map(m => (
-            <div
-              key={m.id}
-              onClick={() => setActiveId(m.id)}
-              onDoubleClick={() => navigate(`/machine/${m.id}`)}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 16px', borderBottom: `1px solid ${C.borderSub}`,
-                background: m.id === activeId ? C.bgAlert : 'transparent',
-                cursor: 'pointer', transition: 'background 0.1s',
-              }}
-              onMouseOver={e => { if (m.id !== activeId) e.currentTarget.style.background = C.bgS2 }}
-              onMouseOut={e => { if (m.id !== activeId) e.currentTarget.style.background = 'transparent' }}
-            >
-              <div>
-                <p style={{ fontSize: 13, color: C.heading, fontWeight: 500 }}>{m.name}</p>
-                <p style={{ fontSize: 10, color: C.subtle, marginTop: 1 }}>{m.id} · {m.line}</p>
+          <div className="flex-1 overflow-y-auto">
+            {MACHINES.map(m => (
+              <div
+                key={m.id}
+                onClick={() => setActiveId(m.id)}
+                onDoubleClick={() => navigate(`/machine/${m.id}`)}
+                className={`flex items-center justify-between px-4 py-2.5 border-b border-borderSubtle cursor-pointer transition-colors duration-200 ${
+                  m.id === activeId ? 'bg-bgAlert' : 'hover:bg-surface2'
+                }`}
+              >
+                <div>
+                  <p className="text-[13px] text-heading font-medium tracking-wide">{m.name}</p>
+                  <p className="text-[10px] text-subtle mt-0.5">{m.id} · {m.line}</p>
+                </div>
+                <StatusBadge status={m.status} />
               </div>
-              <StatusBadge status={m.status} />
+            ))}
+          </div>
+          
+          {alertVisible && alertData && (
+            <div className="p-4 animate-in fade-in slide-in-from-bottom-5 duration-300 relative z-10 w-full mb-0 border-t border-borderPrimary">
+               <AlertCard alert={alertData} />
             </div>
-          ))}
-          {alertVisible && alertData && <AlertCard alert={alertData} />}
+          )}
         </div>
       </div>
     </div>

@@ -1,17 +1,10 @@
-import { C } from '../../theme'
 export function FeedControls({ isRunning, chartData, onStart, onReset }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div className="flex items-center gap-3">
       {!isRunning && chartData.length === 0 && (
         <button
           onClick={onStart}
-          style={{
-            padding: '6px 14px', fontSize: 12, fontWeight: 500,
-            border: `1px solid ${C.warn}`, color: C.warn,
-            background: 'transparent', cursor: 'pointer', transition: 'all 0.15s',
-          }}
-          onMouseOver={e => { e.currentTarget.style.background = C.warn; e.currentTarget.style.color = C.bgBase }}
-          onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.warn }}
+          className="px-4 py-1.5 text-xs font-semibold border border-warn text-warn bg-warn/5 hover:bg-warn hover:text-bgBase transition-all duration-200 cursor-pointer rounded-sm shadow-[0_0_10px_rgba(217,119,6,0.1)] hover:shadow-[0_0_15px_rgba(217,119,6,0.4)]"
         >
           Start Factory Feed
         </button>
@@ -19,21 +12,14 @@ export function FeedControls({ isRunning, chartData, onStart, onReset }) {
       {(isRunning || chartData.length > 0) && (
         <button
           onClick={onReset}
-          style={{
-            padding: '6px 14px', fontSize: 12, fontWeight: 500,
-            border: `1px solid ${C.border}`, color: C.subtle,
-            background: 'transparent', cursor: 'pointer',
-          }}
+          className="px-4 py-1.5 text-xs font-medium border border-borderSubtle text-subtle bg-surface1 hover:bg-surface2 hover:text-body transition-colors duration-150 cursor-pointer rounded-sm shadow-sm"
         >
           Reset
         </button>
       )}
       {isRunning && (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: C.safe }}>
-          <span style={{
-            width: 6, height: 6, borderRadius: '50%', background: C.safe,
-            animation: 'pulse 2s infinite',
-          }} />
+        <span className="flex items-center gap-1.5 text-[11px] text-safe font-bold tracking-widest uppercase">
+          <span className="w-2 h-2 rounded-full bg-safe animate-pulse-glow shadow-[0_0_6px_rgba(22,163,74,0.8)]" />
           LIVE
         </span>
       )}

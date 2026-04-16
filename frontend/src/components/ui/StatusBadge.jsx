@@ -1,23 +1,12 @@
-import { C } from '../../theme'
-
 export function StatusBadge({ status }) {
   const map = {
-    NORMAL: { color: C.safe,     bg: C.safeDim },
-    WARN:   { color: C.warn,     bg: C.warnDim },
-    DRIFT:  { color: C.critical, bg: C.critDim },
+    NORMAL: 'text-safe bg-safeDim border-safe/30',
+    WARN:   'text-warn bg-warnDim border-warn/30 shadow-[0_0_8px_rgba(217,119,6,0.2)]',
+    DRIFT:  'text-critical bg-criticalDim border-critical/50 shadow-[0_0_12px_rgba(220,38,38,0.3)] animate-pulse-glow',
   }
-  const s = map[status] || map.NORMAL
+  const cls = map[status] || map.NORMAL
   return (
-    <span style={{
-      color: s.color,
-      border: `1px solid ${s.color}`,
-      background: s.bg,
-      padding: '2px 8px',
-      fontSize: 10,
-      fontWeight: 600,
-      letterSpacing: '0.08em',
-      display: 'inline-block',
-    }}>
+    <span className={`border px-2 py-0.5 text-[10px] font-semibold tracking-widest inline-block rounded-sm backdrop-blur-md ${cls}`}>
       {status}
     </span>
   )

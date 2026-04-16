@@ -1,13 +1,11 @@
-import { C } from '../../theme'
-
 export function HealthBar({ value }) {
-  const color = value >= 90 ? C.safe : value >= 75 ? C.warn : C.critical
+  const colorClass = value >= 90 ? 'bg-safe' : value >= 75 ? 'bg-warn' : 'bg-critical'
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ height: 3, width: 56, background: C.border, flexShrink: 0 }}>
-        <div style={{ width: `${value}%`, background: color, height: '100%' }} />
+    <div className="flex items-center gap-2">
+      <div className="h-[3px] w-14 bg-borderPrimary shrink-0 overflow-hidden rounded-full">
+        <div className={`h-full ${colorClass} transition-all duration-500`} style={{ width: `${value}%` }} />
       </div>
-      <span style={{ color: C.heading, fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>{value}%</span>
+      <span className="text-heading text-xs tabular-nums font-medium">{value}%</span>
     </div>
   )
 }

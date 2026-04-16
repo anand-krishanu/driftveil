@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { C } from '../../theme'
 import { MACHINES } from '../../data/machines'
 
 export function TopNav({ theme, onToggleTheme }) {
@@ -15,25 +14,20 @@ export function TopNav({ theme, onToggleTheme }) {
   }, [])
 
   return (
-    <header style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 24px', height: 52,
-      borderBottom: `1px solid ${C.border}`,
-      background: C.bgS1, flexShrink: 0,
-    }}>
+    <header className="flex items-center justify-between px-6 h-[52px] border-b border-borderPrimary bg-surface1/60 backdrop-blur-md shrink-0">
       {/* Brand */}
-      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontSize: 15, fontWeight: 700, color: C.heading, letterSpacing: '-0.02em' }}>
-          DRIFT<span style={{ color: C.warn }}>VEIL</span>
+      <Link to="/" className="flex items-center gap-4 no-underline group hover:opacity-80 transition-opacity">
+        <span className="text-[15px] font-bold text-heading tracking-tight flex items-center">
+          DRIFT<span className="text-warn drop-shadow-[0_0_8px_rgba(217,119,6,0.3)]">VEIL</span>
         </span>
-        <span style={{ color: C.border }}>|</span>
-        <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.subtle }}>
+        <span className="text-borderPrimary">|</span>
+        <span className="text-[10px] uppercase tracking-[0.15em] font-semibold text-subtle">
           Industrial Drift Intelligence
         </span>
       </Link>
 
       {/* Nav Links */}
-      <nav style={{ display: 'flex', height: 52, alignItems: 'center' }}>
+      <nav className="flex h-[52px] items-center">
         {/* Role Views */}
         {[
           { to: '/',         label: 'Plant Operator' },
@@ -44,14 +38,9 @@ export function TopNav({ theme, onToggleTheme }) {
             <Link
               key={to}
               to={to}
-              style={{
-                padding: '0 18px', height: '100%',
-                display: 'flex', alignItems: 'center',
-                fontSize: 12, fontWeight: 500, textDecoration: 'none',
-                borderBottom: active ? `2px solid ${C.warn}` : '2px solid transparent',
-                color: active ? C.heading : C.subtle,
-                transition: 'all 0.15s',
-              }}
+              className={`px-[18px] h-full flex items-center text-xs font-semibold no-underline border-b-2 transition-colors duration-200 ${
+                active ? 'border-warn text-heading' : 'border-transparent text-subtle hover:text-body'
+              }`}
             >
               {label}
             </Link>
@@ -59,7 +48,7 @@ export function TopNav({ theme, onToggleTheme }) {
         })}
 
         {/* Separator */}
-        <div style={{ width: 1, height: 24, background: C.border, margin: '0 8px' }} />
+        <div className="w-px h-6 bg-borderPrimary mx-2" />
 
         {/* Info Pages */}
         {[
@@ -71,14 +60,9 @@ export function TopNav({ theme, onToggleTheme }) {
             <Link
               key={to}
               to={to}
-              style={{
-                padding: '0 14px', height: '100%',
-                display: 'flex', alignItems: 'center',
-                fontSize: 11, fontWeight: 500, textDecoration: 'none',
-                borderBottom: active ? `2px solid ${C.safe}` : '2px solid transparent',
-                color: active ? C.safe : C.muted,
-                transition: 'all 0.15s',
-              }}
+              className={`px-3.5 h-full flex items-center text-[11px] font-semibold no-underline border-b-2 transition-colors duration-200 ${
+                active ? 'border-safe text-safe shadow-[0_4px_10px_-4px_rgba(22,163,74,0.4)]' : 'border-transparent text-muted hover:text-subtle'
+              }`}
             >
               {label}
             </Link>
@@ -87,24 +71,19 @@ export function TopNav({ theme, onToggleTheme }) {
       </nav>
 
       {/* Status + Theme */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11 }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: C.safe }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.safe }} />
+      <div className="flex items-center gap-3.5 text-[11px]">
+        <span className="flex items-center gap-1.5 text-safe font-semibold">
+          <span className="w-1.5 h-1.5 rounded-full bg-safe animate-pulse-glow" />
           Monitoring {MACHINES.length} Active Nodes
         </span>
-        <span style={{ color: C.border }}>|</span>
-        <span style={{ color: C.subtle, fontFamily: 'JetBrains Mono' }}>SERVER CONNECTED</span>
-        <span style={{ color: C.border }}>|</span>
-        <span style={{ color: C.muted, fontFamily: 'JetBrains Mono' }}>{now}</span>
-        <span style={{ color: C.border }}>|</span>
+        <span className="text-borderPrimary">|</span>
+        <span className="text-subtle font-mono uppercase tracking-wider text-[10px]">SERVER CONNECTED</span>
+        <span className="text-borderPrimary">|</span>
+        <span className="text-muted font-mono">{now}</span>
+        <span className="text-borderPrimary">|</span>
         <button
           onClick={onToggleTheme}
-          style={{
-            padding: '5px 12px', fontSize: 11, fontWeight: 500,
-            border: `1px solid ${C.border}`, color: C.body,
-            background: C.bgS2, cursor: 'pointer', borderRadius: 2,
-            transition: 'all 0.15s',
-          }}
+          className="px-3 py-1.5 text-[11px] font-medium border border-borderPrimary text-body bg-surface2/50 hover:bg-surface3 cursor-pointer rounded-sm transition-all duration-200"
         >
           {theme === 'dark' ? '☀ Light' : '☾ Dark'}
         </button>
