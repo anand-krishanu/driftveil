@@ -4,10 +4,9 @@ main.py
 DriftVeil FastAPI Backend — The Brain of the System
 
 Endpoints:
-  GET  /api/live-feed          → Returns the next chunk of sensor data for the chart
-  POST /api/start-feed         → Resets the live feed cursor to row 0 (starts demo)
-  GET  /api/agent-status       → Returns current alert/diagnosis from Agent 4
+  POST /api/start-feed         → Resets the live feed cursor for a specific machine
   GET  /api/reset              → Full reset of all state
+  WS   /ws/feed/{machine_id}   → Streams data and LLM alerts at 2Hz natively
 
 Agent Pipeline (runs automatically when drift is detected):
   Agent 1 (Monitor)    → Polls latest 10 rows via MCP
@@ -34,7 +33,7 @@ from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI
 
@@ -42,7 +41,7 @@ from openai import AsyncOpenAI
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 if not OPENAI_API_KEY:
-    print("⚠️  WARNING: OPENAI_API_KEY not found in .env — AI agents will not work!")
+    print("[WARNING] OPENAI_API_KEY not found in .env - AI agents will not work!")
 
 # ── Config ────────────────────────────────────────────────────────────────────
 MCP_BASE_URL   = "http://127.0.0.1:8001"
@@ -64,18 +63,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Shared in-memory state ─────────────────────────────────────────────────────
-# This acts like a simple database for the prototype.
-state = {
-    "cursor":          0,          # Current row index in the CSV
-    "running":         False,      # Is the live feed active?
-    "all_rows":        [],         # Cache of all 200 rows (loaded on start)
-    "sent_rows":       [],         # Rows already sent to frontend
-    "drift_detected":  False,      # Has drift been flagged?
-    "agent_running":   False,      # Is the AI pipeline currently running?
-    "alert":           None,       # Final Alert JSON from Agent 4
-    "diagnosis_raw":   None,       # Raw output from Agent 3
-}
+# ── Shared in-memory state (Multi-tenant) ─────────────────────────────────────────────────────
+states = {}
+
+def get_state(machine_id: str) -> dict:
+    if machine_id not in states:
+        states[machine_id] = {
+            "cursor":          0,
+            "running":         False,
+            "all_rows":        [],
+            "sent_rows":       [],
+            "drift_detected":  False,
+            "agent_running":   False,
+            "alert":           None,
+            "diagnosis_raw":   None,
+        }
+    return states[machine_id]
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
@@ -84,10 +87,10 @@ openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 #  HELPER: Load all rows from MCP server into memory
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def load_all_rows_from_mcp() -> list:
+async def load_all_rows_from_mcp(machine_id: str) -> list:
     """Fetch all 200 rows from the MCP server and cache them."""
     async with httpx.AsyncClient() as client:
-        resp = await client.get(f"{MCP_BASE_URL}/tools/get_sensor_data", params={"start": 0, "limit": 200})
+        resp = await client.get(f"{MCP_BASE_URL}/tools/get_sensor_data", params={"start": 0, "limit": 200, "machine_id": machine_id})
         resp.raise_for_status()
         data = resp.json()
         return data["data"]
@@ -97,17 +100,16 @@ async def load_all_rows_from_mcp() -> list:
 #  AGENT 1 — Monitor: Fetch latest N rows via MCP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def agent_monitor(start: int, limit: int = 10) -> list:
+async def agent_monitor(start: int, machine_id: str, limit: int = 10) -> list:
     """
     Agent 1: Monitor
     ----------------
     Fetches the latest `limit` rows starting from `start` via the MCP server.
-    Simulates a real-time sensor polling loop.
     """
     async with httpx.AsyncClient() as client:
         resp = await client.get(
             f"{MCP_BASE_URL}/tools/get_sensor_data",
-            params={"start": start, "limit": limit},
+            params={"start": start, "limit": limit, "machine_id": machine_id},
         )
         resp.raise_for_status()
         return resp.json()["data"]
@@ -283,41 +285,47 @@ Return ONLY the JSON object, nothing else."""
 #  AGENT PIPELINE — Runs in background when drift is detected
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def run_agent_pipeline(drifting_rows: list, detection_stats: dict):
+async def run_agent_pipeline(drifting_rows: list, detection_stats: dict, machine_id: str, websocket: WebSocket):
     """
     Orchestrates all 4 agents in sequence.
-    Results are stored in the global `state` dict so the frontend
-    can poll /api/agent-status to pick up the alert.
+    Pushes results INSTANTLY to the WebSocket the millisecond they are ready.
     """
-    print("\n🤖 Agent Pipeline triggered!")
-    print(f"   Detection stats: {detection_stats}")
-
+    print(f"\n[Agent Pipeline] Triggered for {machine_id}!")
+    st = get_state(machine_id)
+    
     try:
-        # Agent 3: Root Cause
-        print("   ⚙️  Agent 3 (Root Cause) → calling GPT-4o ...")
+        print("   [Agent 3] Root Cause -> calling GPT-4o ...")  
         raw_diagnosis = await agent_root_cause(drifting_rows, detection_stats)
-        state["diagnosis_raw"] = raw_diagnosis
-        print(f"   ✅ Agent 3 complete:\n{raw_diagnosis[:200]}...")
+        st["diagnosis_raw"] = raw_diagnosis
+        print(f"   [Agent 3] Complete:\n{raw_diagnosis[:200]}...")
+        
+        # Instantly push diagnosis_raw mid-stream
+        await websocket.send_json({
+            "type": "agent_update",
+            "diagnosis_raw": raw_diagnosis
+        })
 
-        # Agent 4: Explainer
-        print("   ⚙️  Agent 4 (Explainer) → calling GPT-4o ...")
+        print("   [Agent 4] Explainer -> calling GPT-4o ...")
         alert_json = await agent_explainer(raw_diagnosis)
-        state["alert"] = alert_json
-        print(f"   ✅ Agent 4 complete: {alert_json}")
+        st["alert"] = alert_json
+        print(f"   [Agent 4] Complete: {alert_json}")
+        
+        # Instantly push alert_json
+        await websocket.send_json({
+            "type": "agent_update",
+            "alert": alert_json
+        })
 
     except Exception as e:
-        print(f"   ❌ Agent pipeline error: {e}")
-        # Fallback alert so the frontend still gets something
-        state["alert"] = {
-            "title":      "Drift Detected",
-            "eta_days":   7,
-            "action":     "Inspect equipment immediately.",
-            "severity":   "medium",
-            "confidence": "medium",
+        print(f"   [ERROR] Agent pipeline error: {e}")
+        fallback = {
+            "title": "Drift Detected", "eta_days": 7, "action": "Inspect equipment.", "severity": "medium", "confidence": "medium"
         }
+        st["alert"] = fallback
+        await websocket.send_json({"type": "agent_update", "alert": fallback})
     finally:
-        state["agent_running"] = False
-        print("🤖 Agent Pipeline complete!\n")
+        st["agent_running"] = False
+        print("[Agent Pipeline] Complete!\n")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -325,145 +333,115 @@ async def run_agent_pipeline(drifting_rows: list, detection_stats: dict):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @app.post("/api/start-feed")
-async def start_feed():
+async def start_feed(machine_id: str):
     """
-    Resets the live feed cursor to row 0 and loads all rows into memory.
-    The frontend calls this when the user clicks 'Start Factory Feed'.
+    Resets the live feed cursor to row 0 and loads all rows into memory for a specific machine.
     """
-    state["cursor"]         = 0
-    state["running"]        = True
-    state["sent_rows"]      = []
-    state["drift_detected"] = False
-    state["agent_running"]  = False
-    state["alert"]          = None
-    state["diagnosis_raw"]  = None
+    st = get_state(machine_id)
+    st["cursor"]         = 0
+    st["running"]        = True
+    st["sent_rows"]      = []
+    st["drift_detected"] = False
+    st["agent_running"]  = False
+    st["alert"]          = None
+    st["diagnosis_raw"]  = None
 
     # Load all 200 rows from MCP server into memory
-    state["all_rows"] = await load_all_rows_from_mcp()
-    print(f"✅ Feed started — {len(state['all_rows'])} rows loaded from MCP server")
+    st["all_rows"] = await load_all_rows_from_mcp(machine_id)
+    print(f"[Feed] Started - {len(st['all_rows'])} rows loaded from MCP server for {machine_id}")
 
-    return {"status": "started", "total_rows": len(state["all_rows"])}
+    return {"status": "started", "total_rows": len(st["all_rows"])}
 
 
-@app.get("/api/live-feed")
-async def live_feed(background_tasks: BackgroundTasks):
+@app.websocket("/ws/feed/{machine_id}")
+async def websocket_feed(websocket: WebSocket, machine_id: str):
     """
-    Returns the NEXT chunk of sensor data for the frontend chart.
-    The frontend calls this every second via setInterval().
-
-    Also runs Agent 1 (Monitor) + Agent 2 (Detection) on each call.
-    If drift is detected and no agent run is happening, triggers the
-    full AI pipeline (Agents 3 + 4) in the background.
-
-    Returns:
-        {
-          "row": { timestamp, temperature, vibration, row_index },
-          "cursor": int,
-          "total": int,
-          "finished": bool,
-          "drift_detected": bool,
-          "detection_stats": { ... }
-        }
+    Streams data natively via WebSockets at 2Hz.
+    Replaces /api/live-feed polling.
     """
-    if not state["running"] or not state["all_rows"]:
-        return {"status": "idle", "message": "Call /api/start-feed first"}
+    await websocket.accept()
+    st = get_state(machine_id)
+    print(f"[WS] Connected for {machine_id}. running={st['running']}, all_rows_len={len(st['all_rows'])}")
+    try:
+        while True:
+            await asyncio.sleep(0.5)
+            
+            if not st["running"] or not st["all_rows"]:
+                print(f"[WS] Loop tick skipped: running={st['running']}, all_rows_len={len(st['all_rows'])}")
+                continue
 
-    cursor = state["cursor"]
-    total  = len(state["all_rows"])
+            cursor = st["cursor"]
+            total  = len(st["all_rows"])
 
-    # Check if we've served all rows
-    if cursor >= total:
-        return {
-            "finished":        True,
-            "cursor":          cursor,
-            "total":           total,
-            "drift_detected":  state["drift_detected"],
-            "alert":           state["alert"],
-        }
+            if cursor >= total:
+                await websocket.send_json({
+                    "finished":        True,
+                    "cursor":          cursor,
+                    "total":           total,
+                    "drift_detected":  st["drift_detected"],
+                    "alert":           st["alert"],
+                })
+                st["running"] = False
+                continue
 
-    # ── Return the next row ───────────────────────────────────────────────────
-    current_row = state["all_rows"][cursor]
-    state["sent_rows"].append(current_row)
-    state["cursor"] += CHUNK_SIZE
+            current_row = st["all_rows"][cursor]
+            st["sent_rows"].append(current_row)
+            st["cursor"] += CHUNK_SIZE
 
-    # ── Agent 1: Monitor — fetch latest 10 rows via MCP ──────────────────────
-    monitor_start = max(0, cursor - 9)
-    recent_rows   = await agent_monitor(start=monitor_start, limit=10)
+            # Agent 1
+            monitor_start = max(0, cursor - 9)
+            recent_rows   = await agent_monitor(start=monitor_start, machine_id=machine_id, limit=10)
 
-    # ── Agent 2: Detection — check for drift in all sent rows ────────────────
-    detection_stats = agent_detection(state["sent_rows"])
+            # Agent 2
+            detection_stats = agent_detection(st["sent_rows"])
 
-    # ── Trigger AI pipeline if drift detected (only once) ────────────────────
-    if (
-        detection_stats.get("drift_detected")
-        and not state["drift_detected"]
-        and not state["agent_running"]
-    ):
-        state["drift_detected"] = True
-        state["agent_running"]  = True
-        print(f"🚨 DRIFT DETECTED at row {cursor}! Triggering AI agent pipeline ...")
+            if detection_stats.get("drift_detected") and not st["drift_detected"] and not st["agent_running"]:
+                st["drift_detected"] = True
+                st["agent_running"]  = True
+                print(f"[ALERT] DRIFT DETECTED at row {cursor}! Triggering AI agent pipeline ...")
+                
+                drifting_rows = st["sent_rows"][-15:]
+                # Spawn background WebSocket push task directly
+                asyncio.create_task(run_agent_pipeline(drifting_rows, detection_stats, machine_id, websocket))
 
-        # Grab the last 15 rows to pass to Agent 3
-        drifting_rows = state["sent_rows"][-15:]
-        background_tasks.add_task(run_agent_pipeline, drifting_rows, detection_stats)
+            await websocket.send_json({
+                "type": "row_data",
+                "row":             current_row,
+                "cursor":          st["cursor"],
+                "total":           total,
+                "finished":        False,
+                "drift_detected":  st["drift_detected"],
+                "detection_stats": detection_stats,
+                "alert":           st["alert"],
+                "diagnosis_raw":   st["diagnosis_raw"],
+            })
 
-    return {
-        "row":             current_row,
-        "cursor":          state["cursor"],
-        "total":           total,
-        "finished":        False,
-        "drift_detected":  state["drift_detected"],
-        "detection_stats": detection_stats,
-        "alert":           state["alert"],   # None until Agent 4 finishes
-    }
-
-
-@app.get("/api/agent-status")
-async def agent_status():
-    """
-    Returns the current state of the agent pipeline.
-    The frontend polls this to pick up the alert card data.
-    """
-    return {
-        "drift_detected":  state["drift_detected"],
-        "agent_running":   state["agent_running"],
-        "alert":           state["alert"],
-        "diagnosis_raw":   state["diagnosis_raw"],
-        "cursor":          state["cursor"],
-        "total":           len(state["all_rows"]),
-    }
+    except WebSocketDisconnect:
+        print(f"[Websocket] Client disconnected from {machine_id}")
 
 
 @app.post("/api/reset")
 async def reset():
     """Fully resets all state — for demo restarts."""
-    state.update({
-        "cursor":          0,
-        "running":         False,
-        "all_rows":        [],
-        "sent_rows":       [],
-        "drift_detected":  False,
-        "agent_running":   False,
-        "alert":           None,
-        "diagnosis_raw":   None,
-    })
+    states.clear()
     return {"status": "reset complete"}
 
 
 @app.get("/health")
-async def health():
+async def health(machine_id: str = "MCH-03"):
     """Health check."""
+    st = get_state(machine_id)
     return {
         "status":  "ok",
         "server":  "DriftVeil FastAPI Backend",
-        "running": state["running"],
-        "cursor":  state["cursor"],
+        "running": st["running"],
+        "cursor":  st["cursor"],
     }
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 DriftVeil Backend starting on http://127.0.0.1:8000")
+    print("[DriftVeil] Backend starting on http://127.0.0.1:8000")
     print("   Make sure mcp_server.py is running on port 8001 first!")
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")

@@ -1,10 +1,8 @@
 import { C } from '../../theme'
-import { ALL_SENSOR_DATA } from '../../data/sensorData'
-
 export function FeedControls({ isRunning, chartData, onStart, onReset }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      {!isRunning && chartData.length < ALL_SENSOR_DATA.length && (
+      {!isRunning && chartData.length === 0 && (
         <button
           onClick={onStart}
           style={{

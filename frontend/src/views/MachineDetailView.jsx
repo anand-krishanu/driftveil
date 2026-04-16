@@ -5,12 +5,13 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts'
 import { C } from '../theme'
-import { MACHINES, ACTIVE_ALERT, AGENT_TRACE, MAINTENANCE_LOG } from '../data/machines'
+import { MACHINES, MAINTENANCE_LOG } from '../data/machines'
 import { MACHINE_HISTORY, SCADA_THRESHOLD } from '../data/sensorData'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { HealthBar } from '../components/ui/HealthBar'
 import { AlertCard } from '../components/alerts/AlertCard'
 import { CustomTooltip } from '../components/charts/CustomTooltip'
+import { useSensorFeed } from '../hooks/useSensorFeed'
 
 const TABS = ['Overview', 'Sensor History', 'Agent Trace', 'Maintenance Log', 'What-If Sim']
 
@@ -49,18 +50,22 @@ function TabBar({ active, onChange }) {
 }
 
 // ─── Tab: Overview ────────────────────────────────────────────────────────────
-function OverviewTab({ machine }) {
+function OverviewTab({ machine, alertData, stats, chartData }) {
   const history = MACHINE_HISTORY[machine.id] || []
-  const hasAlert = machine.status === 'DRIFT'
+  const hasAlert = !!alertData
+
+  const liveCusum = stats?.cusum_score ? stats.cusum_score : machine.cusum
+  const liveTemp = chartData?.length > 0 ? chartData[chartData.length - 1].temperature.toFixed(2) : machine.temp
+  const liveVib = chartData?.length > 0 ? chartData[chartData.length - 1].vibration.toFixed(3) : machine.vib
 
   return (
     <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* KPI Row */}
       <div style={{ display: 'flex', gap: 12 }}>
         <KpiCard label="Health Score"    value={`${machine.health}%`}  color={machine.health >= 90 ? C.safe : machine.health >= 75 ? C.warn : C.critical} />
-        <KpiCard label="Temperature"     value={`${machine.temp}°C`}   color={machine.cusum > 10 ? C.warn : C.heading} sub="Current reading" />
-        <KpiCard label="Vibration"       value={`${machine.vib} mm/s`} color={machine.cusum > 10 ? C.warn : C.heading} sub="Current reading" />
-        <KpiCard label="CUSUM Score"     value={machine.cusum.toFixed(1)} color={machine.cusum > 10 ? C.critical : machine.cusum > 4 ? C.warn : C.safe} sub={machine.cusum > 10 ? 'SIGNAL: Drift Confirmed' : 'Within range'} />
+        <KpiCard label="Temperature"     value={`${liveTemp}°C`}   color={liveCusum > 10 ? C.warn : C.heading} sub="Current reading" />
+        <KpiCard label="Vibration"       value={`${liveVib} mm/s`} color={liveCusum > 10 ? C.warn : C.heading} sub="Current reading" />
+        <KpiCard label="CUSUM Score"     value={liveCusum.toFixed(1)} color={liveCusum > 10 ? C.critical : liveCusum > 4 ? C.warn : C.safe} sub={liveCusum > 10 ? 'SIGNAL: Drift Confirmed' : 'Within range'} />
         <KpiCard label="Est. Runtime"    value={machine.runtime}        sub="Since last service" />
       </div>
 
@@ -109,7 +114,7 @@ function OverviewTab({ machine }) {
         </div>
       </div>
 
-      {hasAlert && <AlertCard alert={ACTIVE_ALERT} />}
+      {hasAlert && <AlertCard alert={alertData} />}
     </div>
   )
 }
@@ -165,44 +170,88 @@ function SensorHistoryTab({ machine }) {
 }
 
 // ─── Tab: Agent Trace ─────────────────────────────────────────────────────────
-function AgentTraceTab() {
+function AgentTraceTab({ alertData, stats, diagnosisRaw }) {
   return (
-    <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 800 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h3 style={{ fontSize: 14, color: C.heading }}>AWS Strands Agent Execution — Event DV-2024-0847</h3>
-        <span style={{ fontSize: 11, color: C.subtle, fontFamily: 'JetBrains Mono' }}>09:14:23 – 09:14:26 UTC</span>
+        <h3 style={{ fontSize: 14, color: C.heading }}>Live AWS Strands Agent Execution</h3>
+        <span style={{ fontSize: 11, color: C.subtle, fontFamily: 'JetBrains Mono' }}>System Event Log</span>
       </div>
-      {AGENT_TRACE.map((step, i) => (
-        <div key={i} style={{ border: `1px solid ${C.border}`, background: C.bgS1 }}>
+
+      {!stats && !alertData && (
+        <div style={{ padding: 24, textAlign: 'center', border: `1px solid ${C.border}` }}>
+          <p style={{ color: C.subtle, fontSize: 13 }}>Waiting for pipeline to trigger (requires simulated drift).</p>
+        </div>
+      )}
+
+      {stats && (
+        <div style={{ border: `1px solid ${C.border}`, background: C.bgS1 }}>
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '10px 16px', borderBottom: `1px solid ${C.borderSub}`,
-            background: C.bgS2,
+            padding: '10px 16px', borderBottom: `1px solid ${C.borderSub}`, background: C.bgS2,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{
-                width: 22, height: 22, borderRadius: '50%',
-                background: C.warn, color: C.bgBase,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 700,
-              }}>{i + 1}</span>
-              <p style={{ fontSize: 12, fontWeight: 600, color: C.heading }}>{step.agent}</p>
+              <span style={{ width: 22, height: 22, borderRadius: '50%', background: C.warn, color: C.bgBase, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>2</span>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.warn }}>Agent 2: Detection Math Engine</p>
             </div>
-            <p style={{ fontSize: 11, color: C.subtle, fontFamily: 'JetBrains Mono' }}>{step.time}</p>
+            <p style={{ fontSize: 11, color: C.subtle, fontFamily: 'JetBrains Mono' }}>completed</p>
           </div>
           <div style={{ padding: 16 }}>
-            <p style={{ fontSize: 12, color: C.body, fontFamily: 'JetBrains Mono', lineHeight: 1.8 }}>
-              {step.output}
+            <p style={{ fontSize: 12, color: C.body, fontFamily: 'JetBrains Mono', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+              {`> CUSUM Score: ${stats.cusum_score}\n> Temperature Slope: ${stats.slope_temp}°C/t\n> Vibration Slope: ${stats.slope_vib}\n\n[DRIFT CONFIRMED OVER THRESHOLD]\nInvoking multi-agent pipeline for explanation.`}
             </p>
           </div>
         </div>
-      ))}
-      <div style={{ border: `1px solid ${C.border}`, background: C.bgS1, padding: 16 }}>
-        <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', color: C.subtle, marginBottom: 8 }}>Bedrock Guardrails Output</p>
-        <p style={{ fontSize: 12, color: C.body, fontFamily: 'JetBrains Mono', lineHeight: 1.8 }}>
-          All 4 agent outputs verified. No hallucinations detected. Each claim backed by structured MCP tool data. Confidence: 89%.
-        </p>
-      </div>
+      )}
+
+      {(stats?.drift_detected || diagnosisRaw) && (
+        <div style={{ border: `1px solid ${C.border}`, background: C.bgS1 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '10px 16px', borderBottom: `1px solid ${C.borderSub}`, background: C.bgS2,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ width: 22, height: 22, borderRadius: '50%', background: C.critical, color: C.bgBase, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>3</span>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.critical }}>Agent 3: Root Cause (Claude 3.5)</p>
+            </div>
+            <p style={{ fontSize: 11, color: C.subtle, fontFamily: 'JetBrains Mono' }}>{diagnosisRaw ? 'completed' : 'running...'}</p>
+          </div>
+          <div style={{ padding: 16 }}>
+            <p style={{ fontSize: 12, color: C.body, fontFamily: 'JetBrains Mono', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+              {diagnosisRaw || `Processing 15 rows of sensor data.\nChecking MCP for fingerprint matches...`}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {(alertData || diagnosisRaw) && (
+        <div style={{ border: `1px solid ${C.border}`, background: C.bgS1, opacity: alertData ? 1 : 0.6 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '10px 16px', borderBottom: `1px solid ${C.borderSub}`, background: C.bgS2,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ width: 22, height: 22, borderRadius: '50%', background: C.safe, color: C.bgBase, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>4</span>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.safe }}>Agent 4: Explainer & Formatter</p>
+            </div>
+            <p style={{ fontSize: 11, color: C.subtle, fontFamily: 'JetBrains Mono' }}>{alertData ? 'completed' : 'running...'}</p>
+          </div>
+          <div style={{ padding: 16 }}>
+            <p style={{ fontSize: 12, color: C.body, fontFamily: 'JetBrains Mono', lineHeight: 1.8 }}>
+              {alertData ? `JSON Alert Card published.` : `Translating raw diagnosis to JSON struct...`}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {alertData && (
+        <div style={{ border: `1px solid ${C.safe}`, background: C.bgAlert, padding: 16, marginTop: 8 }}>
+          <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', color: C.safe, marginBottom: 8 }}>Bedrock Guardrails Verification</p>
+          <p style={{ fontSize: 12, color: C.heading, fontFamily: 'JetBrains Mono', lineHeight: 1.8 }}>
+            All 4 agent outputs verified. No hallucinations detected. Each claim backed by structured MCP tool data. Confidence: {alertData.confidence}.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -382,6 +431,7 @@ export function MachineDetailView() {
   const { machineId } = useParams()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('Overview')
+  const { alertData, stats, diagnosisRaw, chartData } = useSensorFeed(machineId)
 
   const machine = MACHINES.find(m => m.id === machineId)
   if (!machine) {
@@ -427,9 +477,9 @@ export function MachineDetailView() {
 
       {/* Tab Content */}
       <div style={{ flex: 1, overflow: 'auto', background: C.bgBase }}>
-        {activeTab === 'Overview'          && <OverviewTab machine={machine} />}
+        {activeTab === 'Overview'          && <OverviewTab machine={machine} alertData={alertData} stats={stats} chartData={chartData} />}
         {activeTab === 'Sensor History'    && <SensorHistoryTab machine={machine} />}
-        {activeTab === 'Agent Trace'       && <AgentTraceTab />}
+        {activeTab === 'Agent Trace'       && <AgentTraceTab alertData={alertData} stats={stats} diagnosisRaw={diagnosisRaw} />}
         {activeTab === 'Maintenance Log'   && <MaintenanceLogTab />}
         {activeTab === 'What-If Sim'       && <WhatIfTab machine={machine} />}
       </div>

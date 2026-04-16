@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C } from '../theme'
-import { MACHINES, ACTIVE_ALERT } from '../data/machines'
+import { MACHINES } from '../data/machines'
 import { SensorChart } from '../components/charts/SensorChart'
 import { AlertCard } from '../components/alerts/AlertCard'
 import { FeedControls } from '../components/ui/FeedControls'
@@ -9,7 +10,8 @@ import { useSensorFeed } from '../hooks/useSensorFeed'
 
 export function OperatorView() {
   const navigate = useNavigate()
-  const { chartData, isRunning, alertVisible, startFeed, resetFeed } = useSensorFeed()
+  const [activeId, setActiveId] = useState('MCH-03')
+  const { chartData, isRunning, alertVisible, alertData, startFeed, resetFeed } = useSensorFeed(activeId)
 
   const normalCount = MACHINES.filter(m => m.status === 'NORMAL').length
   const driftCount  = MACHINES.filter(m => m.status === 'DRIFT').length
@@ -45,7 +47,7 @@ export function OperatorView() {
             padding: '12px 24px', borderBottom: `1px solid ${C.border}`,
           }}>
             <div>
-              <h3 style={{ fontSize: 14, color: C.heading }}>MCH-03 — Live Sensor Feed</h3>
+              <h3 style={{ fontSize: 14, color: C.heading }}>{activeId} — Live Sensor Feed</h3>
               <p style={{ fontSize: 11, color: C.subtle, marginTop: 2 }}>
                 Temperature · Vibration · SCADA Threshold
               </p>
@@ -72,15 +74,16 @@ export function OperatorView() {
           {MACHINES.map(m => (
             <div
               key={m.id}
-              onClick={() => navigate(`/machine/${m.id}`)}
+              onClick={() => setActiveId(m.id)}
+              onDoubleClick={() => navigate(`/machine/${m.id}`)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '10px 16px', borderBottom: `1px solid ${C.borderSub}`,
-                background: m.id === 'MCH-03' ? C.bgAlert : 'transparent',
+                background: m.id === activeId ? C.bgAlert : 'transparent',
                 cursor: 'pointer', transition: 'background 0.1s',
               }}
-              onMouseOver={e => { if (m.id !== 'MCH-03') e.currentTarget.style.background = C.bgS2 }}
-              onMouseOut={e => { if (m.id !== 'MCH-03') e.currentTarget.style.background = 'transparent' }}
+              onMouseOver={e => { if (m.id !== activeId) e.currentTarget.style.background = C.bgS2 }}
+              onMouseOut={e => { if (m.id !== activeId) e.currentTarget.style.background = 'transparent' }}
             >
               <div>
                 <p style={{ fontSize: 13, color: C.heading, fontWeight: 500 }}>{m.name}</p>
@@ -89,7 +92,7 @@ export function OperatorView() {
               <StatusBadge status={m.status} />
             </div>
           ))}
-          {alertVisible && <AlertCard alert={ACTIVE_ALERT} />}
+          {alertVisible && alertData && <AlertCard alert={alertData} />}
         </div>
       </div>
     </div>

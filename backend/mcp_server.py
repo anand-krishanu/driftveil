@@ -52,6 +52,7 @@ app.add_middleware(
 def get_sensor_data(
     start: int = Query(default=0, ge=0, description="Row index to start reading from (0-indexed)"),
     limit: int = Query(default=10, ge=1, le=200, description="Number of rows to return"),
+    machine_id: Optional[str] = Query(default=None, description="Industrial machine identifier"),
 ):
     """
     Reads `limit` rows from sensor_stream.csv starting at row `start`.
@@ -122,5 +123,5 @@ def health():
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    print("🔧  DriftVeil MCP Server starting on http://127.0.0.1:8001")
+    print("[DriftVeil] MCP Server starting on http://127.0.0.1:8001")
     uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info")

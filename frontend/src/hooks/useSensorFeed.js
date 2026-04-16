@@ -1,49 +1,86 @@
 import { useState, useEffect, useRef } from 'react'
-import { ALL_SENSOR_DATA, DRIFT_TRIGGER_TICK } from '../data/sensorData'
 
-// ─── useSensorFeed ────────────────────────────────────────────────────────────
-// Encapsulates all simulation state and timer logic.
-// Returns: { chartData, isRunning, alertVisible, startFeed, resetFeed }
+const API_BASE = 'http://127.0.0.1:8000/api'
+const WS_BASE = 'ws://127.0.0.1:8000/ws'
 
-export function useSensorFeed() {
+export function useSensorFeed(machineId = 'MCH-03') {
   const [chartData,     setChartData]     = useState([])
   const [isRunning,     setIsRunning]     = useState(false)
-  const [alertVisible,  setAlertVisible]  = useState(false)
-  const [tick,          setTick]          = useState(0)
-  const intervalRef = useRef(null)
+  const [alertData,     setAlertData]     = useState(null)
+  const [stats,         setStats]         = useState(null)
+  const [diagnosisRaw,  setDiagnosisRaw]  = useState(null)
+  const wsRef = useRef(null)
 
-  function startFeed() {
-    setChartData([])
-    setAlertVisible(false)
-    setTick(0)
-    setIsRunning(true)
+  async function startFeed() {
+    try {
+      await fetch(`${API_BASE}/start-feed?machine_id=${machineId}`, { method: 'POST' })
+      setChartData([])
+      setAlertData(null)
+      setStats(null)
+      setDiagnosisRaw(null)
+      setIsRunning(true)
+    } catch (e) {
+      console.error('Failed to start feed:', e)
+    }
   }
 
-  function resetFeed() {
-    clearInterval(intervalRef.current)
-    setIsRunning(false)
-    setChartData([])
-    setAlertVisible(false)
-    setTick(0)
+  async function resetFeed() {
+    try {
+      await fetch(`${API_BASE}/reset`, { method: 'POST' })
+      if (wsRef.current) wsRef.current.close()
+      setIsRunning(false)
+      setChartData([])
+      setAlertData(null)
+      setStats(null)
+      setDiagnosisRaw(null)
+    } catch (e) {
+      console.error('Failed to reset feed:', e)
+    }
   }
 
   useEffect(() => {
     if (!isRunning) return
-    intervalRef.current = setInterval(() => {
-      setTick(prev => {
-        const next = prev + 1
-        if (next >= ALL_SENSOR_DATA.length) {
-          clearInterval(intervalRef.current)
-          setIsRunning(false)
-          return prev
-        }
-        setChartData(ALL_SENSOR_DATA.slice(0, next))
-        if (next === DRIFT_TRIGGER_TICK) setAlertVisible(true)
-        return next
-      })
-    }, 60)
-    return () => clearInterval(intervalRef.current)
-  }, [isRunning])
+    
+    // Connect to WebSocket
+    const ws = new WebSocket(`${WS_BASE}/feed/${machineId}`)
+    wsRef.current = ws
 
-  return { chartData, isRunning, alertVisible, startFeed, resetFeed }
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+
+      // Instant push updates from background LLM task
+      if (data.type === 'agent_update') {
+        if (data.diagnosis_raw) setDiagnosisRaw(data.diagnosis_raw)
+        if (data.alert) setAlertData(data.alert)
+        return
+      }
+
+      // Stream finished
+      if (data.finished) {
+        setIsRunning(false)
+        ws.close()
+        if (data.alert) setAlertData(data.alert)
+        return
+      }
+
+      // Standard telemetry tick
+      if (data.type === 'row_data') {
+        if (data.row) {
+          data.row.label = `T+${data.row.row_index}`
+          setChartData(prev => [...prev, data.row])
+        }
+        if (data.detection_stats) setStats(data.detection_stats)
+        if (data.alert) setAlertData(data.alert)
+        if (data.diagnosis_raw) setDiagnosisRaw(data.diagnosis_raw)
+      }
+    }
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+        ws.close()
+      }
+    }
+  }, [isRunning, machineId])
+
+  return { chartData, isRunning, alertVisible: !!alertData, alertData, stats, diagnosisRaw, startFeed, resetFeed }
 }
