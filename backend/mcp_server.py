@@ -4,39 +4,41 @@ mcp_server.py
 A local MCP (Model Context Protocol) server that exposes two tools
 to the agent pipeline:
 
-  Tool 1 → get_sensor_data(start, limit)
-           Reads rows from sensor_stream.csv and returns them as JSON.
+  Tool 1 -> get_sensor_data(start, limit)
+           Reads rows from DB and returns them as JSON.
 
-  Tool 2 → get_fingerprints()
-           Reads fingerprints.json and returns all known failure patterns.
-
-How to run (in a separate terminal):
-    python mcp_server.py
-
-The server listens on http://127.0.0.1:8001
-FastAPI (main.py) calls it internally — you do NOT need to interact
-with this server directly.
+  Tool 2 -> get_fingerprints()
+           Reads from DB and returns all known failure patterns.
 """
 
 import json
-import csv
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from prisma_client import Prisma
 import uvicorn
+from contextlib import asynccontextmanager
 
-# ── Paths ────────────────────────────────────────────────────────────────────
-BASE_DIR        = Path(__file__).parent
-CSV_PATH        = BASE_DIR / "sensor_stream.csv"
-FINGERPRINT_PATH = BASE_DIR / "fingerprints.json"
+import logging
 
-# ── App ───────────────────────────────────────────────────────────────────────
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("mcp_server")
+
+db = Prisma()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await db.connect()
+    yield
+    await db.disconnect()
+
 app = FastAPI(
     title="DriftVeil MCP Server",
     description="MCP-style tool server exposing sensor data and failure fingerprints.",
     version="1.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -46,40 +48,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# ── Tool 1: get_sensor_data ───────────────────────────────────────────────────
 @app.get("/tools/get_sensor_data")
-def get_sensor_data(
+async def get_sensor_data(
     start: int = Query(default=0, ge=0, description="Row index to start reading from (0-indexed)"),
     limit: int = Query(default=10, ge=1, le=200, description="Number of rows to return"),
     machine_id: Optional[str] = Query(default=None, description="Industrial machine identifier"),
 ):
-    """
-    Reads `limit` rows from sensor_stream.csv starting at row `start`.
+    logger.info(f"Incoming request for get_sensor_data, machine_id={machine_id}, start={start}, limit={limit}")
+    if not machine_id:
+        machine = await db.machine.find_first()
+        if machine:
+            machine_id = machine.id
+        else:
+            raise HTTPException(status_code=404, detail="No machines found.")
 
-    Returns a list of dicts:
-        [{"timestamp": "...", "temperature": 60.12, "vibration": 0.23}, ...]
-    """
-    if not CSV_PATH.exists():
-        raise HTTPException(
-            status_code=404,
-            detail="sensor_stream.csv not found. Run generate_data.py first!"
-        )
+    readings = await db.sensorreading.find_many(
+        where={"machineId": machine_id},
+        order={"time": "asc"},
+        skip=start,
+        take=limit
+    )
 
     rows = []
-    with open(CSV_PATH, newline="") as f:
-        reader = csv.DictReader(f)
-        for i, row in enumerate(reader):
-            if i < start:
-                continue
-            if len(rows) >= limit:
-                break
-            rows.append({
-                "row_index":   i,
-                "timestamp":   row["timestamp"],
-                "temperature": float(row["temperature"]),
-                "vibration":   float(row["vibration"]),
-            })
+    for i, r in enumerate(readings):
+        rows.append({
+            "row_index": start + i,
+            "timestamp": r.time.strftime('%Y-%m-%d %H:%M:%S'),
+            "temperature": r.temperature,
+            "vibration": r.vibration
+        })
 
     return {
         "tool":  "get_sensor_data",
@@ -89,24 +86,20 @@ def get_sensor_data(
         "data":  rows,
     }
 
-
-# ── Tool 2: get_fingerprints ──────────────────────────────────────────────────
 @app.get("/tools/get_fingerprints")
-def get_fingerprints():
-    """
-    Reads and returns all failure fingerprints from fingerprints.json.
+async def get_fingerprints():
+    fps = await db.failurefingerprint.find_many()
 
-    Returns a list of fingerprint objects with fields:
-        id, issue, pattern, severity, eta_days_range, recommended_action
-    """
-    if not FINGERPRINT_PATH.exists():
-        raise HTTPException(
-            status_code=404,
-            detail="fingerprints.json not found."
-        )
-
-    with open(FINGERPRINT_PATH) as f:
-        fingerprints = json.load(f)
+    fingerprints = []
+    for f in fps:
+        fingerprints.append({
+            "id": f.id,
+            "issue": f.issueName,
+            "pattern": f.patternData,
+            "severity": f.severity.lower(),
+            "eta_days_range": f"{f.etaDays}-{f.etaDays+7}" if f.etaDays else "Unknown",
+            "recommended_action": f.actionPrescription
+        })
 
     return {
         "tool":         "get_fingerprints",
@@ -115,13 +108,39 @@ def get_fingerprints():
     }
 
 
-# ── Health check ──────────────────────────────────────────────────────────────
+@app.get("/tools/get_machines")
+async def get_machines():
+    machines = await db.machine.find_many(order={"id": "asc"})
+
+    rows = []
+    for machine in machines:
+        latest = await db.sensorreading.find_first(
+            where={"machineId": machine.id},
+            order={"time": "desc"},
+        )
+
+        rows.append({
+            "id": machine.id,
+            "name": machine.name,
+            "line": machine.line,
+            "location": machine.location,
+            "status": machine.status,
+            "base_health": machine.baseHealth,
+            "temp": latest.temperature if latest else None,
+            "vib": latest.vibration if latest else None,
+            "last_timestamp": latest.time.strftime('%Y-%m-%d %H:%M:%S') if latest else None,
+        })
+
+    return {
+        "tool": "get_machines",
+        "count": len(rows),
+        "machines": rows,
+    }
+
 @app.get("/health")
 def health():
-    return {"status": "ok", "server": "DriftVeil MCP Server"}
+    return {"status": "ok", "server": "DriftVeil MCP Server (Prisma)"}
 
-
-# ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("[DriftVeil] MCP Server starting on http://127.0.0.1:8001")
-    uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info")
+    uvicorn.run("mcp_server:app", host="127.0.0.1", port=8001, log_level="info")

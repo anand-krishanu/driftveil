@@ -1,25 +1,53 @@
 export function FeedControls({ isRunning, chartData, onStart, onReset }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       {!isRunning && chartData.length === 0 && (
         <button
           onClick={onStart}
-          className="px-4 py-1.5 text-xs font-semibold border border-warn text-warn bg-warn/5 hover:bg-warn hover:text-bgBase transition-all duration-200 cursor-pointer rounded-sm shadow-[0_0_10px_rgba(217,119,6,0.1)] hover:shadow-[0_0_15px_rgba(217,119,6,0.4)]"
+          style={{
+            padding: '4px 12px',
+            fontSize: 11,
+            fontWeight: 600,
+            border: '1px solid var(--accent-info)',
+            color: 'var(--accent-info)',
+            background: 'var(--accent-info-dim)',
+            cursor: 'pointer',
+            letterSpacing: '0.04em',
+            transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.target.style.background = 'var(--accent-info)'; e.target.style.color = '#111' }}
+          onMouseLeave={e => { e.target.style.background = 'var(--accent-info-dim)'; e.target.style.color = 'var(--accent-info)' }}
         >
-          Start Factory Feed
+          ▶ Start Factory Feed
         </button>
       )}
       {(isRunning || chartData.length > 0) && (
         <button
           onClick={onReset}
-          className="px-4 py-1.5 text-xs font-medium border border-borderSubtle text-subtle bg-surface1 hover:bg-surface2 hover:text-body transition-colors duration-150 cursor-pointer rounded-sm shadow-sm"
+          style={{
+            padding: '4px 12px',
+            fontSize: 11,
+            border: '1px solid var(--border)',
+            color: 'var(--text-subtle)',
+            background: 'transparent',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.target.style.background = 'var(--bg-row-hover)'; e.target.style.color = 'var(--text-body)' }}
+          onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--text-subtle)' }}
         >
-          Reset
+          ↺ Reset
         </button>
       )}
       {isRunning && (
-        <span className="flex items-center gap-1.5 text-[11px] text-safe font-bold tracking-widest uppercase">
-          <span className="w-2 h-2 rounded-full bg-safe animate-pulse-glow shadow-[0_0_6px_rgba(22,163,74,0.8)]" />
+        <span
+          className="flex items-center gap-1.5"
+          style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-safe)', fontFamily: 'JetBrains Mono', letterSpacing: '0.08em' }}
+        >
+          <span
+            className="w-2 h-2 rounded-full animate-pulse-glow"
+            style={{ background: 'var(--accent-safe)' }}
+          />
           LIVE
         </span>
       )}

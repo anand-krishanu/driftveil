@@ -44,9 +44,9 @@ While the current architecture is robust for a hackathon, here are the core chan
    - **Current:** The UI shows "Running..." until the full paragraph is generated, then flashes the text on screen.
    - **Change:** Use `stream=True` in the OpenAI/Bedrock client block and stream chunks to the frontend. The `AgentTrace` UI will look substantially more impressive if the text gets typed out character-by-character as the AI thinks.
 
-5. **In-Memory State to TimescaleDB**
+5. **In-Memory State to Persistent Database via Prisma ORM**
    - **Current:** Global variables (`state = {}`) in `main.py` hold the cursor count and alert payloads. If the FastApi server restarts, the feed resets.
-   - **Change:** Write historical data into a TimescaleDB (PostgreSQL) container, and pull the recent 15 rows via a SQL query when drift occurs.
+   - **Change:** Implement **Prisma ORM with Python** to persist streaming data, historical fingerprints, and alert generated payloads. We will start with SQLite for local development speed and schema design, keeping the architecture agnostic so it can instantly migrate to PostgreSQL for enterprise deployments.
 
 ---
 

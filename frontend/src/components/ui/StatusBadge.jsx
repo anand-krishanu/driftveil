@@ -1,12 +1,16 @@
 export function StatusBadge({ status }) {
-  const map = {
-    NORMAL: 'text-safe bg-safeDim border-safe/30',
-    WARN:   'text-warn bg-warnDim border-warn/30 shadow-[0_0_8px_rgba(217,119,6,0.2)]',
-    DRIFT:  'text-critical bg-criticalDim border-critical/50 shadow-[0_0_12px_rgba(220,38,38,0.3)] animate-pulse-glow',
+  const styles = {
+    NORMAL: { color: 'var(--accent-safe)',    border: 'rgba(115,191,105,0.4)', bg: 'var(--accent-safe-dim)'    },
+    WARN:   { color: 'var(--accent-warn)',    border: 'rgba(255,153,0,0.4)',   bg: 'var(--accent-warn-dim)'    },
+    DRIFT:  { color: 'var(--accent-critical)', border: 'rgba(242,73,92,0.5)', bg: 'var(--accent-critical-dim)' },
   }
-  const cls = map[status] || map.NORMAL
+  const s = styles[status] || styles.NORMAL
   return (
-    <span className={`border px-2 py-0.5 text-[10px] font-semibold tracking-widest inline-block rounded-sm backdrop-blur-md ${cls}`}>
+    <span
+      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold tracking-widest"
+      style={{ color: s.color, border: `1px solid ${s.border}`, background: s.bg }}
+    >
+      <span className="w-1 h-1 rounded-full" style={{ background: s.color }} />
       {status}
     </span>
   )

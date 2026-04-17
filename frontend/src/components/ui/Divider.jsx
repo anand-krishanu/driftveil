@@ -1,5 +1,12 @@
 export function Divider({ vertical = false }) {
   return (
-    <div className={`bg-borderPrimary shrink-0 ${vertical ? 'w-px h-full' : 'h-px w-full'}`} />
+    <div
+      style={{
+        background: 'var(--border)',
+        flexShrink: 0,
+        width: vertical ? 1 : '100%',
+        height: vertical ? '100%' : 1,
+      }}
+    />
   )
 }

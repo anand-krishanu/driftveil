@@ -20,22 +20,35 @@ How to run:
 Prerequisites:
     1. mcp_server.py must be running on port 8001
     2. .env must contain OPENAI_API_KEY=your_key_here
-    3. sensor_stream.csv must exist (run generate_data.py first)
+    3. Database seeded with seed.py first
 """
 
 import os
 import json
 import asyncio
+import random
+import re
 import httpx
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from typing import Optional
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, BackgroundTasks, WebSocket, WebSocketDisconnect
+import logging
+from fastapi import FastAPI, BackgroundTasks, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI
+from pydantic import BaseModel, Field
+from prisma_client import Prisma
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("driftveil")
 
 # ── Load environment variables ────────────────────────────────────────────────
 load_dotenv()
@@ -48,6 +61,50 @@ MCP_BASE_URL   = "http://127.0.0.1:8001"
 CHUNK_SIZE     = 1          # rows to advance per /api/live-feed call
 DRIFT_WINDOW   = 15         # rows for moving average calculation
 DRIFT_SLOPE_THRESHOLD = 0.15  # °C increase per row triggers detection
+
+MACHINE_PROFILES = {
+    "CENTRIFUGAL_PUMP": {
+        "label": "Centrifugal Pump",
+        "default_name": "Centrifugal Pump",
+        "sensor_fields": ["temperature", "vibration", "rpm"],
+        "baseline": {"temperature": 58.0, "vibration": 0.22, "rpm": 1780},
+        "noise": {"temperature": 0.9, "vibration": 0.012, "rpm": 30},
+    },
+    "ROTARY_COMPRESSOR": {
+        "label": "Rotary Compressor",
+        "default_name": "Rotary Compressor",
+        "sensor_fields": ["temperature", "vibration", "rpm"],
+        "baseline": {"temperature": 68.0, "vibration": 0.28, "rpm": 3250},
+        "noise": {"temperature": 1.1, "vibration": 0.015, "rpm": 45},
+    },
+    "CONVEYOR_GEARBOX": {
+        "label": "Conveyor Gearbox",
+        "default_name": "Conveyor Gearbox",
+        "sensor_fields": ["temperature", "vibration", "rpm"],
+        "baseline": {"temperature": 52.0, "vibration": 0.25, "rpm": 1200},
+        "noise": {"temperature": 0.8, "vibration": 0.010, "rpm": 20},
+    },
+    "INDUSTRIAL_FAN": {
+        "label": "Industrial Fan",
+        "default_name": "Industrial Fan",
+        "sensor_fields": ["temperature", "vibration", "rpm"],
+        "baseline": {"temperature": 49.0, "vibration": 0.20, "rpm": 1950},
+        "noise": {"temperature": 0.7, "vibration": 0.009, "rpm": 25},
+    },
+    "CNC_SPINDLE": {
+        "label": "CNC Spindle",
+        "default_name": "CNC Spindle",
+        "sensor_fields": ["temperature", "vibration", "rpm"],
+        "baseline": {"temperature": 45.0, "vibration": 0.12, "rpm": 6200},
+        "noise": {"temperature": 0.6, "vibration": 0.007, "rpm": 80},
+    },
+}
+
+SCENARIO_SETTINGS = {
+    "NORMAL": {"temp_rise": 2.5, "vib_rise": 0.08, "health": 100},
+    "WARN": {"temp_rise": 8.0, "vib_rise": 0.24, "health": 90},
+    "DRIFT": {"temp_rise": 18.0, "vib_rise": 0.50, "health": 80},
+}
 
 # ── App setup ─────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -63,8 +120,68 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+db = Prisma()
+
+
+@app.on_event("startup")
+async def on_startup():
+    await db.connect()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    await db.disconnect()
+
 # ── Shared in-memory state (Multi-tenant) ─────────────────────────────────────────────────────
 states = {}
+
+
+class MachineAutoCreateRequest(BaseModel):
+    machine_type: str
+    machine_id: Optional[str] = None
+    name: Optional[str] = None
+    line: Optional[str] = None
+    location: Optional[str] = None
+    scenario: str = "NORMAL"
+    points: int = Field(default=200, ge=50, le=1000)
+
+
+def _generate_stream_rows(machine_type: str, scenario: str, points: int) -> list:
+    profile = MACHINE_PROFILES[machine_type]
+    scenario_cfg = SCENARIO_SETTINGS[scenario]
+    base = profile["baseline"]
+    noise = profile["noise"]
+
+    rows = []
+    start_time = datetime.utcnow() - timedelta(seconds=points * 5)
+
+    for i in range(points):
+        progress = i / max(points - 1, 1)
+        # Drift ramps stronger in the second half to mimic degradation trend.
+        ramp = progress if scenario != "DRIFT" else max(0.0, (i - (points * 0.5)) / max(points * 0.5, 1))
+
+        temp = base["temperature"] + scenario_cfg["temp_rise"] * ramp + random.uniform(-noise["temperature"], noise["temperature"])
+        vib = base["vibration"] + scenario_cfg["vib_rise"] * ramp + random.uniform(-noise["vibration"], noise["vibration"])
+        rpm = base["rpm"] + random.uniform(-noise["rpm"], noise["rpm"])
+
+        rows.append({
+            "time": (start_time + timedelta(seconds=i * 5)).replace(microsecond=0).isoformat() + "Z",
+            "temperature": round(max(0.0, temp), 2),
+            "vibration": round(max(0.0, vib), 4),
+            "rpm": int(max(0, rpm)),
+        })
+
+    return rows
+
+
+async def _next_machine_id() -> str:
+    machines = await db.machine.find_many(order={"id": "asc"})
+    max_num = 0
+    for m in machines:
+        match = re.fullmatch(r"MCH-(\d+)", m.id)
+        if match:
+            max_num = max(max_num, int(match.group(1)))
+    return f"MCH-{max_num + 1:02d}"
 
 def get_state(machine_id: str) -> dict:
     if machine_id not in states:
@@ -89,11 +206,22 @@ openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 async def load_all_rows_from_mcp(machine_id: str) -> list:
     """Fetch all 200 rows from the MCP server and cache them."""
+    logger.info(f"Loading all sensor rows from MCP for machine {machine_id}...")
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{MCP_BASE_URL}/tools/get_sensor_data", params={"start": 0, "limit": 200, "machine_id": machine_id})
         resp.raise_for_status()
         data = resp.json()
+        logger.info(f"Loaded {data.get('count', 0)} rows from MCP.")
         return data["data"]
+
+
+async def load_machines_from_mcp() -> list:
+    """Fetch machine registry from MCP/DB."""
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{MCP_BASE_URL}/tools/get_machines")
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("machines", [])
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -317,12 +445,13 @@ async def run_agent_pipeline(drifting_rows: list, detection_stats: dict, machine
         })
 
     except Exception as e:
-        print(f"   [ERROR] Agent pipeline error: {e}")
+        logger.error(f"   [ERROR] Agent pipeline error: {e}")
         fallback = {
-            "title": "Drift Detected", "eta_days": 7, "action": "Inspect equipment.", "severity": "medium", "confidence": "medium"
+            "title": "Drift Detected (Missing OpenAI Key)", "eta_days": 7, "action": "Inspect equipment. Configure OPENAI_API_KEY for dynamic AI.", "severity": "medium", "confidence": "medium"
         }
         st["alert"] = fallback
-        await websocket.send_json({"type": "agent_update", "alert": fallback})
+        st["diagnosis_raw"] = "### Mock AI Agent\\n\\n**AI Diagnosis Disabled**: An OpenAI API key was missing or invalid. Add one to your `.env` file to fully use Agents 3 and 4.\\n\\n* Suspected Mode: Early Bearing Wear\\n* Severity: Medium\\n* Confidence: 85%\\n* ETA to Failure: 7-14 days"
+        await websocket.send_json({"type": "agent_update", "alert": fallback, "diagnosis_raw": st["diagnosis_raw"]})
     finally:
         st["agent_running"] = False
         print("[Agent Pipeline] Complete!\n")
@@ -351,6 +480,128 @@ async def start_feed(machine_id: str):
     print(f"[Feed] Started - {len(st['all_rows'])} rows loaded from MCP server for {machine_id}")
 
     return {"status": "started", "total_rows": len(st["all_rows"])}
+
+
+@app.get("/api/machines")
+async def get_machines():
+    """Returns machine registry records from DB through MCP."""
+    machines = await load_machines_from_mcp()
+    return {"count": len(machines), "machines": machines}
+
+
+@app.get("/api/machine-types")
+async def get_machine_types():
+    types = []
+    for key, profile in MACHINE_PROFILES.items():
+        types.append({
+            "machine_type": key,
+            "label": profile["label"],
+            "default_name": profile["default_name"],
+            "sensor_fields": profile["sensor_fields"],
+            "baseline": profile["baseline"],
+            "default_stream": {"points": 200, "interval_seconds": 5, "scenario": "NORMAL"},
+        })
+    return {"count": len(types), "types": types}
+
+
+@app.get("/api/machine-types/{machine_type}/preview")
+async def get_machine_type_preview(
+    machine_type: str,
+    scenario: str = Query(default="NORMAL"),
+    points: int = Query(default=60, ge=20, le=400),
+):
+    type_key = machine_type.upper()
+    scenario_key = scenario.upper()
+    if type_key not in MACHINE_PROFILES:
+        raise HTTPException(status_code=404, detail=f"Unknown machine_type: {machine_type}")
+    if scenario_key not in SCENARIO_SETTINGS:
+        raise HTTPException(status_code=400, detail=f"Invalid scenario: {scenario}")
+
+    rows = _generate_stream_rows(type_key, scenario_key, points)
+    return {
+        "machine_type": type_key,
+        "scenario": scenario_key,
+        "points": points,
+        "sensor_fields": MACHINE_PROFILES[type_key]["sensor_fields"],
+        "baseline": MACHINE_PROFILES[type_key]["baseline"],
+        "sample": rows[:8],
+    }
+
+
+@app.post("/api/machines/auto")
+async def create_machine_auto(payload: MachineAutoCreateRequest):
+    type_key = payload.machine_type.upper()
+    scenario_key = payload.scenario.upper()
+
+    if type_key not in MACHINE_PROFILES:
+        raise HTTPException(status_code=404, detail=f"Unknown machine_type: {payload.machine_type}")
+    if scenario_key not in SCENARIO_SETTINGS:
+        raise HTTPException(status_code=400, detail=f"Invalid scenario: {payload.scenario}")
+
+    machine_id = payload.machine_id.strip() if payload.machine_id else await _next_machine_id()
+
+    existing = await db.machine.find_unique(where={"id": machine_id})
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Machine id already exists: {machine_id}")
+
+    profile = MACHINE_PROFILES[type_key]
+    scenario_cfg = SCENARIO_SETTINGS[scenario_key]
+    machine_name = payload.name.strip() if payload.name else f"{profile['default_name']} {machine_id}"
+
+    await db.machine.create(
+        data={
+            "id": machine_id,
+            "name": machine_name,
+            "line": payload.line or "Line 1",
+            "location": payload.location or "Bay A-1",
+            "baseHealth": scenario_cfg["health"],
+            "status": "NORMAL" if scenario_key == "NORMAL" else "WARN",
+        }
+    )
+
+    rows = _generate_stream_rows(type_key, scenario_key, payload.points)
+    inserts = [
+        {
+            "machineId": machine_id,
+            "time": row["time"],
+            "temperature": row["temperature"],
+            "vibration": row["vibration"],
+            "rpm": row["rpm"],
+        }
+        for row in rows
+    ]
+
+    chunk_size = 100
+    for i in range(0, len(inserts), chunk_size):
+        await db.sensorreading.create_many(data=inserts[i:i + chunk_size])
+
+    return {
+        "status": "created",
+        "machine": {
+            "id": machine_id,
+            "name": machine_name,
+            "machine_type": type_key,
+            "scenario": scenario_key,
+            "line": payload.line or "Line 1",
+            "location": payload.location or "Bay A-1",
+            "base_health": scenario_cfg["health"],
+        },
+        "sensor_fields": profile["sensor_fields"],
+        "baseline": profile["baseline"],
+        "stream": {"points": payload.points, "interval_seconds": 5},
+    }
+
+
+@app.get("/api/machines/{machine_id}/history")
+async def get_machine_history(machine_id: str, start: int = 0, limit: int = 200):
+    """Returns historical sensor readings for a machine from DB through MCP."""
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(
+            f"{MCP_BASE_URL}/tools/get_sensor_data",
+            params={"start": start, "limit": limit, "machine_id": machine_id},
+        )
+        resp.raise_for_status()
+        return resp.json()
 
 
 @app.websocket("/ws/feed/{machine_id}")

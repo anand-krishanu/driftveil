@@ -1,11 +1,13 @@
 export function HealthBar({ value }) {
-  const colorClass = value >= 90 ? 'bg-safe' : value >= 75 ? 'bg-warn' : 'bg-critical'
+  const color = value >= 90 ? 'var(--accent-safe)' : value >= 70 ? 'var(--accent-warn)' : 'var(--accent-critical)'
   return (
     <div className="flex items-center gap-2">
-      <div className="h-[3px] w-14 bg-borderPrimary shrink-0 overflow-hidden rounded-full">
-        <div className={`h-full ${colorClass} transition-all duration-500`} style={{ width: `${value}%` }} />
+      <div style={{ width: 60, height: 4, background: 'var(--border)', position: 'relative', flexShrink: 0 }}>
+        <div style={{ width: `${value}%`, height: '100%', background: color, transition: 'width 0.4s ease' }} />
       </div>
-      <span className="text-heading text-xs tabular-nums font-medium">{value}%</span>
+      <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono', tabularNums: true, minWidth: 28 }}>
+        {value}%
+      </span>
     </div>
   )
 }

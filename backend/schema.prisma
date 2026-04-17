@@ -1,0 +1,77 @@
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  output               = "./prisma_client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./driftveil.db"
+}
+
+// -----------------------------------------------------------------------------
+// 1. Asset Registry
+// -----------------------------------------------------------------------------
+model Machine {
+  id               String            @id @default(uuid())
+  name             String
+  line             String?
+  location         String?
+  baseHealth       Int               @default(100)
+  status           String            @default("NORMAL")
+  installedAt      DateTime?
+  createdAt        DateTime          @default(now())
+
+  // Relations
+  sensorReadings   SensorReading[]
+  alerts           Alert[]
+}
+
+// -----------------------------------------------------------------------------
+// 2. Time-Series Telemetry (Simulates TimescaleDB Hypertable)
+// -----------------------------------------------------------------------------
+model SensorReading {
+  id          String   @id @default(uuid())
+  time        DateTime @default(now()) // In real TimescaleDB, this + machineId is the composite PK
+  machineId   String
+  temperature Float
+  vibration   Float
+  rpm         Int?
+
+  machine     Machine  @relation(fields: [machineId], references: [id])
+
+  // For fast queries on the most recent readings
+  @@index([machineId, time(sort: Desc)])
+}
+
+// -----------------------------------------------------------------------------
+// 3. AI Intelligence
+// -----------------------------------------------------------------------------
+model FailureFingerprint {
+  id                  String   @id @default(uuid())
+  issueName           String
+  severity            String   // LOW, MEDIUM, HIGH, CRITICAL
+  patternData         String   // Stored as JSON string in SQLite
+  etaDays             Int?
+  actionPrescription  String?
+}
+
+// -----------------------------------------------------------------------------
+// 4. Operations & Alerts
+// -----------------------------------------------------------------------------
+model Alert {
+  id            String   @id @default(uuid())
+  machineId     String
+  timestamp     DateTime @default(now())
+  title         String
+  severity      String
+  confidence    Int?
+  etaDays       Int?
+  action        String?
+  rawDiagnosis  String?
+  cusumScore    Float?
+  resolved      Boolean  @default(false)
+
+  machine       Machine  @relation(fields: [machineId], references: [id])
+}

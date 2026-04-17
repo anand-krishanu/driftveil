@@ -2,63 +2,124 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bgBase: var(--bg-base);
-  --color-surface1: var(--bg-surface-1);
-  --color-surface2: var(--bg-surface-2);
-  --color-surface3: var(--bg-surface-3);
-  --color-bgAlert: var(--bg-alert);
-  --color-borderPrimary: var(--border);
-  --color-borderSubtle: var(--border-subtle);
-  --color-heading: var(--text-heading);
-  --color-body: var(--text-body);
-  --color-subtle: var(--text-subtle);
-  --color-muted: var(--text-muted);
-  --color-warn: var(--accent-warn);
-  --color-warnDim: var(--accent-warn-dim);
-  --color-critical: var(--accent-critical);
-  --color-criticalDim: var(--accent-critical-dim);
-  --color-safe: var(--accent-safe);
-  --color-safeDim: var(--accent-safe-dim);
+  /* Grafana-style flat dark palette */
+  --color-bgBase:     var(--bg-base);
+  --color-bgPanel:    var(--bg-panel);
+  --color-bgHeader:   var(--bg-header);
+  --color-bgRow:      var(--bg-row);
+  --color-bgRowAlt:   var(--bg-row-alt);
+  --color-bgRowHover: var(--bg-row-hover);
+  --color-bgInput:    var(--bg-input);
+  --color-bgAlert:    var(--bg-alert);
 
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-borderPrimary: var(--border);
+  --color-borderSubtle:  var(--border-subtle);
+  --color-borderFocus:   var(--border-focus);
+
+  --color-heading: var(--text-heading);
+  --color-body:    var(--text-body);
+  --color-subtle:  var(--text-subtle);
+  --color-muted:   var(--text-muted);
+
+  --color-warn:        var(--accent-warn);
+  --color-warnDim:     var(--accent-warn-dim);
+  --color-critical:    var(--accent-critical);
+  --color-criticalDim: var(--accent-critical-dim);
+  --color-safe:        var(--accent-safe);
+  --color-safeDim:     var(--accent-safe-dim);
+  --color-info:        var(--accent-info);
+  --color-infoDim:     var(--accent-info-dim);
+
+  --color-chartTemp:   var(--chart-temp);
+  --color-chartVib:    var(--chart-vib);
+  --color-chartGrid:   var(--chart-grid);
+
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
   --font-sans: 'Inter', system-ui, sans-serif;
-  
-  --animate-pulse-glow: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  
+
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-blink: blink 1.2s step-end infinite;
+
   @keyframes pulse-glow {
-    0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.6)); }
-    50% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(220, 38, 38, 0.2)); }
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
   }
 }
 
-/* ─── DARK THEME (default) ─────────────────────────────────────────────────── */
-:root {
-  --bg-base:        #0d0d10;
-  --bg-surface-1:   rgba(20, 20, 23, 0.6);
-  --bg-surface-2:   rgba(26, 26, 31, 0.8);
-  --bg-surface-3:   #202026;
-  --bg-alert:       rgba(26, 14, 14, 0.5);
+/* ─── DARK THEME (default / Grafana-style) ──────────────────────────────────── */
+:root, :root[data-theme="dark"] {
+  --bg-base:      #111217;
+  --bg-panel:     #181b1f;
+  --bg-header:    #141619;
+  --bg-row:       #1a1d21;
+  --bg-row-alt:   #181b1f;
+  --bg-row-hover: #22252b;
+  --bg-input:     #0d0f12;
+  --bg-alert:     #1a0f0f;
 
-  --border:         rgba(46, 46, 54, 0.6);
-  --border-subtle:  rgba(31, 31, 38, 0.4);
+  --border:        #2d3035;
+  --border-subtle: #22252a;
+  --border-focus:  #5794f2;
 
-  --text-heading:   #f0f0f3;
-  --text-body:      #b0b0bc;
-  --text-subtle:    #6b6b7a;
-  --text-muted:     #44444f;
+  --text-heading: #d8d9da;
+  --text-body:    #9fa4ad;
+  --text-subtle:  #6e7079;
+  --text-muted:   #464c54;
 
-  --accent-warn:        #d97706;
-  --accent-warn-dim:    rgba(146, 64, 14, 0.3);
-  --accent-critical:    #dc2626;
-  --accent-critical-dim:rgba(127, 29, 29, 0.3);
-  --accent-safe:        #16a34a;
-  --accent-safe-dim:    rgba(20, 83, 45, 0.3);
+  --accent-warn:        #ff9900;
+  --accent-warn-dim:    rgba(255, 153, 0, 0.12);
+  --accent-critical:    #f2495c;
+  --accent-critical-dim:rgba(242, 73, 92, 0.12);
+  --accent-safe:        #73bf69;
+  --accent-safe-dim:    rgba(115, 191, 105, 0.12);
+  --accent-info:        #5794f2;
+  --accent-info-dim:    rgba(87, 148, 242, 0.12);
 
-  --chart-temp:   #e09040;
-  --chart-vib:    #8080a0;
-  --chart-grid:   #1f1f26;
+  --chart-temp:  #ff7700;
+  --chart-vib:   #5794f2;
+  --chart-grid:  #1f2228;
 
   color-scheme: dark;
+}
+
+/* ─── LIGHT THEME ───────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  --bg-base:      #f4f5f5;
+  --bg-panel:     #ffffff;
+  --bg-header:    #f0f1f1;
+  --bg-row:       #ffffff;
+  --bg-row-alt:   #f9f9fa;
+  --bg-row-hover: #eff1f5;
+  --bg-input:     #f7f8f8;
+  --bg-alert:     #fff5f5;
+
+  --border:        #dde0e3;
+  --border-subtle: #e8eaed;
+  --border-focus:  #5794f2;
+
+  --text-heading: #1f2328;
+  --text-body:    #464c54;
+  --text-subtle:  #6e7079;
+  --text-muted:   #9fa4ad;
+
+  --accent-warn:        #d97706;
+  --accent-warn-dim:    rgba(217, 119, 6, 0.1);
+  --accent-critical:    #dc2626;
+  --accent-critical-dim:rgba(220, 38, 38, 0.1);
+  --accent-safe:        #16a34a;
+  --accent-safe-dim:    rgba(22, 163, 74, 0.1);
+  --accent-info:        #2563eb;
+  --accent-info-dim:    rgba(37, 99, 235, 0.1);
+
+  --chart-temp:  #d97706;
+  --chart-vib:   #2563eb;
+  --chart-grid:  #e8eaed;
+
+  color-scheme: light;
 }
 
 /* ─── RESETS ───────────────────────────────────────────────────────────────── */
@@ -71,24 +132,23 @@ html, body, #root {
 }
 
 body {
-  background-color: var(--bg-base);
+  background: var(--bg-base);
   color: var(--text-body);
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s, color 0.2s;
 }
 
 h1, h2, h3, h4 {
   color: var(--text-heading);
   font-weight: 600;
-  letter-spacing: -0.01em;
   margin: 0;
 }
 
 p { margin: 0; }
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--bg-surface-1); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }

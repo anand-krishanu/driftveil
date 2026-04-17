@@ -12,21 +12,33 @@ export function useSensorFeed(machineId = 'MCH-03') {
   const wsRef = useRef(null)
 
   async function startFeed() {
+    if (!machineId) {
+      console.warn('[Frontend] Cannot start feed: machineId is empty.')
+      return
+    }
     try {
-      await fetch(`${API_BASE}/start-feed?machine_id=${machineId}`, { method: 'POST' })
+      console.log(`[Frontend] Fetching start-feed for ${machineId}...`)
+      const res = await fetch(`${API_BASE}/start-feed?machine_id=${machineId}`, { method: 'POST' })
+      const text = await res.text()
+      console.log(`[Frontend] start-feed response status:`, res.status, text)
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}: ${text}`)
+      }
       setChartData([])
       setAlertData(null)
       setStats(null)
       setDiagnosisRaw(null)
       setIsRunning(true)
     } catch (e) {
-      console.error('Failed to start feed:', e)
+      console.error('[Frontend Error] Failed to start feed:', e)
     }
   }
 
   async function resetFeed() {
     try {
-      await fetch(`${API_BASE}/reset`, { method: 'POST' })
+      console.log(`[Frontend] Fetching reset...`)
+      const res = await fetch(`${API_BASE}/reset`, { method: 'POST' })
+      console.log(`[Frontend] reset response status:`, res.status)
       if (wsRef.current) wsRef.current.close()
       setIsRunning(false)
       setChartData([])
@@ -39,11 +51,16 @@ export function useSensorFeed(machineId = 'MCH-03') {
   }
 
   useEffect(() => {
-    if (!isRunning) return
+    if (!isRunning || !machineId) return
     
     // Connect to WebSocket
+    console.log(`[Frontend] Connecting to WebSocket: ${WS_BASE}/feed/${machineId}...`)
     const ws = new WebSocket(`${WS_BASE}/feed/${machineId}`)
     wsRef.current = ws
+    
+    ws.onopen = () => console.log(`[Frontend] WebSocket connected successfully!`)
+    ws.onerror = (err) => console.error(`[Frontend] WebSocket error:`, err)
+    ws.onclose = (event) => console.log(`[Frontend] WebSocket closed:`, event.code, event.reason)
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)

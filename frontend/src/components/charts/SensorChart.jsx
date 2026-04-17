@@ -1,68 +1,120 @@
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ReferenceLine, ResponsiveContainer, Legend
+  Tooltip, ReferenceLine, ResponsiveContainer
 } from 'recharts'
-import { SCADA_THRESHOLD } from '../../data/sensorData'
 import { CustomTooltip } from './CustomTooltip'
 
+const SCADA_THRESHOLD = 100
+
+function buildDomain(data, key, floor = 0) {
+  if (!data || data.length === 0) {
+    return [floor, floor + 1]
+  }
+  const values = data
+    .map((d) => Number(d[key]))
+    .filter((v) => Number.isFinite(v))
+
+  if (values.length === 0) {
+    return [floor, floor + 1]
+  }
+
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const spread = Math.max(max - min, 0.01)
+  const pad = spread * 0.2
+  return [Math.max(floor, min - pad), max + pad]
+}
+
 export function SensorChart({ data, height = 320, showScada = true }) {
+  const tempDomain = buildDomain(data, 'temperature', 0)
+  const vibDomain = buildDomain(data, 'vibration', 0)
+
   return (
-    <ResponsiveContainer width="100%" height={height}>
-      <LineChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 0 }}>
-        <CartesianGrid strokeDasharray="2 4" stroke="var(--color-chartGrid)" vertical={false} />
-        <XAxis
-          dataKey="label"
-          tick={{ fill: 'var(--color-subtle)', fontSize: 10, fontFamily: 'var(--font-mono)' }}
-          tickLine={false}
-          axisLine={{ stroke: 'var(--color-borderPrimary)' }}
-          interval={19}
-        />
-        <YAxis
-          domain={[30, 110]}
-          tick={{ fill: 'var(--color-subtle)', fontSize: 10, fontFamily: 'var(--font-mono)' }}
-          tickLine={false}
-          axisLine={false}
-          width={36}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend
-          wrapperStyle={{ fontSize: 11, color: 'var(--color-subtle)', paddingTop: 8 }}
-          iconType="plainline"
-        />
-        {showScada && (
-          <ReferenceLine
-            y={SCADA_THRESHOLD}
-            stroke="var(--color-critical)"
-            strokeDasharray="5 4"
-            strokeWidth={1.5}
-            label={{
-              value: 'SCADA THRESHOLD',
-              fill: 'var(--color-critical)',
-              fontSize: 9,
-              fontFamily: 'var(--font-mono)',
-              position: 'insideTopRight',
-            }}
-          />
-        )}
-        <Line
-          type="monotone"
-          dataKey="temperature"
-          name="Temperature (°C)"
-          stroke="var(--color-chartTemp)"
-          strokeWidth={2}
-          dot={false}
-          isAnimationActive={false}
-        />
-        <Line
-          type="monotone"
-          dataKey="vibration"
-          name="Vibration (mm/s)"
-          stroke="var(--color-chartVib)"
-          strokeWidth={2}
-          dot={false}
-          isAnimationActive={false}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div style={{ height, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ height: '50%', border: '1px solid var(--border-subtle)', background: 'var(--bg-row)' }}>
+        <div style={{ fontSize: 10, color: 'var(--text-muted)', padding: '6px 8px 0', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Temperature (deg C)
+        </div>
+        <ResponsiveContainer width="100%" height="88%">
+          <LineChart data={data} margin={{ top: 6, right: 16, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="none" stroke="var(--chart-grid)" horizontal={true} vertical={false} strokeOpacity={1} />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+              tickLine={false}
+              axisLine={{ stroke: 'var(--border)' }}
+              interval={19}
+            />
+            <YAxis
+              domain={tempDomain}
+              tick={{ fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+              tickLine={false}
+              axisLine={false}
+              width={32}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            {showScada && (
+              <ReferenceLine
+                y={SCADA_THRESHOLD}
+                stroke="var(--accent-critical)"
+                strokeDasharray="6 3"
+                strokeWidth={1}
+                label={{
+                  value: 'SCADA THRESHOLD',
+                  fill: 'var(--accent-critical)',
+                  fontSize: 9,
+                  fontFamily: 'JetBrains Mono',
+                  position: 'insideTopRight',
+                }}
+              />
+            )}
+            <Line
+              type="monotone"
+              dataKey="temperature"
+              name="Temperature (deg C)"
+              stroke="var(--chart-temp)"
+              strokeWidth={1.5}
+              dot={false}
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div style={{ height: '50%', border: '1px solid var(--border-subtle)', background: 'var(--bg-row)' }}>
+        <div style={{ fontSize: 10, color: 'var(--text-muted)', padding: '6px 8px 0', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Vibration (mm/s)
+        </div>
+        <ResponsiveContainer width="100%" height="88%">
+          <LineChart data={data} margin={{ top: 6, right: 16, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="none" stroke="var(--chart-grid)" horizontal={true} vertical={false} strokeOpacity={1} />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+              tickLine={false}
+              axisLine={{ stroke: 'var(--border)' }}
+              interval={19}
+            />
+            <YAxis
+              domain={vibDomain}
+              tick={{ fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+              tickLine={false}
+              axisLine={false}
+              width={40}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line
+              type="monotone"
+              dataKey="vibration"
+              name="Vibration (mm/s)"
+              stroke="var(--chart-vib)"
+              strokeWidth={1.5}
+              dot={false}
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   )
 }
