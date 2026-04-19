@@ -253,3 +253,4 @@ If frontend cannot fetch data:
 ## Architecture Notes
 
 See ARCHITECTURE.md for system design details.
+For chatbot plus what-if simulation design, see CHATBOT_SIMULATION_README.md.
