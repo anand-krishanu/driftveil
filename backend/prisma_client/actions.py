@@ -4176,6 +4176,3105 @@ class AlertActions(Generic[_PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
+class ChatSessionActions(Generic[_PrismaModelT]):
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
+        self._client = client
+        self._model = model
+
+    async def query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> List[_PrismaModelT]:
+        """Execute a raw SQL query
+
+        Parameters
+        ----------
+        query
+            The raw SQL query string to be executed
+        *args
+            Parameters to be passed to the SQL query, these MUST be used over
+            string formatting to avoid an SQL injection vulnerability
+
+        Returns
+        -------
+        List[prisma.models.ChatSession]
+            The records returned by the SQL query
+
+        Raises
+        ------
+        prisma_errors.RawQueryError
+            This could be due to invalid syntax, mismatched number of parameters or any other error
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        users = await ChatSession.prisma().query_raw(
+            'SELECT * FROM ChatSession WHERE id = ?',
+            'faidicegb',
+        )
+        ```
+        """
+        return await self._client.query_raw(query, *args, model=self._model)
+
+    async def query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> Optional[_PrismaModelT]:
+        """Execute a raw SQL query, returning the first result
+
+        Parameters
+        ----------
+        query
+            The raw SQL query string to be executed
+        *args
+            Parameters to be passed to the SQL query, these MUST be used over
+            string formatting to avoid an SQL injection vulnerability
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The first record returned by the SQL query
+        None
+            The raw SQL query did not return any records
+
+        Raises
+        ------
+        prisma_errors.RawQueryError
+            This could be due to invalid syntax, mismatched number of parameters or any other error
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        user = await ChatSession.prisma().query_first(
+            'SELECT * FROM ChatSession WHERE machineId = ?',
+            'bacecgfhbe',
+        )
+        ```
+        """
+        return await self._client.query_first(query, *args, model=self._model)
+
+    async def create(
+        self,
+        data: types.ChatSessionCreateInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> _PrismaModelT:
+        """Create a new ChatSession record.
+
+        Parameters
+        ----------
+        data
+            ChatSession record data
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The created ChatSession record
+
+        Raises
+        ------
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # create a ChatSession record from just the required fields
+        chatsession = await ChatSession.prisma().create(
+            data={
+                # data to create a ChatSession record
+                'machineId': 'ihcahiead',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='create',
+            model=self._model,
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def create_many(
+        self,
+        data: List[types.ChatSessionCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        """Create multiple ChatSession records at once.
+
+        This function is *not* available when using SQLite.
+
+        Parameters
+        ----------
+        data
+            List of ChatSession record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        int
+            The total number of records created
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        total = await ChatSession.prisma().create_many(
+            data=[
+                {
+                    # data to create a ChatSession record
+                    'machineId': 'biheheiajg',
+                },
+                {
+                    # data to create a ChatSession record
+                    'machineId': 'jbgijghgb',
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    async def delete(
+        self,
+        where: types.ChatSessionWhereUniqueInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Delete a single ChatSession record.
+
+        Parameters
+        ----------
+        where
+            ChatSession filter to select the record to be deleted, must be unique
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The deleted ChatSession record
+        None
+            Could not find a record to delete
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatsession = await ChatSession.prisma().delete(
+            where={
+                'id': 'hgjcghfbi',
+            },
+        )
+        ```
+        """
+        try:
+            resp = await self._client._execute(
+                method='delete',
+                model=self._model,
+                arguments={
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return model_parse(self._model, resp['data']['result'])
+
+    async def find_unique(
+        self,
+        where: types.ChatSessionWhereUniqueInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Find a unique ChatSession record.
+
+        Parameters
+        ----------
+        where
+            ChatSession filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The found ChatSession record
+        None
+            No record matching the given input could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatsession = await ChatSession.prisma().find_unique(
+            where={
+                'id': 'icadbcehj',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_unique',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return model_parse(self._model, result)
+
+    async def find_unique_or_raise(
+        self,
+        where: types.ChatSessionWhereUniqueInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique ChatSession record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            ChatSession filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The found ChatSession record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatsession = await ChatSession.prisma().find_unique_or_raise(
+            where={
+                'id': 'jchciaee',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_unique_or_raise',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def find_many(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatSessionWhereInput] = None,
+        cursor: Optional[types.ChatSessionWhereUniqueInput] = None,
+        include: Optional[types.ChatSessionInclude] = None,
+        order: Optional[Union[types.ChatSessionOrderByInput, List[types.ChatSessionOrderByInput]]] = None,
+        distinct: Optional[List[types.ChatSessionScalarFieldKeys]] = None,
+    ) -> List[_PrismaModelT]:
+        """Find multiple ChatSession records.
+
+        An empty list is returned if no records could be found.
+
+        Parameters
+        ----------
+        take
+            Limit the maximum number of ChatSession records returned
+        skip
+            Ignore the first N results
+        where
+            ChatSession filter to select records
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+        order
+            Order the returned ChatSession records by any field
+        distinct
+            Filter ChatSession records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        List[prisma.models.ChatSession]
+            The list of all ChatSession records that could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the first 10 ChatSession records
+        chatsessions = await ChatSession.prisma().find_many(take=10)
+
+        # find the first 5 ChatSession records ordered by the createdAt field
+        chatsessions = await ChatSession.prisma().find_many(
+            take=5,
+            order={
+                'createdAt': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_many',
+            model=self._model,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
+    async def find_first(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatSessionWhereInput] = None,
+        cursor: Optional[types.ChatSessionWhereUniqueInput] = None,
+        include: Optional[types.ChatSessionInclude] = None,
+        order: Optional[Union[types.ChatSessionOrderByInput, List[types.ChatSessionOrderByInput]]] = None,
+        distinct: Optional[List[types.ChatSessionScalarFieldKeys]] = None,
+    ) -> Optional[_PrismaModelT]:
+        """Find a single ChatSession record.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            ChatSession filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+        order
+            Order the returned ChatSession records by any field
+        distinct
+            Filter ChatSession records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The first ChatSession record found, matching the given arguments
+        None
+            No record could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second ChatSession record ordered by the id field
+        chatsession = await ChatSession.prisma().find_first(
+            skip=1,
+            order={
+                'id': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_first',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+
+        return model_parse(self._model, result)
+
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatSessionWhereInput] = None,
+        cursor: Optional[types.ChatSessionWhereUniqueInput] = None,
+        include: Optional[types.ChatSessionInclude] = None,
+        order: Optional[Union[types.ChatSessionOrderByInput, List[types.ChatSessionOrderByInput]]] = None,
+        distinct: Optional[List[types.ChatSessionScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single ChatSession record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            ChatSession filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+        order
+            Order the returned ChatSession records by any field
+        distinct
+            Filter ChatSession records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The first ChatSession record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second ChatSession record ordered by the machineId field
+        chatsession = await ChatSession.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'machineId': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_first_or_raise',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def update(
+        self,
+        data: types.ChatSessionUpdateInput,
+        where: types.ChatSessionWhereUniqueInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Update a single ChatSession record.
+
+        Parameters
+        ----------
+        data
+            ChatSession record data specifying what to update
+        where
+            ChatSession filter to select the unique record to create / update
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The updated ChatSession record
+        None
+            No record could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        chatsession = await ChatSession.prisma().update(
+            where={
+                'id': 'deeificjd',
+            },
+            data={
+                # data to update the ChatSession record to
+            },
+        )
+        ```
+        """
+        try:
+            resp = await self._client._execute(
+                method='update',
+                model=self._model,
+                arguments={
+                    'data': data,
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return model_parse(self._model, resp['data']['result'])
+
+    async def upsert(
+        self,
+        where: types.ChatSessionWhereUniqueInput,
+        data: types.ChatSessionUpsertInput,
+        include: Optional[types.ChatSessionInclude] = None,
+    ) -> _PrismaModelT:
+        """Updates an existing record or create a new one
+
+        Parameters
+        ----------
+        where
+            ChatSession filter to select the unique record to create / update
+        data
+            Data specifying what fields to set on create and update
+        include
+            Specifies which relations should be loaded on the returned ChatSession model
+
+        Returns
+        -------
+        prisma.models.ChatSession
+            The created or updated ChatSession record
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatsession = await ChatSession.prisma().upsert(
+            where={
+                'id': 'bbcbhebbda',
+            },
+            data={
+                'create': {
+                    'id': 'bbcbhebbda',
+                    'machineId': 'jbgijghgb',
+                },
+                'update': {
+                    'machineId': 'jbgijghgb',
+                },
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='upsert',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def update_many(
+        self,
+        data: types.ChatSessionUpdateManyMutationInput,
+        where: types.ChatSessionWhereInput,
+    ) -> int:
+        """Update multiple ChatSession records
+
+        Parameters
+        ----------
+        data
+            ChatSession data to update the selected ChatSession records to
+        where
+            Filter to select the ChatSession records to update
+
+        Returns
+        -------
+        int
+            The total number of ChatSession records that were updated
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # update all ChatSession records
+        total = await ChatSession.prisma().update_many(
+            data={
+                'createdAt': datetime.datetime.utcnow()
+            },
+            where={}
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='update_many',
+            model=self._model,
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    @overload
+    async def count(
+        self,
+        select: None = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatSessionWhereInput] = None,
+        cursor: Optional[types.ChatSessionWhereUniqueInput] = None,
+    ) -> int:
+        """Count the number of ChatSession records present in the database
+
+        Parameters
+        ----------
+        select
+            Select the ChatSession fields to be counted
+        take
+            Limit the maximum result
+        skip
+            Ignore the first N records
+        where
+            ChatSession filter to find records
+        cursor
+            Specifies the position in the list to start counting results from, (typically an ID field)
+        order
+            This parameter is deprecated and will be removed in a future release
+
+        Returns
+        -------
+        int
+            The total number of records found, returned if `select` is not given
+
+        prisma.types.ChatSessionCountAggregateOutput
+            Data returned when `select` is used, the fields present in this dictionary will
+            match the fields passed in the `select` argument
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # total: int
+        total = await ChatSession.prisma().count()
+
+        # results: prisma.types.ChatSessionCountAggregateOutput
+        results = await ChatSession.prisma().count(
+            select={
+                '_all': True,
+                'id': True,
+            },
+        )
+        ```
+        """
+
+
+    @overload
+    async def count(
+        self,
+        select: types.ChatSessionCountAggregateInput,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatSessionWhereInput] = None,
+        cursor: Optional[types.ChatSessionWhereUniqueInput] = None,
+    ) -> types.ChatSessionCountAggregateOutput:
+        ...
+
+    async def count(
+        self,
+        select: Optional[types.ChatSessionCountAggregateInput] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatSessionWhereInput] = None,
+        cursor: Optional[types.ChatSessionWhereUniqueInput] = None,
+    ) -> Union[int, types.ChatSessionCountAggregateOutput]:
+        """Count the number of ChatSession records present in the database
+
+        Parameters
+        ----------
+        select
+            Select the ChatSession fields to be counted
+        take
+            Limit the maximum result
+        skip
+            Ignore the first N records
+        where
+            ChatSession filter to find records
+        cursor
+            Specifies the position in the list to start counting results from, (typically an ID field)
+        order
+            This parameter is deprecated and will be removed in a future release
+
+        Returns
+        -------
+        int
+            The total number of records found, returned if `select` is not given
+
+        prisma.types.ChatSessionCountAggregateOutput
+            Data returned when `select` is used, the fields present in this dictionary will
+            match the fields passed in the `select` argument
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # total: int
+        total = await ChatSession.prisma().count()
+
+        # results: prisma.types.ChatSessionCountAggregateOutput
+        results = await ChatSession.prisma().count(
+            select={
+                '_all': True,
+                'machineId': True,
+            },
+        )
+        ```
+        """
+
+        # TODO: this selection building should be moved to the QueryBuilder
+        #
+        # note the distinction between checking for `not select` here and `select is None`
+        # later is to handle the case that the given select dictionary is empty, this
+        # is a limitation of our types.
+        if not select:
+            root_selection = ['_count { _all }']
+        else:
+
+            root_selection = [
+                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+            ]
+
+        resp = await self._client._execute(
+            method='count',
+            model=self._model,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'cursor': cursor,
+            },
+            root_selection=root_selection,
+        )
+
+        if select is None:
+            return cast(int, resp['data']['result']['_count']['_all'])
+        else:
+            return cast(types.ChatSessionCountAggregateOutput, resp['data']['result']['_count'])
+
+    async def delete_many(
+        self,
+        where: Optional[types.ChatSessionWhereInput] = None
+    ) -> int:
+        """Delete multiple ChatSession records.
+
+        Parameters
+        ----------
+        where
+            Optional ChatSession filter to find the records to be deleted
+
+        Returns
+        -------
+        int
+            The total number of ChatSession records that were deleted
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # delete all ChatSession records
+        total = await ChatSession.prisma().delete_many()
+        ```
+        """
+        resp = await self._client._execute(
+            method='delete_many',
+            model=self._model,
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.ChatSessionScalarFieldKeys'],
+        *,
+        where: Optional['types.ChatSessionWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.ChatSessionAvgAggregateInput'] = None,
+        sum: Optional['types.ChatSessionSumAggregateInput'] = None,
+        min: Optional['types.ChatSessionMinAggregateInput'] = None,
+        max: Optional['types.ChatSessionMaxAggregateInput'] = None,
+        having: Optional['types.ChatSessionScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.ChatSessionCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.ChatSessionScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ChatSessionScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.ChatSessionGroupByOutput']:
+        """Group ChatSession records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar ChatSession fields to group records by
+        where
+            ChatSession filter to select records
+        take
+            Limit the maximum number of ChatSession records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.ChatSessionGroupByOutput]
+            A list of dictionaries representing the ChatSession record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group ChatSession records by createdAt values
+        # and count how many records are in each group
+        results = await ChatSession.prisma().group_by(
+            ['createdAt'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            method='group_by',
+            model=self._model,
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
+
+class ChatMessageActions(Generic[_PrismaModelT]):
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
+        self._client = client
+        self._model = model
+
+    async def query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> List[_PrismaModelT]:
+        """Execute a raw SQL query
+
+        Parameters
+        ----------
+        query
+            The raw SQL query string to be executed
+        *args
+            Parameters to be passed to the SQL query, these MUST be used over
+            string formatting to avoid an SQL injection vulnerability
+
+        Returns
+        -------
+        List[prisma.models.ChatMessage]
+            The records returned by the SQL query
+
+        Raises
+        ------
+        prisma_errors.RawQueryError
+            This could be due to invalid syntax, mismatched number of parameters or any other error
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        users = await ChatMessage.prisma().query_raw(
+            'SELECT * FROM ChatMessage WHERE id = ?',
+            'bejfijgcfb',
+        )
+        ```
+        """
+        return await self._client.query_raw(query, *args, model=self._model)
+
+    async def query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> Optional[_PrismaModelT]:
+        """Execute a raw SQL query, returning the first result
+
+        Parameters
+        ----------
+        query
+            The raw SQL query string to be executed
+        *args
+            Parameters to be passed to the SQL query, these MUST be used over
+            string formatting to avoid an SQL injection vulnerability
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The first record returned by the SQL query
+        None
+            The raw SQL query did not return any records
+
+        Raises
+        ------
+        prisma_errors.RawQueryError
+            This could be due to invalid syntax, mismatched number of parameters or any other error
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        user = await ChatMessage.prisma().query_first(
+            'SELECT * FROM ChatMessage WHERE sessionId = ?',
+            'caifcbgii',
+        )
+        ```
+        """
+        return await self._client.query_first(query, *args, model=self._model)
+
+    async def create(
+        self,
+        data: types.ChatMessageCreateInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> _PrismaModelT:
+        """Create a new ChatMessage record.
+
+        Parameters
+        ----------
+        data
+            ChatMessage record data
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The created ChatMessage record
+
+        Raises
+        ------
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # create a ChatMessage record from just the required fields
+        chatmessage = await ChatMessage.prisma().create(
+            data={
+                # data to create a ChatMessage record
+                'sessionId': 'igaibbfgj',
+                'role': 'bggajdcbbi',
+                'content': 'fcfhgbjed',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='create',
+            model=self._model,
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def create_many(
+        self,
+        data: List[types.ChatMessageCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        """Create multiple ChatMessage records at once.
+
+        This function is *not* available when using SQLite.
+
+        Parameters
+        ----------
+        data
+            List of ChatMessage record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        int
+            The total number of records created
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        total = await ChatMessage.prisma().create_many(
+            data=[
+                {
+                    # data to create a ChatMessage record
+                    'sessionId': 'hdgcajhjg',
+                    'role': 'ejdjahicb',
+                    'content': 'gdjgigfgc',
+                },
+                {
+                    # data to create a ChatMessage record
+                    'sessionId': 'gfeaahdeh',
+                    'role': 'bjafcgbffc',
+                    'content': 'hihegjif',
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    async def delete(
+        self,
+        where: types.ChatMessageWhereUniqueInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Delete a single ChatMessage record.
+
+        Parameters
+        ----------
+        where
+            ChatMessage filter to select the record to be deleted, must be unique
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The deleted ChatMessage record
+        None
+            Could not find a record to delete
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatmessage = await ChatMessage.prisma().delete(
+            where={
+                'id': 'bdjidcidac',
+            },
+        )
+        ```
+        """
+        try:
+            resp = await self._client._execute(
+                method='delete',
+                model=self._model,
+                arguments={
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return model_parse(self._model, resp['data']['result'])
+
+    async def find_unique(
+        self,
+        where: types.ChatMessageWhereUniqueInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Find a unique ChatMessage record.
+
+        Parameters
+        ----------
+        where
+            ChatMessage filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The found ChatMessage record
+        None
+            No record matching the given input could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatmessage = await ChatMessage.prisma().find_unique(
+            where={
+                'id': 'ifgaaagff',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_unique',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return model_parse(self._model, result)
+
+    async def find_unique_or_raise(
+        self,
+        where: types.ChatMessageWhereUniqueInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique ChatMessage record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            ChatMessage filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The found ChatMessage record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatmessage = await ChatMessage.prisma().find_unique_or_raise(
+            where={
+                'id': 'befcddgjce',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_unique_or_raise',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def find_many(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatMessageWhereInput] = None,
+        cursor: Optional[types.ChatMessageWhereUniqueInput] = None,
+        include: Optional[types.ChatMessageInclude] = None,
+        order: Optional[Union[types.ChatMessageOrderByInput, List[types.ChatMessageOrderByInput]]] = None,
+        distinct: Optional[List[types.ChatMessageScalarFieldKeys]] = None,
+    ) -> List[_PrismaModelT]:
+        """Find multiple ChatMessage records.
+
+        An empty list is returned if no records could be found.
+
+        Parameters
+        ----------
+        take
+            Limit the maximum number of ChatMessage records returned
+        skip
+            Ignore the first N results
+        where
+            ChatMessage filter to select records
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+        order
+            Order the returned ChatMessage records by any field
+        distinct
+            Filter ChatMessage records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        List[prisma.models.ChatMessage]
+            The list of all ChatMessage records that could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the first 10 ChatMessage records
+        chatmessages = await ChatMessage.prisma().find_many(take=10)
+
+        # find the first 5 ChatMessage records ordered by the role field
+        chatmessages = await ChatMessage.prisma().find_many(
+            take=5,
+            order={
+                'role': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_many',
+            model=self._model,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
+    async def find_first(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatMessageWhereInput] = None,
+        cursor: Optional[types.ChatMessageWhereUniqueInput] = None,
+        include: Optional[types.ChatMessageInclude] = None,
+        order: Optional[Union[types.ChatMessageOrderByInput, List[types.ChatMessageOrderByInput]]] = None,
+        distinct: Optional[List[types.ChatMessageScalarFieldKeys]] = None,
+    ) -> Optional[_PrismaModelT]:
+        """Find a single ChatMessage record.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            ChatMessage filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+        order
+            Order the returned ChatMessage records by any field
+        distinct
+            Filter ChatMessage records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The first ChatMessage record found, matching the given arguments
+        None
+            No record could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second ChatMessage record ordered by the content field
+        chatmessage = await ChatMessage.prisma().find_first(
+            skip=1,
+            order={
+                'content': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_first',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+
+        return model_parse(self._model, result)
+
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatMessageWhereInput] = None,
+        cursor: Optional[types.ChatMessageWhereUniqueInput] = None,
+        include: Optional[types.ChatMessageInclude] = None,
+        order: Optional[Union[types.ChatMessageOrderByInput, List[types.ChatMessageOrderByInput]]] = None,
+        distinct: Optional[List[types.ChatMessageScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single ChatMessage record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            ChatMessage filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+        order
+            Order the returned ChatMessage records by any field
+        distinct
+            Filter ChatMessage records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The first ChatMessage record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second ChatMessage record ordered by the createdAt field
+        chatmessage = await ChatMessage.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'createdAt': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_first_or_raise',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def update(
+        self,
+        data: types.ChatMessageUpdateInput,
+        where: types.ChatMessageWhereUniqueInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Update a single ChatMessage record.
+
+        Parameters
+        ----------
+        data
+            ChatMessage record data specifying what to update
+        where
+            ChatMessage filter to select the unique record to create / update
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The updated ChatMessage record
+        None
+            No record could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        chatmessage = await ChatMessage.prisma().update(
+            where={
+                'id': 'bfhdbjjgfd',
+            },
+            data={
+                # data to update the ChatMessage record to
+            },
+        )
+        ```
+        """
+        try:
+            resp = await self._client._execute(
+                method='update',
+                model=self._model,
+                arguments={
+                    'data': data,
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return model_parse(self._model, resp['data']['result'])
+
+    async def upsert(
+        self,
+        where: types.ChatMessageWhereUniqueInput,
+        data: types.ChatMessageUpsertInput,
+        include: Optional[types.ChatMessageInclude] = None,
+    ) -> _PrismaModelT:
+        """Updates an existing record or create a new one
+
+        Parameters
+        ----------
+        where
+            ChatMessage filter to select the unique record to create / update
+        data
+            Data specifying what fields to set on create and update
+        include
+            Specifies which relations should be loaded on the returned ChatMessage model
+
+        Returns
+        -------
+        prisma.models.ChatMessage
+            The created or updated ChatMessage record
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        chatmessage = await ChatMessage.prisma().upsert(
+            where={
+                'id': 'cabdjadaji',
+            },
+            data={
+                'create': {
+                    'id': 'cabdjadaji',
+                    'sessionId': 'gfeaahdeh',
+                    'role': 'bjafcgbffc',
+                    'content': 'hihegjif',
+                },
+                'update': {
+                    'sessionId': 'gfeaahdeh',
+                    'role': 'bjafcgbffc',
+                    'content': 'hihegjif',
+                },
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='upsert',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def update_many(
+        self,
+        data: types.ChatMessageUpdateManyMutationInput,
+        where: types.ChatMessageWhereInput,
+    ) -> int:
+        """Update multiple ChatMessage records
+
+        Parameters
+        ----------
+        data
+            ChatMessage data to update the selected ChatMessage records to
+        where
+            Filter to select the ChatMessage records to update
+
+        Returns
+        -------
+        int
+            The total number of ChatMessage records that were updated
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # update all ChatMessage records
+        total = await ChatMessage.prisma().update_many(
+            data={
+                'simulationId': 'faajgfadf'
+            },
+            where={}
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='update_many',
+            model=self._model,
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    @overload
+    async def count(
+        self,
+        select: None = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatMessageWhereInput] = None,
+        cursor: Optional[types.ChatMessageWhereUniqueInput] = None,
+    ) -> int:
+        """Count the number of ChatMessage records present in the database
+
+        Parameters
+        ----------
+        select
+            Select the ChatMessage fields to be counted
+        take
+            Limit the maximum result
+        skip
+            Ignore the first N records
+        where
+            ChatMessage filter to find records
+        cursor
+            Specifies the position in the list to start counting results from, (typically an ID field)
+        order
+            This parameter is deprecated and will be removed in a future release
+
+        Returns
+        -------
+        int
+            The total number of records found, returned if `select` is not given
+
+        prisma.types.ChatMessageCountAggregateOutput
+            Data returned when `select` is used, the fields present in this dictionary will
+            match the fields passed in the `select` argument
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # total: int
+        total = await ChatMessage.prisma().count()
+
+        # results: prisma.types.ChatMessageCountAggregateOutput
+        results = await ChatMessage.prisma().count(
+            select={
+                '_all': True,
+                'id': True,
+            },
+        )
+        ```
+        """
+
+
+    @overload
+    async def count(
+        self,
+        select: types.ChatMessageCountAggregateInput,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatMessageWhereInput] = None,
+        cursor: Optional[types.ChatMessageWhereUniqueInput] = None,
+    ) -> types.ChatMessageCountAggregateOutput:
+        ...
+
+    async def count(
+        self,
+        select: Optional[types.ChatMessageCountAggregateInput] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.ChatMessageWhereInput] = None,
+        cursor: Optional[types.ChatMessageWhereUniqueInput] = None,
+    ) -> Union[int, types.ChatMessageCountAggregateOutput]:
+        """Count the number of ChatMessage records present in the database
+
+        Parameters
+        ----------
+        select
+            Select the ChatMessage fields to be counted
+        take
+            Limit the maximum result
+        skip
+            Ignore the first N records
+        where
+            ChatMessage filter to find records
+        cursor
+            Specifies the position in the list to start counting results from, (typically an ID field)
+        order
+            This parameter is deprecated and will be removed in a future release
+
+        Returns
+        -------
+        int
+            The total number of records found, returned if `select` is not given
+
+        prisma.types.ChatMessageCountAggregateOutput
+            Data returned when `select` is used, the fields present in this dictionary will
+            match the fields passed in the `select` argument
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # total: int
+        total = await ChatMessage.prisma().count()
+
+        # results: prisma.types.ChatMessageCountAggregateOutput
+        results = await ChatMessage.prisma().count(
+            select={
+                '_all': True,
+                'sessionId': True,
+            },
+        )
+        ```
+        """
+
+        # TODO: this selection building should be moved to the QueryBuilder
+        #
+        # note the distinction between checking for `not select` here and `select is None`
+        # later is to handle the case that the given select dictionary is empty, this
+        # is a limitation of our types.
+        if not select:
+            root_selection = ['_count { _all }']
+        else:
+
+            root_selection = [
+                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+            ]
+
+        resp = await self._client._execute(
+            method='count',
+            model=self._model,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'cursor': cursor,
+            },
+            root_selection=root_selection,
+        )
+
+        if select is None:
+            return cast(int, resp['data']['result']['_count']['_all'])
+        else:
+            return cast(types.ChatMessageCountAggregateOutput, resp['data']['result']['_count'])
+
+    async def delete_many(
+        self,
+        where: Optional[types.ChatMessageWhereInput] = None
+    ) -> int:
+        """Delete multiple ChatMessage records.
+
+        Parameters
+        ----------
+        where
+            Optional ChatMessage filter to find the records to be deleted
+
+        Returns
+        -------
+        int
+            The total number of ChatMessage records that were deleted
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # delete all ChatMessage records
+        total = await ChatMessage.prisma().delete_many()
+        ```
+        """
+        resp = await self._client._execute(
+            method='delete_many',
+            model=self._model,
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.ChatMessageScalarFieldKeys'],
+        *,
+        where: Optional['types.ChatMessageWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.ChatMessageAvgAggregateInput'] = None,
+        sum: Optional['types.ChatMessageSumAggregateInput'] = None,
+        min: Optional['types.ChatMessageMinAggregateInput'] = None,
+        max: Optional['types.ChatMessageMaxAggregateInput'] = None,
+        having: Optional['types.ChatMessageScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.ChatMessageCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.ChatMessageScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ChatMessageScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.ChatMessageGroupByOutput']:
+        """Group ChatMessage records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar ChatMessage fields to group records by
+        where
+            ChatMessage filter to select records
+        take
+            Limit the maximum number of ChatMessage records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.ChatMessageGroupByOutput]
+            A list of dictionaries representing the ChatMessage record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group ChatMessage records by role values
+        # and count how many records are in each group
+        results = await ChatMessage.prisma().group_by(
+            ['role'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            method='group_by',
+            model=self._model,
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
+
+class WhatIfSimulationActions(Generic[_PrismaModelT]):
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
+        self._client = client
+        self._model = model
+
+    async def query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> List[_PrismaModelT]:
+        """Execute a raw SQL query
+
+        Parameters
+        ----------
+        query
+            The raw SQL query string to be executed
+        *args
+            Parameters to be passed to the SQL query, these MUST be used over
+            string formatting to avoid an SQL injection vulnerability
+
+        Returns
+        -------
+        List[prisma.models.WhatIfSimulation]
+            The records returned by the SQL query
+
+        Raises
+        ------
+        prisma_errors.RawQueryError
+            This could be due to invalid syntax, mismatched number of parameters or any other error
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        users = await WhatIfSimulation.prisma().query_raw(
+            'SELECT * FROM WhatIfSimulation WHERE id = ?',
+            'biaagcedjc',
+        )
+        ```
+        """
+        return await self._client.query_raw(query, *args, model=self._model)
+
+    async def query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> Optional[_PrismaModelT]:
+        """Execute a raw SQL query, returning the first result
+
+        Parameters
+        ----------
+        query
+            The raw SQL query string to be executed
+        *args
+            Parameters to be passed to the SQL query, these MUST be used over
+            string formatting to avoid an SQL injection vulnerability
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The first record returned by the SQL query
+        None
+            The raw SQL query did not return any records
+
+        Raises
+        ------
+        prisma_errors.RawQueryError
+            This could be due to invalid syntax, mismatched number of parameters or any other error
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        user = await WhatIfSimulation.prisma().query_first(
+            'SELECT * FROM WhatIfSimulation WHERE machineId = ?',
+            'cahhaghecf',
+        )
+        ```
+        """
+        return await self._client.query_first(query, *args, model=self._model)
+
+    async def create(
+        self,
+        data: types.WhatIfSimulationCreateInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> _PrismaModelT:
+        """Create a new WhatIfSimulation record.
+
+        Parameters
+        ----------
+        data
+            WhatIfSimulation record data
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The created WhatIfSimulation record
+
+        Raises
+        ------
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # create a WhatIfSimulation record from just the required fields
+        whatifsimulation = await WhatIfSimulation.prisma().create(
+            data={
+                # data to create a WhatIfSimulation record
+                'machineId': 'bghcbbcidi',
+                'userQuestion': 'jcgghhgdj',
+                'scenarioJson': 'beehgcebbg',
+                'resultJson': 'bhdiaidiaf',
+                'riskLevel': 'deajegcfi',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='create',
+            model=self._model,
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def create_many(
+        self,
+        data: List[types.WhatIfSimulationCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        """Create multiple WhatIfSimulation records at once.
+
+        This function is *not* available when using SQLite.
+
+        Parameters
+        ----------
+        data
+            List of WhatIfSimulation record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        int
+            The total number of records created
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        total = await WhatIfSimulation.prisma().create_many(
+            data=[
+                {
+                    # data to create a WhatIfSimulation record
+                    'machineId': 'gabahhhjf',
+                    'userQuestion': 'cjagadcjg',
+                    'scenarioJson': 'bifficggej',
+                    'resultJson': 'bgbbaajbic',
+                    'riskLevel': 'eegghdhjb',
+                },
+                {
+                    # data to create a WhatIfSimulation record
+                    'machineId': 'daafgidjg',
+                    'userQuestion': 'gdcgcgagj',
+                    'scenarioJson': 'bhceabbgja',
+                    'resultJson': 'ehabfhegh',
+                    'riskLevel': 'bcajcajjbc',
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    async def delete(
+        self,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Delete a single WhatIfSimulation record.
+
+        Parameters
+        ----------
+        where
+            WhatIfSimulation filter to select the record to be deleted, must be unique
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The deleted WhatIfSimulation record
+        None
+            Could not find a record to delete
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        whatifsimulation = await WhatIfSimulation.prisma().delete(
+            where={
+                'id': 'bfdgheeegf',
+            },
+        )
+        ```
+        """
+        try:
+            resp = await self._client._execute(
+                method='delete',
+                model=self._model,
+                arguments={
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return model_parse(self._model, resp['data']['result'])
+
+    async def find_unique(
+        self,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Find a unique WhatIfSimulation record.
+
+        Parameters
+        ----------
+        where
+            WhatIfSimulation filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The found WhatIfSimulation record
+        None
+            No record matching the given input could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        whatifsimulation = await WhatIfSimulation.prisma().find_unique(
+            where={
+                'id': 'ececbijji',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_unique',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return model_parse(self._model, result)
+
+    async def find_unique_or_raise(
+        self,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique WhatIfSimulation record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            WhatIfSimulation filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The found WhatIfSimulation record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        whatifsimulation = await WhatIfSimulation.prisma().find_unique_or_raise(
+            where={
+                'id': 'cbcfgdcdhf',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_unique_or_raise',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def find_many(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+        cursor: Optional[types.WhatIfSimulationWhereUniqueInput] = None,
+        include: Optional[types.WhatIfSimulationInclude] = None,
+        order: Optional[Union[types.WhatIfSimulationOrderByInput, List[types.WhatIfSimulationOrderByInput]]] = None,
+        distinct: Optional[List[types.WhatIfSimulationScalarFieldKeys]] = None,
+    ) -> List[_PrismaModelT]:
+        """Find multiple WhatIfSimulation records.
+
+        An empty list is returned if no records could be found.
+
+        Parameters
+        ----------
+        take
+            Limit the maximum number of WhatIfSimulation records returned
+        skip
+            Ignore the first N results
+        where
+            WhatIfSimulation filter to select records
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+        order
+            Order the returned WhatIfSimulation records by any field
+        distinct
+            Filter WhatIfSimulation records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        List[prisma.models.WhatIfSimulation]
+            The list of all WhatIfSimulation records that could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the first 10 WhatIfSimulation records
+        whatifsimulations = await WhatIfSimulation.prisma().find_many(take=10)
+
+        # find the first 5 WhatIfSimulation records ordered by the sessionId field
+        whatifsimulations = await WhatIfSimulation.prisma().find_many(
+            take=5,
+            order={
+                'sessionId': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_many',
+            model=self._model,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
+    async def find_first(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+        cursor: Optional[types.WhatIfSimulationWhereUniqueInput] = None,
+        include: Optional[types.WhatIfSimulationInclude] = None,
+        order: Optional[Union[types.WhatIfSimulationOrderByInput, List[types.WhatIfSimulationOrderByInput]]] = None,
+        distinct: Optional[List[types.WhatIfSimulationScalarFieldKeys]] = None,
+    ) -> Optional[_PrismaModelT]:
+        """Find a single WhatIfSimulation record.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            WhatIfSimulation filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+        order
+            Order the returned WhatIfSimulation records by any field
+        distinct
+            Filter WhatIfSimulation records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The first WhatIfSimulation record found, matching the given arguments
+        None
+            No record could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second WhatIfSimulation record ordered by the userQuestion field
+        whatifsimulation = await WhatIfSimulation.prisma().find_first(
+            skip=1,
+            order={
+                'userQuestion': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_first',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+
+        return model_parse(self._model, result)
+
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+        cursor: Optional[types.WhatIfSimulationWhereUniqueInput] = None,
+        include: Optional[types.WhatIfSimulationInclude] = None,
+        order: Optional[Union[types.WhatIfSimulationOrderByInput, List[types.WhatIfSimulationOrderByInput]]] = None,
+        distinct: Optional[List[types.WhatIfSimulationScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single WhatIfSimulation record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            WhatIfSimulation filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+        order
+            Order the returned WhatIfSimulation records by any field
+        distinct
+            Filter WhatIfSimulation records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The first WhatIfSimulation record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second WhatIfSimulation record ordered by the scenarioJson field
+        whatifsimulation = await WhatIfSimulation.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'scenarioJson': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='find_first_or_raise',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def update(
+        self,
+        data: types.WhatIfSimulationUpdateInput,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> Optional[_PrismaModelT]:
+        """Update a single WhatIfSimulation record.
+
+        Parameters
+        ----------
+        data
+            WhatIfSimulation record data specifying what to update
+        where
+            WhatIfSimulation filter to select the unique record to create / update
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The updated WhatIfSimulation record
+        None
+            No record could be found
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        whatifsimulation = await WhatIfSimulation.prisma().update(
+            where={
+                'id': 'fdgjfbhia',
+            },
+            data={
+                # data to update the WhatIfSimulation record to
+            },
+        )
+        ```
+        """
+        try:
+            resp = await self._client._execute(
+                method='update',
+                model=self._model,
+                arguments={
+                    'data': data,
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return model_parse(self._model, resp['data']['result'])
+
+    async def upsert(
+        self,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        data: types.WhatIfSimulationUpsertInput,
+        include: Optional[types.WhatIfSimulationInclude] = None,
+    ) -> _PrismaModelT:
+        """Updates an existing record or create a new one
+
+        Parameters
+        ----------
+        where
+            WhatIfSimulation filter to select the unique record to create / update
+        data
+            Data specifying what fields to set on create and update
+        include
+            Specifies which relations should be loaded on the returned WhatIfSimulation model
+
+        Returns
+        -------
+        prisma.models.WhatIfSimulation
+            The created or updated WhatIfSimulation record
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        whatifsimulation = await WhatIfSimulation.prisma().upsert(
+            where={
+                'id': 'jcehcdchh',
+            },
+            data={
+                'create': {
+                    'id': 'jcehcdchh',
+                    'machineId': 'daafgidjg',
+                    'userQuestion': 'gdcgcgagj',
+                    'scenarioJson': 'bhceabbgja',
+                    'resultJson': 'ehabfhegh',
+                    'riskLevel': 'bcajcajjbc',
+                },
+                'update': {
+                    'machineId': 'daafgidjg',
+                    'userQuestion': 'gdcgcgagj',
+                    'scenarioJson': 'bhceabbgja',
+                    'resultJson': 'ehabfhegh',
+                    'riskLevel': 'bcajcajjbc',
+                },
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='upsert',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+        return model_parse(self._model, resp['data']['result'])
+
+    async def update_many(
+        self,
+        data: types.WhatIfSimulationUpdateManyMutationInput,
+        where: types.WhatIfSimulationWhereInput,
+    ) -> int:
+        """Update multiple WhatIfSimulation records
+
+        Parameters
+        ----------
+        data
+            WhatIfSimulation data to update the selected WhatIfSimulation records to
+        where
+            Filter to select the WhatIfSimulation records to update
+
+        Returns
+        -------
+        int
+            The total number of WhatIfSimulation records that were updated
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # update all WhatIfSimulation records
+        total = await WhatIfSimulation.prisma().update_many(
+            data={
+                'resultJson': 'bgcbjdhjcc'
+            },
+            where={}
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            method='update_many',
+            model=self._model,
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    @overload
+    async def count(
+        self,
+        select: None = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+        cursor: Optional[types.WhatIfSimulationWhereUniqueInput] = None,
+    ) -> int:
+        """Count the number of WhatIfSimulation records present in the database
+
+        Parameters
+        ----------
+        select
+            Select the WhatIfSimulation fields to be counted
+        take
+            Limit the maximum result
+        skip
+            Ignore the first N records
+        where
+            WhatIfSimulation filter to find records
+        cursor
+            Specifies the position in the list to start counting results from, (typically an ID field)
+        order
+            This parameter is deprecated and will be removed in a future release
+
+        Returns
+        -------
+        int
+            The total number of records found, returned if `select` is not given
+
+        prisma.types.WhatIfSimulationCountAggregateOutput
+            Data returned when `select` is used, the fields present in this dictionary will
+            match the fields passed in the `select` argument
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # total: int
+        total = await WhatIfSimulation.prisma().count()
+
+        # results: prisma.types.WhatIfSimulationCountAggregateOutput
+        results = await WhatIfSimulation.prisma().count(
+            select={
+                '_all': True,
+                'riskLevel': True,
+            },
+        )
+        ```
+        """
+
+
+    @overload
+    async def count(
+        self,
+        select: types.WhatIfSimulationCountAggregateInput,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+        cursor: Optional[types.WhatIfSimulationWhereUniqueInput] = None,
+    ) -> types.WhatIfSimulationCountAggregateOutput:
+        ...
+
+    async def count(
+        self,
+        select: Optional[types.WhatIfSimulationCountAggregateInput] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+        cursor: Optional[types.WhatIfSimulationWhereUniqueInput] = None,
+    ) -> Union[int, types.WhatIfSimulationCountAggregateOutput]:
+        """Count the number of WhatIfSimulation records present in the database
+
+        Parameters
+        ----------
+        select
+            Select the WhatIfSimulation fields to be counted
+        take
+            Limit the maximum result
+        skip
+            Ignore the first N records
+        where
+            WhatIfSimulation filter to find records
+        cursor
+            Specifies the position in the list to start counting results from, (typically an ID field)
+        order
+            This parameter is deprecated and will be removed in a future release
+
+        Returns
+        -------
+        int
+            The total number of records found, returned if `select` is not given
+
+        prisma.types.WhatIfSimulationCountAggregateOutput
+            Data returned when `select` is used, the fields present in this dictionary will
+            match the fields passed in the `select` argument
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # total: int
+        total = await WhatIfSimulation.prisma().count()
+
+        # results: prisma.types.WhatIfSimulationCountAggregateOutput
+        results = await WhatIfSimulation.prisma().count(
+            select={
+                '_all': True,
+                'createdAt': True,
+            },
+        )
+        ```
+        """
+
+        # TODO: this selection building should be moved to the QueryBuilder
+        #
+        # note the distinction between checking for `not select` here and `select is None`
+        # later is to handle the case that the given select dictionary is empty, this
+        # is a limitation of our types.
+        if not select:
+            root_selection = ['_count { _all }']
+        else:
+
+            root_selection = [
+                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+            ]
+
+        resp = await self._client._execute(
+            method='count',
+            model=self._model,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'cursor': cursor,
+            },
+            root_selection=root_selection,
+        )
+
+        if select is None:
+            return cast(int, resp['data']['result']['_count']['_all'])
+        else:
+            return cast(types.WhatIfSimulationCountAggregateOutput, resp['data']['result']['_count'])
+
+    async def delete_many(
+        self,
+        where: Optional[types.WhatIfSimulationWhereInput] = None
+    ) -> int:
+        """Delete multiple WhatIfSimulation records.
+
+        Parameters
+        ----------
+        where
+            Optional WhatIfSimulation filter to find the records to be deleted
+
+        Returns
+        -------
+        int
+            The total number of WhatIfSimulation records that were deleted
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # delete all WhatIfSimulation records
+        total = await WhatIfSimulation.prisma().delete_many()
+        ```
+        """
+        resp = await self._client._execute(
+            method='delete_many',
+            model=self._model,
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.WhatIfSimulationScalarFieldKeys'],
+        *,
+        where: Optional['types.WhatIfSimulationWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.WhatIfSimulationAvgAggregateInput'] = None,
+        sum: Optional['types.WhatIfSimulationSumAggregateInput'] = None,
+        min: Optional['types.WhatIfSimulationMinAggregateInput'] = None,
+        max: Optional['types.WhatIfSimulationMaxAggregateInput'] = None,
+        having: Optional['types.WhatIfSimulationScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.WhatIfSimulationCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.WhatIfSimulationScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.WhatIfSimulationScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.WhatIfSimulationGroupByOutput']:
+        """Group WhatIfSimulation records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar WhatIfSimulation fields to group records by
+        where
+            WhatIfSimulation filter to select records
+        take
+            Limit the maximum number of WhatIfSimulation records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.WhatIfSimulationGroupByOutput]
+            A list of dictionaries representing the WhatIfSimulation record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group WhatIfSimulation records by id values
+        # and count how many records are in each group
+        results = await WhatIfSimulation.prisma().group_by(
+            ['id'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            method='group_by',
+            model=self._model,
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
+
 
 def _select_fields(root: str, select: Mapping[str, Any]) -> str:
     """Helper to build a GraphQL selection string

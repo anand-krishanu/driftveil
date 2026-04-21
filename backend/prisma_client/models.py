@@ -69,6 +69,7 @@ class Machine(bases.BaseMachine):
     createdAt: datetime.datetime
     sensorReadings: Optional[List['models.SensorReading']] = None
     alerts: Optional[List['models.Alert']] = None
+    chatSessions: Optional[List['models.ChatSession']] = None
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -575,10 +576,414 @@ class Alert(bases.BaseAlert):
         _created_partial_types.add(name)
 
 
+class ChatSession(bases.BaseChatSession):
+    """Represents a ChatSession record"""
+
+    id: _str
+    machineId: _str
+    createdAt: datetime.datetime
+    machine: Optional['models.Machine'] = None
+    messages: Optional[List['models.ChatMessage']] = None
+    simulations: Optional[List['models.WhatIfSimulation']] = None
+
+    # take *args and **kwargs so that other metaclasses can define arguments
+    def __init_subclass__(
+        cls,
+        *args: Any,
+        warn_subclass: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__()
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
+
+
+    @staticmethod
+    def create_partial(
+        name: str,
+        include: Optional[Iterable['types.ChatSessionKeys']] = None,
+        exclude: Optional[Iterable['types.ChatSessionKeys']] = None,
+        required: Optional[Iterable['types.ChatSessionKeys']] = None,
+        optional: Optional[Iterable['types.ChatSessionKeys']] = None,
+        relations: Optional[Mapping['types.ChatSessionRelationalFieldKeys', str]] = None,
+        exclude_relational_fields: bool = False,
+    ) -> None:
+        if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+            raise RuntimeError(
+                'Attempted to create a partial type outside of client generation.'
+            )
+
+        if name in _created_partial_types:
+            raise ValueError(f'Partial type "{name}" has already been created.')
+
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
+
+        if required and optional:
+            shared = set(required) & set(optional)
+            if shared:
+                raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
+
+        if exclude_relational_fields and relations:
+            raise ValueError(
+                'exclude_relational_fields and relations are mutually exclusive'
+            )
+
+        fields: Dict['types.ChatSessionKeys', PartialModelField] = OrderedDict()
+
+        try:
+            if include:
+                for field in include:
+                    fields[field] = _ChatSession_fields[field].copy()
+            elif exclude:
+                for field in exclude:
+                    if field not in _ChatSession_fields:
+                        raise KeyError(field)
+
+                fields = {
+                    key: data.copy()
+                    for key, data in _ChatSession_fields.items()
+                    if key not in exclude
+                }
+            else:
+                fields = {
+                    key: data.copy()
+                    for key, data in _ChatSession_fields.items()
+                }
+
+            if required:
+                for field in required:
+                    fields[field]['optional'] = False
+
+            if optional:
+                for field in optional:
+                    fields[field]['optional'] = True
+
+            if exclude_relational_fields:
+                fields = {
+                    key: data
+                    for key, data in fields.items()
+                    if key not in _ChatSession_relational_fields
+                }
+
+            if relations:
+                for field, type_ in relations.items():
+                    if field not in _ChatSession_relational_fields:
+                        raise errors.UnknownRelationalFieldError('ChatSession', field)
+
+                    # TODO: this method of validating types is not ideal
+                    # as it means we cannot two create partial types that
+                    # reference each other
+                    if type_ not in _created_partial_types:
+                        raise ValueError(
+                            f'Unknown partial type: "{type_}". '
+                            f'Did you remember to generate the {type_} type before this one?'
+                        )
+
+                    # TODO: support non prisma.partials models
+                    info = fields[field]
+                    if info['is_list']:
+                        info['type'] = f'List[\'partials.{type_}\']'
+                    else:
+                        info['type'] = f'\'partials.{type_}\''
+        except KeyError as exc:
+            raise ValueError(
+                f'{exc.args[0]} is not a valid ChatSession / {name} field.'
+            ) from None
+
+        models = partial_models_ctx.get()
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'ChatSession',
+            }
+        )
+        _created_partial_types.add(name)
+
+
+class ChatMessage(bases.BaseChatMessage):
+    """Represents a ChatMessage record"""
+
+    id: _str
+    sessionId: _str
+    role: _str
+    content: _str
+    createdAt: datetime.datetime
+    simulationId: Optional[_str] = None
+    session: Optional['models.ChatSession'] = None
+
+    # take *args and **kwargs so that other metaclasses can define arguments
+    def __init_subclass__(
+        cls,
+        *args: Any,
+        warn_subclass: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__()
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
+
+
+    @staticmethod
+    def create_partial(
+        name: str,
+        include: Optional[Iterable['types.ChatMessageKeys']] = None,
+        exclude: Optional[Iterable['types.ChatMessageKeys']] = None,
+        required: Optional[Iterable['types.ChatMessageKeys']] = None,
+        optional: Optional[Iterable['types.ChatMessageKeys']] = None,
+        relations: Optional[Mapping['types.ChatMessageRelationalFieldKeys', str]] = None,
+        exclude_relational_fields: bool = False,
+    ) -> None:
+        if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+            raise RuntimeError(
+                'Attempted to create a partial type outside of client generation.'
+            )
+
+        if name in _created_partial_types:
+            raise ValueError(f'Partial type "{name}" has already been created.')
+
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
+
+        if required and optional:
+            shared = set(required) & set(optional)
+            if shared:
+                raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
+
+        if exclude_relational_fields and relations:
+            raise ValueError(
+                'exclude_relational_fields and relations are mutually exclusive'
+            )
+
+        fields: Dict['types.ChatMessageKeys', PartialModelField] = OrderedDict()
+
+        try:
+            if include:
+                for field in include:
+                    fields[field] = _ChatMessage_fields[field].copy()
+            elif exclude:
+                for field in exclude:
+                    if field not in _ChatMessage_fields:
+                        raise KeyError(field)
+
+                fields = {
+                    key: data.copy()
+                    for key, data in _ChatMessage_fields.items()
+                    if key not in exclude
+                }
+            else:
+                fields = {
+                    key: data.copy()
+                    for key, data in _ChatMessage_fields.items()
+                }
+
+            if required:
+                for field in required:
+                    fields[field]['optional'] = False
+
+            if optional:
+                for field in optional:
+                    fields[field]['optional'] = True
+
+            if exclude_relational_fields:
+                fields = {
+                    key: data
+                    for key, data in fields.items()
+                    if key not in _ChatMessage_relational_fields
+                }
+
+            if relations:
+                for field, type_ in relations.items():
+                    if field not in _ChatMessage_relational_fields:
+                        raise errors.UnknownRelationalFieldError('ChatMessage', field)
+
+                    # TODO: this method of validating types is not ideal
+                    # as it means we cannot two create partial types that
+                    # reference each other
+                    if type_ not in _created_partial_types:
+                        raise ValueError(
+                            f'Unknown partial type: "{type_}". '
+                            f'Did you remember to generate the {type_} type before this one?'
+                        )
+
+                    # TODO: support non prisma.partials models
+                    info = fields[field]
+                    if info['is_list']:
+                        info['type'] = f'List[\'partials.{type_}\']'
+                    else:
+                        info['type'] = f'\'partials.{type_}\''
+        except KeyError as exc:
+            raise ValueError(
+                f'{exc.args[0]} is not a valid ChatMessage / {name} field.'
+            ) from None
+
+        models = partial_models_ctx.get()
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'ChatMessage',
+            }
+        )
+        _created_partial_types.add(name)
+
+
+class WhatIfSimulation(bases.BaseWhatIfSimulation):
+    """Represents a WhatIfSimulation record"""
+
+    id: _str
+    machineId: _str
+    sessionId: Optional[_str] = None
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+    createdAt: datetime.datetime
+    session: Optional['models.ChatSession'] = None
+
+    # take *args and **kwargs so that other metaclasses can define arguments
+    def __init_subclass__(
+        cls,
+        *args: Any,
+        warn_subclass: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__()
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
+
+
+    @staticmethod
+    def create_partial(
+        name: str,
+        include: Optional[Iterable['types.WhatIfSimulationKeys']] = None,
+        exclude: Optional[Iterable['types.WhatIfSimulationKeys']] = None,
+        required: Optional[Iterable['types.WhatIfSimulationKeys']] = None,
+        optional: Optional[Iterable['types.WhatIfSimulationKeys']] = None,
+        relations: Optional[Mapping['types.WhatIfSimulationRelationalFieldKeys', str]] = None,
+        exclude_relational_fields: bool = False,
+    ) -> None:
+        if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+            raise RuntimeError(
+                'Attempted to create a partial type outside of client generation.'
+            )
+
+        if name in _created_partial_types:
+            raise ValueError(f'Partial type "{name}" has already been created.')
+
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
+
+        if required and optional:
+            shared = set(required) & set(optional)
+            if shared:
+                raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
+
+        if exclude_relational_fields and relations:
+            raise ValueError(
+                'exclude_relational_fields and relations are mutually exclusive'
+            )
+
+        fields: Dict['types.WhatIfSimulationKeys', PartialModelField] = OrderedDict()
+
+        try:
+            if include:
+                for field in include:
+                    fields[field] = _WhatIfSimulation_fields[field].copy()
+            elif exclude:
+                for field in exclude:
+                    if field not in _WhatIfSimulation_fields:
+                        raise KeyError(field)
+
+                fields = {
+                    key: data.copy()
+                    for key, data in _WhatIfSimulation_fields.items()
+                    if key not in exclude
+                }
+            else:
+                fields = {
+                    key: data.copy()
+                    for key, data in _WhatIfSimulation_fields.items()
+                }
+
+            if required:
+                for field in required:
+                    fields[field]['optional'] = False
+
+            if optional:
+                for field in optional:
+                    fields[field]['optional'] = True
+
+            if exclude_relational_fields:
+                fields = {
+                    key: data
+                    for key, data in fields.items()
+                    if key not in _WhatIfSimulation_relational_fields
+                }
+
+            if relations:
+                for field, type_ in relations.items():
+                    if field not in _WhatIfSimulation_relational_fields:
+                        raise errors.UnknownRelationalFieldError('WhatIfSimulation', field)
+
+                    # TODO: this method of validating types is not ideal
+                    # as it means we cannot two create partial types that
+                    # reference each other
+                    if type_ not in _created_partial_types:
+                        raise ValueError(
+                            f'Unknown partial type: "{type_}". '
+                            f'Did you remember to generate the {type_} type before this one?'
+                        )
+
+                    # TODO: support non prisma.partials models
+                    info = fields[field]
+                    if info['is_list']:
+                        info['type'] = f'List[\'partials.{type_}\']'
+                    else:
+                        info['type'] = f'\'partials.{type_}\''
+        except KeyError as exc:
+            raise ValueError(
+                f'{exc.args[0]} is not a valid WhatIfSimulation / {name} field.'
+            ) from None
+
+        models = partial_models_ctx.get()
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'WhatIfSimulation',
+            }
+        )
+        _created_partial_types.add(name)
+
+
 
 _Machine_relational_fields: Set[str] = {
         'sensorReadings',
         'alerts',
+        'chatSessions',
     }
 _Machine_fields: Dict['types.MachineKeys', PartialModelField] = OrderedDict(
     [
@@ -659,6 +1064,14 @@ _Machine_fields: Dict['types.MachineKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': True,
             'type': 'List[\'models.Alert\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('chatSessions', {
+            'name': 'chatSessions',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.ChatSession\']',
             'is_relational': True,
             'documentation': None,
         }),
@@ -887,6 +1300,208 @@ _Alert_fields: Dict['types.AlertKeys', PartialModelField] = OrderedDict(
     ],
 )
 
+_ChatSession_relational_fields: Set[str] = {
+        'machine',
+        'messages',
+        'simulations',
+    }
+_ChatSession_fields: Dict['types.ChatSessionKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('machineId', {
+            'name': 'machineId',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('createdAt', {
+            'name': 'createdAt',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('machine', {
+            'name': 'machine',
+            'is_list': False,
+            'optional': True,
+            'type': 'models.Machine',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('messages', {
+            'name': 'messages',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.ChatMessage\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('simulations', {
+            'name': 'simulations',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.WhatIfSimulation\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+    ],
+)
+
+_ChatMessage_relational_fields: Set[str] = {
+        'session',
+    }
+_ChatMessage_fields: Dict['types.ChatMessageKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('sessionId', {
+            'name': 'sessionId',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('role', {
+            'name': 'role',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('content', {
+            'name': 'content',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('createdAt', {
+            'name': 'createdAt',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('simulationId', {
+            'name': 'simulationId',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('session', {
+            'name': 'session',
+            'is_list': False,
+            'optional': True,
+            'type': 'models.ChatSession',
+            'is_relational': True,
+            'documentation': None,
+        }),
+    ],
+)
+
+_WhatIfSimulation_relational_fields: Set[str] = {
+        'session',
+    }
+_WhatIfSimulation_fields: Dict['types.WhatIfSimulationKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('machineId', {
+            'name': 'machineId',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('sessionId', {
+            'name': 'sessionId',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('userQuestion', {
+            'name': 'userQuestion',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('scenarioJson', {
+            'name': 'scenarioJson',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('resultJson', {
+            'name': 'resultJson',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('riskLevel', {
+            'name': 'riskLevel',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('createdAt', {
+            'name': 'createdAt',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('session', {
+            'name': 'session',
+            'is_list': False,
+            'optional': True,
+            'type': 'models.ChatSession',
+            'is_relational': True,
+            'documentation': None,
+        }),
+    ],
+)
+
 
 
 # we have to import ourselves as relation types are namespaced to models
@@ -898,3 +1513,6 @@ model_rebuild(Machine)
 model_rebuild(SensorReading)
 model_rebuild(FailureFingerprint)
 model_rebuild(Alert)
+model_rebuild(ChatSession)
+model_rebuild(ChatMessage)
+model_rebuild(WhatIfSimulation)

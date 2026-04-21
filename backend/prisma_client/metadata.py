@@ -10,12 +10,16 @@ PRISMA_MODELS: set[str] = {
     'SensorReading',
     'FailureFingerprint',
     'Alert',
+    'ChatSession',
+    'ChatMessage',
+    'WhatIfSimulation',
 }
 
 RELATIONAL_FIELD_MAPPINGS: dict[str, dict[str, str]] = {
     'Machine': {
         'sensorReadings': 'SensorReading',
         'alerts': 'Alert',
+        'chatSessions': 'ChatSession',
     },
     'SensorReading': {
         'machine': 'Machine',
@@ -24,6 +28,17 @@ RELATIONAL_FIELD_MAPPINGS: dict[str, dict[str, str]] = {
     },
     'Alert': {
         'machine': 'Machine',
+    },
+    'ChatSession': {
+        'machine': 'Machine',
+        'messages': 'ChatMessage',
+        'simulations': 'WhatIfSimulation',
+    },
+    'ChatMessage': {
+        'session': 'ChatSession',
+    },
+    'WhatIfSimulation': {
+        'session': 'ChatSession',
     },
 }
 

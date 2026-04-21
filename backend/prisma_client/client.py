@@ -85,10 +85,10 @@ __all__ = (
 
 log: logging.Logger = logging.getLogger(__name__)
 
-SCHEMA_PATH = Path('C:/Users/ZORO/Desktop/driftveil/code/driftveil/backend/schema.prisma')
+SCHEMA_PATH = Path('C:/Users/Ishika/Desktop/DriftVeil/driftveil/driftveil/backend/schema.prisma')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.binary
-BINARY_PATHS = model_parse(BinaryPaths, {'queryEngine': {'windows': 'C:\\Users\\ZORO\\.cache\\prisma-python\\binaries\\5.17.0\\393aa359c9ad4a4bb28630fb5613f9c281cde053\\node_modules\\prisma\\query-engine-windows.exe'}, 'introspectionEngine': {}, 'migrationEngine': {}, 'libqueryEngine': {}, 'prismaFmt': {}})
+BINARY_PATHS = model_parse(BinaryPaths, {'queryEngine': {'windows': 'C:\\Users\\Ishika\\.cache\\prisma-python\\binaries\\5.17.0\\393aa359c9ad4a4bb28630fb5613f9c281cde053\\node_modules\\prisma\\query-engine-windows.exe'}, 'introspectionEngine': {}, 'migrationEngine': {}, 'libqueryEngine': {}, 'prismaFmt': {}})
 
 
 class Prisma(AsyncBasePrisma):
@@ -98,12 +98,18 @@ class Prisma(AsyncBasePrisma):
     sensorreading: 'actions.SensorReadingActions[models.SensorReading]'
     failurefingerprint: 'actions.FailureFingerprintActions[models.FailureFingerprint]'
     alert: 'actions.AlertActions[models.Alert]'
+    chatsession: 'actions.ChatSessionActions[models.ChatSession]'
+    chatmessage: 'actions.ChatMessageActions[models.ChatMessage]'
+    whatifsimulation: 'actions.WhatIfSimulationActions[models.WhatIfSimulation]'
 
     __slots__ = (
         'machine',
         'sensorreading',
         'failurefingerprint',
         'alert',
+        'chatsession',
+        'chatmessage',
+        'whatifsimulation',
     )
 
     def __init__(
@@ -138,6 +144,9 @@ class Prisma(AsyncBasePrisma):
         self.sensorreading = actions.SensorReadingActions[models.SensorReading](self, models.SensorReading)
         self.failurefingerprint = actions.FailureFingerprintActions[models.FailureFingerprint](self, models.FailureFingerprint)
         self.alert = actions.AlertActions[models.Alert](self, models.Alert)
+        self.chatsession = actions.ChatSessionActions[models.ChatSession](self, models.ChatSession)
+        self.chatmessage = actions.ChatMessageActions[models.ChatMessage](self, models.ChatMessage)
+        self.whatifsimulation = actions.WhatIfSimulationActions[models.WhatIfSimulation](self, models.WhatIfSimulation)
 
         if auto_register:
             register(self)
@@ -148,7 +157,7 @@ class Prisma(AsyncBasePrisma):
         return {
             'name': 'db',
             'url': OptionalValueFromEnvVar(**{'value': 'file:./driftveil.db', 'fromEnvVar': None}).resolve(),
-            'source_file_path': 'C:/Users/ZORO/Desktop/driftveil/code/driftveil/backend/schema.prisma',
+            'source_file_path': 'C:/Users/Ishika/Desktop/DriftVeil/driftveil/driftveil/backend/schema.prisma',
         }
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
@@ -292,6 +301,9 @@ class Batch:
     sensorreading: 'SensorReadingBatchActions'
     failurefingerprint: 'FailureFingerprintBatchActions'
     alert: 'AlertBatchActions'
+    chatsession: 'ChatSessionBatchActions'
+    chatmessage: 'ChatMessageBatchActions'
+    whatifsimulation: 'WhatIfSimulationBatchActions'
 
     def __init__(self, client: Prisma) -> None:
         self.__client = client
@@ -301,6 +313,9 @@ class Batch:
         self.sensorreading = SensorReadingBatchActions(self)
         self.failurefingerprint = FailureFingerprintBatchActions(self)
         self.alert = AlertBatchActions(self)
+        self.chatsession = ChatSessionBatchActions(self)
+        self.chatmessage = ChatMessageBatchActions(self)
+        self.whatifsimulation = WhatIfSimulationBatchActions(self)
 
     def _add(self, **kwargs: Any) -> None:
         builder = QueryBuilder(
@@ -791,6 +806,339 @@ class AlertBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.Alert,
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class ChatSessionBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.ChatSessionCreateInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> None:
+        self._batcher._add(
+            method='create',
+            model=models.ChatSession,
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def create_many(
+        self,
+        data: List[types.ChatSessionCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
+
+        self._batcher._add(
+            method='create_many',
+            model=models.ChatSession,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
+    def delete(
+        self,
+        where: types.ChatSessionWhereUniqueInput,
+        include: Optional[types.ChatSessionInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            method='delete',
+            model=models.ChatSession,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.ChatSessionUpdateInput,
+        where: types.ChatSessionWhereUniqueInput,
+        include: Optional[types.ChatSessionInclude] = None
+    ) -> None:
+        self._batcher._add(
+            method='update',
+            model=models.ChatSession,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.ChatSessionWhereUniqueInput,
+        data: types.ChatSessionUpsertInput,
+        include: Optional[types.ChatSessionInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            method='upsert',
+            model=models.ChatSession,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.ChatSessionUpdateManyMutationInput,
+        where: types.ChatSessionWhereInput,
+    ) -> None:
+        self._batcher._add(
+            method='update_many',
+            model=models.ChatSession,
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.ChatSessionWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            method='delete_many',
+            model=models.ChatSession,
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class ChatMessageBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.ChatMessageCreateInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> None:
+        self._batcher._add(
+            method='create',
+            model=models.ChatMessage,
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def create_many(
+        self,
+        data: List[types.ChatMessageCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
+
+        self._batcher._add(
+            method='create_many',
+            model=models.ChatMessage,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
+    def delete(
+        self,
+        where: types.ChatMessageWhereUniqueInput,
+        include: Optional[types.ChatMessageInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            method='delete',
+            model=models.ChatMessage,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.ChatMessageUpdateInput,
+        where: types.ChatMessageWhereUniqueInput,
+        include: Optional[types.ChatMessageInclude] = None
+    ) -> None:
+        self._batcher._add(
+            method='update',
+            model=models.ChatMessage,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.ChatMessageWhereUniqueInput,
+        data: types.ChatMessageUpsertInput,
+        include: Optional[types.ChatMessageInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            method='upsert',
+            model=models.ChatMessage,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.ChatMessageUpdateManyMutationInput,
+        where: types.ChatMessageWhereInput,
+    ) -> None:
+        self._batcher._add(
+            method='update_many',
+            model=models.ChatMessage,
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.ChatMessageWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            method='delete_many',
+            model=models.ChatMessage,
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class WhatIfSimulationBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.WhatIfSimulationCreateInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> None:
+        self._batcher._add(
+            method='create',
+            model=models.WhatIfSimulation,
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def create_many(
+        self,
+        data: List[types.WhatIfSimulationCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
+
+        self._batcher._add(
+            method='create_many',
+            model=models.WhatIfSimulation,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
+    def delete(
+        self,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        include: Optional[types.WhatIfSimulationInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            method='delete',
+            model=models.WhatIfSimulation,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.WhatIfSimulationUpdateInput,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        include: Optional[types.WhatIfSimulationInclude] = None
+    ) -> None:
+        self._batcher._add(
+            method='update',
+            model=models.WhatIfSimulation,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.WhatIfSimulationWhereUniqueInput,
+        data: types.WhatIfSimulationUpsertInput,
+        include: Optional[types.WhatIfSimulationInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            method='upsert',
+            model=models.WhatIfSimulation,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.WhatIfSimulationUpdateManyMutationInput,
+        where: types.WhatIfSimulationWhereInput,
+    ) -> None:
+        self._batcher._add(
+            method='update_many',
+            model=models.WhatIfSimulation,
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.WhatIfSimulationWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            method='delete_many',
+            model=models.WhatIfSimulation,
             arguments={'where': where},
             root_selection=['count'],
         )

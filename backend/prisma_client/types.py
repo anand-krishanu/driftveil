@@ -1143,6 +1143,7 @@ class MachineOptionalCreateInput(TypedDict, total=False):
     createdAt: datetime.datetime
     sensorReadings: 'SensorReadingCreateManyNestedWithoutRelationsInput'
     alerts: 'AlertCreateManyNestedWithoutRelationsInput'
+    chatSessions: 'ChatSessionCreateManyNestedWithoutRelationsInput'
 
 
 class MachineCreateInput(MachineOptionalCreateInput):
@@ -1206,6 +1207,7 @@ class MachineUpdateInput(TypedDict, total=False):
     createdAt: datetime.datetime
     sensorReadings: 'SensorReadingUpdateManyWithoutRelationsInput'
     alerts: 'AlertUpdateManyWithoutRelationsInput'
+    chatSessions: 'ChatSessionUpdateManyWithoutRelationsInput'
 
 
 class MachineUpdateManyMutationInput(TypedDict, total=False):
@@ -1357,6 +1359,7 @@ class MachineInclude(TypedDict, total=False):
     """Machine relational arguments"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromMachine']
     alerts: Union[bool, 'FindManyAlertArgsFromMachine']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromMachine']
 
 
     
@@ -1365,24 +1368,28 @@ class MachineIncludeFromMachine(TypedDict, total=False):
     """Relational arguments for Machine"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromMachineRecursive1']
     alerts: Union[bool, 'FindManyAlertArgsFromMachineRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromMachineRecursive1']
 
 
 class MachineIncludeFromMachineRecursive1(TypedDict, total=False):
     """Relational arguments for Machine"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromMachineRecursive2']
     alerts: Union[bool, 'FindManyAlertArgsFromMachineRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromMachineRecursive2']
 
 
 class MachineIncludeFromMachineRecursive2(TypedDict, total=False):
     """Relational arguments for Machine"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromMachineRecursive3']
     alerts: Union[bool, 'FindManyAlertArgsFromMachineRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromMachineRecursive3']
 
 
 class MachineIncludeFromMachineRecursive3(TypedDict, total=False):
     """Relational arguments for Machine"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromMachineRecursive4']
     alerts: Union[bool, 'FindManyAlertArgsFromMachineRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromMachineRecursive4']
 
 
 class MachineIncludeFromMachineRecursive4(TypedDict, total=False):
@@ -1779,6 +1786,329 @@ class FindManyAlertArgsFromMachineRecursive4(TypedDict, total=False):
     cursor: 'AlertWhereUniqueInput'
     distinct: List['AlertScalarFieldKeys']
     
+    
+
+class ChatSessionIncludeFromMachine(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    machine: Union[bool, 'MachineArgsFromMachineRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromMachineRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromMachineRecursive1']
+
+
+class ChatSessionIncludeFromMachineRecursive1(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    machine: Union[bool, 'MachineArgsFromMachineRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromMachineRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromMachineRecursive2']
+
+
+class ChatSessionIncludeFromMachineRecursive2(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    machine: Union[bool, 'MachineArgsFromMachineRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromMachineRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromMachineRecursive3']
+
+
+class ChatSessionIncludeFromMachineRecursive3(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    machine: Union[bool, 'MachineArgsFromMachineRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromMachineRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromMachineRecursive4']
+
+
+class ChatSessionIncludeFromMachineRecursive4(TypedDict, total=False):
+    """Relational arguments for Machine"""
+
+    
+
+class ChatSessionArgsFromMachine(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromMachineRecursive1(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromMachineRecursive2(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromMachineRecursive3(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromMachineRecursive4(TypedDict, total=False):
+    """Arguments for Machine"""
+    
+    
+
+class FindManyChatSessionArgsFromMachine(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromMachineRecursive1(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromMachineRecursive2(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromMachineRecursive3(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromMachineRecursive4(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromMachine(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive1']
+
+
+class ChatMessageIncludeFromMachineRecursive1(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive2']
+
+
+class ChatMessageIncludeFromMachineRecursive2(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive3']
+
+
+class ChatMessageIncludeFromMachineRecursive3(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive4']
+
+
+class ChatMessageIncludeFromMachineRecursive4(TypedDict, total=False):
+    """Relational arguments for Machine"""
+
+    
+
+class ChatMessageArgsFromMachine(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromMachineRecursive1(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromMachineRecursive2(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromMachineRecursive3(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromMachineRecursive4(TypedDict, total=False):
+    """Arguments for Machine"""
+    
+    
+
+class FindManyChatMessageArgsFromMachine(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromMachineRecursive1(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromMachineRecursive2(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromMachineRecursive3(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromMachineRecursive4(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromMachine(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive1']
+
+
+class WhatIfSimulationIncludeFromMachineRecursive1(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive2']
+
+
+class WhatIfSimulationIncludeFromMachineRecursive2(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive3']
+
+
+class WhatIfSimulationIncludeFromMachineRecursive3(TypedDict, total=False):
+    """Relational arguments for Machine"""
+    session: Union[bool, 'ChatSessionArgsFromMachineRecursive4']
+
+
+class WhatIfSimulationIncludeFromMachineRecursive4(TypedDict, total=False):
+    """Relational arguments for Machine"""
+
+    
+
+class WhatIfSimulationArgsFromMachine(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromMachineRecursive1(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromMachineRecursive2(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromMachineRecursive3(TypedDict, total=False):
+    """Arguments for Machine"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromMachineRecursive4(TypedDict, total=False):
+    """Arguments for Machine"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromMachine(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromMachineRecursive1(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromMachineRecursive2(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromMachineRecursive3(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromMachineRecursive4(TypedDict, total=False):
+    """Arguments for Machine"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    
 
 
 FindManyMachineArgs = FindManyMachineArgsFromMachine
@@ -1799,6 +2129,7 @@ class MachineWhereInput(TypedDict, total=False):
     createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
     sensorReadings: 'SensorReadingListRelationFilter'
     alerts: 'AlertListRelationFilter'
+    chatSessions: 'ChatSessionListRelationFilter'
 
     # should be noted that AND and NOT should be Union['MachineWhereInputRecursive1', List['MachineWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -1819,6 +2150,7 @@ class MachineWhereInputRecursive1(TypedDict, total=False):
     createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
     sensorReadings: 'SensorReadingListRelationFilter'
     alerts: 'AlertListRelationFilter'
+    chatSessions: 'ChatSessionListRelationFilter'
 
     # should be noted that AND and NOT should be Union['MachineWhereInputRecursive2', List['MachineWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -1839,6 +2171,7 @@ class MachineWhereInputRecursive2(TypedDict, total=False):
     createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
     sensorReadings: 'SensorReadingListRelationFilter'
     alerts: 'AlertListRelationFilter'
+    chatSessions: 'ChatSessionListRelationFilter'
 
     # should be noted that AND and NOT should be Union['MachineWhereInputRecursive3', List['MachineWhereInputRecursive3']]
     # but this causes mypy to hang :/
@@ -1859,6 +2192,7 @@ class MachineWhereInputRecursive3(TypedDict, total=False):
     createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
     sensorReadings: 'SensorReadingListRelationFilter'
     alerts: 'AlertListRelationFilter'
+    chatSessions: 'ChatSessionListRelationFilter'
 
     # should be noted that AND and NOT should be Union['MachineWhereInputRecursive4', List['MachineWhereInputRecursive4']]
     # but this causes mypy to hang :/
@@ -1879,6 +2213,7 @@ class MachineWhereInputRecursive4(TypedDict, total=False):
     createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
     sensorReadings: 'SensorReadingListRelationFilter'
     alerts: 'AlertListRelationFilter'
+    chatSessions: 'ChatSessionListRelationFilter'
 
 
 
@@ -2083,6 +2418,7 @@ MachineKeys = Literal[
     'createdAt',
     'sensorReadings',
     'alerts',
+    'chatSessions',
 ]
 MachineScalarFieldKeys = Literal[
     'id',
@@ -2099,6 +2435,7 @@ MachineScalarFieldKeysT = TypeVar('MachineScalarFieldKeysT', bound=MachineScalar
 MachineRelationalFieldKeys = Literal[
         'sensorReadings',
         'alerts',
+        'chatSessions',
     ]
 
 # SensorReading types
@@ -2305,24 +2642,28 @@ class MachineIncludeFromSensorReading(TypedDict, total=False):
     """Relational arguments for SensorReading"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromSensorReadingRecursive1']
     alerts: Union[bool, 'FindManyAlertArgsFromSensorReadingRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromSensorReadingRecursive1']
 
 
 class MachineIncludeFromSensorReadingRecursive1(TypedDict, total=False):
     """Relational arguments for SensorReading"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromSensorReadingRecursive2']
     alerts: Union[bool, 'FindManyAlertArgsFromSensorReadingRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromSensorReadingRecursive2']
 
 
 class MachineIncludeFromSensorReadingRecursive2(TypedDict, total=False):
     """Relational arguments for SensorReading"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromSensorReadingRecursive3']
     alerts: Union[bool, 'FindManyAlertArgsFromSensorReadingRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromSensorReadingRecursive3']
 
 
 class MachineIncludeFromSensorReadingRecursive3(TypedDict, total=False):
     """Relational arguments for SensorReading"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromSensorReadingRecursive4']
     alerts: Union[bool, 'FindManyAlertArgsFromSensorReadingRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromSensorReadingRecursive4']
 
 
 class MachineIncludeFromSensorReadingRecursive4(TypedDict, total=False):
@@ -2718,6 +3059,329 @@ class FindManyAlertArgsFromSensorReadingRecursive4(TypedDict, total=False):
     where: 'AlertWhereInput'
     cursor: 'AlertWhereUniqueInput'
     distinct: List['AlertScalarFieldKeys']
+    
+    
+
+class ChatSessionIncludeFromSensorReading(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    machine: Union[bool, 'MachineArgsFromSensorReadingRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromSensorReadingRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromSensorReadingRecursive1']
+
+
+class ChatSessionIncludeFromSensorReadingRecursive1(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    machine: Union[bool, 'MachineArgsFromSensorReadingRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromSensorReadingRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromSensorReadingRecursive2']
+
+
+class ChatSessionIncludeFromSensorReadingRecursive2(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    machine: Union[bool, 'MachineArgsFromSensorReadingRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromSensorReadingRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromSensorReadingRecursive3']
+
+
+class ChatSessionIncludeFromSensorReadingRecursive3(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    machine: Union[bool, 'MachineArgsFromSensorReadingRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromSensorReadingRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromSensorReadingRecursive4']
+
+
+class ChatSessionIncludeFromSensorReadingRecursive4(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+
+    
+
+class ChatSessionArgsFromSensorReading(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromSensorReadingRecursive1(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromSensorReadingRecursive2(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromSensorReadingRecursive3(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromSensorReadingRecursive4(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    
+    
+
+class FindManyChatSessionArgsFromSensorReading(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromSensorReadingRecursive1(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromSensorReadingRecursive2(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromSensorReadingRecursive3(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromSensorReadingRecursive4(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromSensorReading(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive1']
+
+
+class ChatMessageIncludeFromSensorReadingRecursive1(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive2']
+
+
+class ChatMessageIncludeFromSensorReadingRecursive2(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive3']
+
+
+class ChatMessageIncludeFromSensorReadingRecursive3(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive4']
+
+
+class ChatMessageIncludeFromSensorReadingRecursive4(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+
+    
+
+class ChatMessageArgsFromSensorReading(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromSensorReadingRecursive1(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromSensorReadingRecursive2(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromSensorReadingRecursive3(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromSensorReadingRecursive4(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    
+    
+
+class FindManyChatMessageArgsFromSensorReading(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromSensorReadingRecursive1(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromSensorReadingRecursive2(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromSensorReadingRecursive3(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromSensorReadingRecursive4(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromSensorReading(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive1']
+
+
+class WhatIfSimulationIncludeFromSensorReadingRecursive1(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive2']
+
+
+class WhatIfSimulationIncludeFromSensorReadingRecursive2(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive3']
+
+
+class WhatIfSimulationIncludeFromSensorReadingRecursive3(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+    session: Union[bool, 'ChatSessionArgsFromSensorReadingRecursive4']
+
+
+class WhatIfSimulationIncludeFromSensorReadingRecursive4(TypedDict, total=False):
+    """Relational arguments for SensorReading"""
+
+    
+
+class WhatIfSimulationArgsFromSensorReading(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromSensorReadingRecursive1(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromSensorReadingRecursive2(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromSensorReadingRecursive3(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromSensorReadingRecursive4(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromSensorReading(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromSensorReadingRecursive1(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromSensorReadingRecursive2(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromSensorReadingRecursive3(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromSensorReadingRecursive4(TypedDict, total=False):
+    """Arguments for SensorReading"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
     
 
 
@@ -3207,24 +3871,28 @@ class MachineIncludeFromFailureFingerprint(TypedDict, total=False):
     """Relational arguments for FailureFingerprint"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromFailureFingerprintRecursive1']
     alerts: Union[bool, 'FindManyAlertArgsFromFailureFingerprintRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromFailureFingerprintRecursive1']
 
 
 class MachineIncludeFromFailureFingerprintRecursive1(TypedDict, total=False):
     """Relational arguments for FailureFingerprint"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromFailureFingerprintRecursive2']
     alerts: Union[bool, 'FindManyAlertArgsFromFailureFingerprintRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromFailureFingerprintRecursive2']
 
 
 class MachineIncludeFromFailureFingerprintRecursive2(TypedDict, total=False):
     """Relational arguments for FailureFingerprint"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromFailureFingerprintRecursive3']
     alerts: Union[bool, 'FindManyAlertArgsFromFailureFingerprintRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromFailureFingerprintRecursive3']
 
 
 class MachineIncludeFromFailureFingerprintRecursive3(TypedDict, total=False):
     """Relational arguments for FailureFingerprint"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromFailureFingerprintRecursive4']
     alerts: Union[bool, 'FindManyAlertArgsFromFailureFingerprintRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromFailureFingerprintRecursive4']
 
 
 class MachineIncludeFromFailureFingerprintRecursive4(TypedDict, total=False):
@@ -3620,6 +4288,329 @@ class FindManyAlertArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
     where: 'AlertWhereInput'
     cursor: 'AlertWhereUniqueInput'
     distinct: List['AlertScalarFieldKeys']
+    
+    
+
+class ChatSessionIncludeFromFailureFingerprint(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    machine: Union[bool, 'MachineArgsFromFailureFingerprintRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromFailureFingerprintRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive1']
+
+
+class ChatSessionIncludeFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    machine: Union[bool, 'MachineArgsFromFailureFingerprintRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromFailureFingerprintRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive2']
+
+
+class ChatSessionIncludeFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    machine: Union[bool, 'MachineArgsFromFailureFingerprintRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromFailureFingerprintRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive3']
+
+
+class ChatSessionIncludeFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    machine: Union[bool, 'MachineArgsFromFailureFingerprintRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromFailureFingerprintRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive4']
+
+
+class ChatSessionIncludeFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+
+    
+
+class ChatSessionArgsFromFailureFingerprint(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    
+    
+
+class FindManyChatSessionArgsFromFailureFingerprint(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromFailureFingerprint(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive1']
+
+
+class ChatMessageIncludeFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive2']
+
+
+class ChatMessageIncludeFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive3']
+
+
+class ChatMessageIncludeFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive4']
+
+
+class ChatMessageIncludeFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+
+    
+
+class ChatMessageArgsFromFailureFingerprint(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    
+    
+
+class FindManyChatMessageArgsFromFailureFingerprint(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromFailureFingerprint(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive1']
+
+
+class WhatIfSimulationIncludeFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive2']
+
+
+class WhatIfSimulationIncludeFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive3']
+
+
+class WhatIfSimulationIncludeFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+    session: Union[bool, 'ChatSessionArgsFromFailureFingerprintRecursive4']
+
+
+class WhatIfSimulationIncludeFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Relational arguments for FailureFingerprint"""
+
+    
+
+class WhatIfSimulationArgsFromFailureFingerprint(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromFailureFingerprint(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive1(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive2(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive3(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromFailureFingerprintRecursive4(TypedDict, total=False):
+    """Arguments for FailureFingerprint"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
     
 
 
@@ -4161,24 +5152,28 @@ class MachineIncludeFromAlert(TypedDict, total=False):
     """Relational arguments for Alert"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromAlertRecursive1']
     alerts: Union[bool, 'FindManyAlertArgsFromAlertRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromAlertRecursive1']
 
 
 class MachineIncludeFromAlertRecursive1(TypedDict, total=False):
     """Relational arguments for Alert"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromAlertRecursive2']
     alerts: Union[bool, 'FindManyAlertArgsFromAlertRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromAlertRecursive2']
 
 
 class MachineIncludeFromAlertRecursive2(TypedDict, total=False):
     """Relational arguments for Alert"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromAlertRecursive3']
     alerts: Union[bool, 'FindManyAlertArgsFromAlertRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromAlertRecursive3']
 
 
 class MachineIncludeFromAlertRecursive3(TypedDict, total=False):
     """Relational arguments for Alert"""
     sensorReadings: Union[bool, 'FindManySensorReadingArgsFromAlertRecursive4']
     alerts: Union[bool, 'FindManyAlertArgsFromAlertRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromAlertRecursive4']
 
 
 class MachineIncludeFromAlertRecursive4(TypedDict, total=False):
@@ -4575,6 +5570,329 @@ class FindManyAlertArgsFromAlertRecursive4(TypedDict, total=False):
     cursor: 'AlertWhereUniqueInput'
     distinct: List['AlertScalarFieldKeys']
     
+    
+
+class ChatSessionIncludeFromAlert(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    machine: Union[bool, 'MachineArgsFromAlertRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromAlertRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromAlertRecursive1']
+
+
+class ChatSessionIncludeFromAlertRecursive1(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    machine: Union[bool, 'MachineArgsFromAlertRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromAlertRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromAlertRecursive2']
+
+
+class ChatSessionIncludeFromAlertRecursive2(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    machine: Union[bool, 'MachineArgsFromAlertRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromAlertRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromAlertRecursive3']
+
+
+class ChatSessionIncludeFromAlertRecursive3(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    machine: Union[bool, 'MachineArgsFromAlertRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromAlertRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromAlertRecursive4']
+
+
+class ChatSessionIncludeFromAlertRecursive4(TypedDict, total=False):
+    """Relational arguments for Alert"""
+
+    
+
+class ChatSessionArgsFromAlert(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromAlertRecursive1(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromAlertRecursive2(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromAlertRecursive3(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromAlertRecursive4(TypedDict, total=False):
+    """Arguments for Alert"""
+    
+    
+
+class FindManyChatSessionArgsFromAlert(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromAlertRecursive1(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromAlertRecursive2(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromAlertRecursive3(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromAlertRecursive4(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromAlert(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive1']
+
+
+class ChatMessageIncludeFromAlertRecursive1(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive2']
+
+
+class ChatMessageIncludeFromAlertRecursive2(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive3']
+
+
+class ChatMessageIncludeFromAlertRecursive3(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive4']
+
+
+class ChatMessageIncludeFromAlertRecursive4(TypedDict, total=False):
+    """Relational arguments for Alert"""
+
+    
+
+class ChatMessageArgsFromAlert(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromAlertRecursive1(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromAlertRecursive2(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromAlertRecursive3(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromAlertRecursive4(TypedDict, total=False):
+    """Arguments for Alert"""
+    
+    
+
+class FindManyChatMessageArgsFromAlert(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromAlertRecursive1(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromAlertRecursive2(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromAlertRecursive3(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromAlertRecursive4(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromAlert(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive1']
+
+
+class WhatIfSimulationIncludeFromAlertRecursive1(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive2']
+
+
+class WhatIfSimulationIncludeFromAlertRecursive2(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive3']
+
+
+class WhatIfSimulationIncludeFromAlertRecursive3(TypedDict, total=False):
+    """Relational arguments for Alert"""
+    session: Union[bool, 'ChatSessionArgsFromAlertRecursive4']
+
+
+class WhatIfSimulationIncludeFromAlertRecursive4(TypedDict, total=False):
+    """Relational arguments for Alert"""
+
+    
+
+class WhatIfSimulationArgsFromAlert(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromAlertRecursive1(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromAlertRecursive2(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromAlertRecursive3(TypedDict, total=False):
+    """Arguments for Alert"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromAlertRecursive4(TypedDict, total=False):
+    """Arguments for Alert"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromAlert(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromAlertRecursive1(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromAlertRecursive2(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromAlertRecursive3(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromAlertRecursive4(TypedDict, total=False):
+    """Arguments for Alert"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    
 
 
 FindManyAlertArgs = FindManyAlertArgsFromAlert
@@ -4948,6 +6266,3658 @@ AlertScalarFieldKeysT = TypeVar('AlertScalarFieldKeysT', bound=AlertScalarFieldK
 
 AlertRelationalFieldKeys = Literal[
         'machine',
+    ]
+
+# ChatSession types
+
+class ChatSessionOptionalCreateInput(TypedDict, total=False):
+    """Optional arguments to the ChatSession create method"""
+    id: _str
+    machineId: _str
+    createdAt: datetime.datetime
+    machine: 'MachineCreateNestedWithoutRelationsInput'
+    messages: 'ChatMessageCreateManyNestedWithoutRelationsInput'
+    simulations: 'WhatIfSimulationCreateManyNestedWithoutRelationsInput'
+
+
+class ChatSessionCreateInput(ChatSessionOptionalCreateInput):
+    """Required arguments to the ChatSession create method"""
+
+
+# TODO: remove this in favour of without explicit relations
+# e.g. PostCreateWithoutAuthorInput
+
+class ChatSessionOptionalCreateWithoutRelationsInput(TypedDict, total=False):
+    """Optional arguments to the ChatSession create method, without relations"""
+    id: _str
+    machineId: _str
+    createdAt: datetime.datetime
+
+
+class ChatSessionCreateWithoutRelationsInput(ChatSessionOptionalCreateWithoutRelationsInput):
+    """Required arguments to the ChatSession create method, without relations"""
+
+class ChatSessionConnectOrCreateWithoutRelationsInput(TypedDict):
+    create: 'ChatSessionCreateWithoutRelationsInput'
+    where: 'ChatSessionWhereUniqueInput'
+
+class ChatSessionCreateNestedWithoutRelationsInput(TypedDict, total=False):
+    create: 'ChatSessionCreateWithoutRelationsInput'
+    connect: 'ChatSessionWhereUniqueInput'
+    connect_or_create: 'ChatSessionConnectOrCreateWithoutRelationsInput'
+
+
+class ChatSessionCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Union['ChatSessionCreateWithoutRelationsInput', List['ChatSessionCreateWithoutRelationsInput']]
+    connect: Union['ChatSessionWhereUniqueInput', List['ChatSessionWhereUniqueInput']]
+    connect_or_create: Union['ChatSessionConnectOrCreateWithoutRelationsInput', List['ChatSessionConnectOrCreateWithoutRelationsInput']]
+
+_ChatSessionWhereUnique_id_Input = TypedDict(
+    '_ChatSessionWhereUnique_id_Input',
+    {
+        'id': '_str',
+    },
+    total=True
+)
+
+ChatSessionWhereUniqueInput = _ChatSessionWhereUnique_id_Input
+
+
+class ChatSessionUpdateInput(TypedDict, total=False):
+    """Optional arguments for updating a record"""
+    id: _str
+    createdAt: datetime.datetime
+    machine: 'MachineUpdateOneWithoutRelationsInput'
+    messages: 'ChatMessageUpdateManyWithoutRelationsInput'
+    simulations: 'WhatIfSimulationUpdateManyWithoutRelationsInput'
+
+
+class ChatSessionUpdateManyMutationInput(TypedDict, total=False):
+    """Arguments for updating many records"""
+    id: _str
+    createdAt: datetime.datetime
+
+
+class ChatSessionUpdateManyWithoutRelationsInput(TypedDict, total=False):
+    create: List['ChatSessionCreateWithoutRelationsInput']
+    connect: List['ChatSessionWhereUniqueInput']
+    connect_or_create: List['ChatSessionConnectOrCreateWithoutRelationsInput']
+    set: List['ChatSessionWhereUniqueInput']
+    disconnect: List['ChatSessionWhereUniqueInput']
+    delete: List['ChatSessionWhereUniqueInput']
+
+    # TODO
+    # update: List['ChatSessionUpdateWithWhereUniqueWithoutRelationsInput']
+    # updateMany: List['ChatSessionUpdateManyWithWhereUniqueWithoutRelationsInput']
+    # deleteMany: List['ChatSessionScalarWhereInput']
+    # upsert: List['ChatSessionUpserteWithWhereUniqueWithoutRelationsInput']
+
+
+class ChatSessionUpdateOneWithoutRelationsInput(TypedDict, total=False):
+    create: 'ChatSessionCreateWithoutRelationsInput'
+    connect: 'ChatSessionWhereUniqueInput'
+    connect_or_create: 'ChatSessionConnectOrCreateWithoutRelationsInput'
+    disconnect: bool
+    delete: bool
+
+    # TODO
+    # update: 'ChatSessionUpdateInput'
+    # upsert: 'ChatSessionUpsertWithoutRelationsInput'
+
+
+class ChatSessionUpsertInput(TypedDict):
+    create: 'ChatSessionCreateInput'
+    update: 'ChatSessionUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
+
+
+_ChatSession_id_OrderByInput = TypedDict(
+    '_ChatSession_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatSession_machineId_OrderByInput = TypedDict(
+    '_ChatSession_machineId_OrderByInput',
+    {
+        'machineId': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatSession_createdAt_OrderByInput = TypedDict(
+    '_ChatSession_createdAt_OrderByInput',
+    {
+        'createdAt': 'SortOrder',
+    },
+    total=True
+)
+
+ChatSessionOrderByInput = Union[
+    '_ChatSession_id_OrderByInput',
+    '_ChatSession_machineId_OrderByInput',
+    '_ChatSession_createdAt_OrderByInput',
+]
+
+
+
+# recursive ChatSession types
+# TODO: cleanup these types
+
+
+# Dict[str, Any] is a mypy limitation
+# see https://github.com/RobertCraigie/prisma-client-py/issues/45
+# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
+
+ChatSessionRelationFilter = TypedDict(
+    'ChatSessionRelationFilter',
+    {
+        'is': 'Dict[str, Any]',
+        'is_not': 'Dict[str, Any]',
+    },
+    total=False,
+)
+
+
+class ChatSessionListRelationFilter(TypedDict, total=False):
+    some: 'Dict[str, Any]'
+    none: 'Dict[str, Any]'
+    every: 'Dict[str, Any]'
+
+
+class ChatSessionInclude(TypedDict, total=False):
+    """ChatSession relational arguments"""
+    machine: Union[bool, 'MachineArgsFromChatSession']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatSession']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatSession']
+
+
+    
+
+class MachineIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatSessionRecursive1']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatSessionRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatSessionRecursive1']
+
+
+class MachineIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatSessionRecursive2']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatSessionRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatSessionRecursive2']
+
+
+class MachineIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatSessionRecursive3']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatSessionRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatSessionRecursive3']
+
+
+class MachineIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatSessionRecursive4']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatSessionRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatSessionRecursive4']
+
+
+class MachineIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class MachineArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'MachineIncludeFromMachineRecursive1'
+
+
+class MachineArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'MachineIncludeFromMachineRecursive2'
+
+
+class MachineArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'MachineIncludeFromMachineRecursive3'
+
+
+class MachineArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'MachineIncludeFromMachineRecursive4'
+
+
+class MachineArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManyMachineArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive1'
+
+
+class FindManyMachineArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive2'
+
+
+class FindManyMachineArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive3'
+
+
+class FindManyMachineArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive4'
+
+
+class FindManyMachineArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    
+    
+
+class SensorReadingIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive1']
+
+
+class SensorReadingIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive2']
+
+
+class SensorReadingIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive3']
+
+
+class SensorReadingIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive4']
+
+
+class SensorReadingIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class SensorReadingArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive1'
+
+
+class SensorReadingArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive2'
+
+
+class SensorReadingArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive3'
+
+
+class SensorReadingArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive4'
+
+
+class SensorReadingArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManySensorReadingArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive1'
+
+
+class FindManySensorReadingArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive2'
+
+
+class FindManySensorReadingArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive3'
+
+
+class FindManySensorReadingArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive4'
+
+
+class FindManySensorReadingArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    
+    
+
+class FailureFingerprintIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+
+class FailureFingerprintIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+
+class FailureFingerprintIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+
+class FailureFingerprintIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+
+class FailureFingerprintIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class FailureFingerprintArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive1'
+
+
+class FailureFingerprintArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive2'
+
+
+class FailureFingerprintArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive3'
+
+
+class FailureFingerprintArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive4'
+
+
+class FailureFingerprintArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManyFailureFingerprintArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive1'
+
+
+class FindManyFailureFingerprintArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive2'
+
+
+class FindManyFailureFingerprintArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive3'
+
+
+class FindManyFailureFingerprintArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive4'
+
+
+class FindManyFailureFingerprintArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    
+    
+
+class AlertIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive1']
+
+
+class AlertIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive2']
+
+
+class AlertIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive3']
+
+
+class AlertIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive4']
+
+
+class AlertIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class AlertArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'AlertIncludeFromAlertRecursive1'
+
+
+class AlertArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'AlertIncludeFromAlertRecursive2'
+
+
+class AlertArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'AlertIncludeFromAlertRecursive3'
+
+
+class AlertArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'AlertIncludeFromAlertRecursive4'
+
+
+class AlertArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManyAlertArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive1'
+
+
+class FindManyAlertArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive2'
+
+
+class FindManyAlertArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive3'
+
+
+class FindManyAlertArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive4'
+
+
+class FindManyAlertArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    
+    
+
+class ChatSessionIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatSessionRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatSessionRecursive1']
+
+
+class ChatSessionIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatSessionRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatSessionRecursive2']
+
+
+class ChatSessionIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatSessionRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatSessionRecursive3']
+
+
+class ChatSessionIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    machine: Union[bool, 'MachineArgsFromChatSessionRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatSessionRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatSessionRecursive4']
+
+
+class ChatSessionIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class ChatSessionArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManyChatSessionArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive1']
+
+
+class ChatMessageIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive2']
+
+
+class ChatMessageIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive3']
+
+
+class ChatMessageIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive4']
+
+
+class ChatMessageIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class ChatMessageArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManyChatMessageArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromChatSession(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive1']
+
+
+class WhatIfSimulationIncludeFromChatSessionRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive2']
+
+
+class WhatIfSimulationIncludeFromChatSessionRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive3']
+
+
+class WhatIfSimulationIncludeFromChatSessionRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+    session: Union[bool, 'ChatSessionArgsFromChatSessionRecursive4']
+
+
+class WhatIfSimulationIncludeFromChatSessionRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatSession"""
+
+    
+
+class WhatIfSimulationArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromChatSession(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromChatSessionRecursive1(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromChatSessionRecursive2(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromChatSessionRecursive3(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromChatSessionRecursive4(TypedDict, total=False):
+    """Arguments for ChatSession"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    
+
+
+FindManyChatSessionArgs = FindManyChatSessionArgsFromChatSession
+FindFirstChatSessionArgs = FindManyChatSessionArgsFromChatSession
+
+
+    
+
+class ChatSessionWhereInput(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    machine: 'MachineRelationFilter'
+    messages: 'ChatMessageListRelationFilter'
+    simulations: 'WhatIfSimulationListRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatSessionWhereInputRecursive1', List['ChatSessionWhereInputRecursive1']]
+    # but this causes mypy to hang :/
+    AND: List['ChatSessionWhereInputRecursive1']
+    OR: List['ChatSessionWhereInputRecursive1']
+    NOT: List['ChatSessionWhereInputRecursive1']
+
+
+class ChatSessionWhereInputRecursive1(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    machine: 'MachineRelationFilter'
+    messages: 'ChatMessageListRelationFilter'
+    simulations: 'WhatIfSimulationListRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatSessionWhereInputRecursive2', List['ChatSessionWhereInputRecursive2']]
+    # but this causes mypy to hang :/
+    AND: List['ChatSessionWhereInputRecursive2']
+    OR: List['ChatSessionWhereInputRecursive2']
+    NOT: List['ChatSessionWhereInputRecursive2']
+
+
+class ChatSessionWhereInputRecursive2(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    machine: 'MachineRelationFilter'
+    messages: 'ChatMessageListRelationFilter'
+    simulations: 'WhatIfSimulationListRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatSessionWhereInputRecursive3', List['ChatSessionWhereInputRecursive3']]
+    # but this causes mypy to hang :/
+    AND: List['ChatSessionWhereInputRecursive3']
+    OR: List['ChatSessionWhereInputRecursive3']
+    NOT: List['ChatSessionWhereInputRecursive3']
+
+
+class ChatSessionWhereInputRecursive3(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    machine: 'MachineRelationFilter'
+    messages: 'ChatMessageListRelationFilter'
+    simulations: 'WhatIfSimulationListRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatSessionWhereInputRecursive4', List['ChatSessionWhereInputRecursive4']]
+    # but this causes mypy to hang :/
+    AND: List['ChatSessionWhereInputRecursive4']
+    OR: List['ChatSessionWhereInputRecursive4']
+    NOT: List['ChatSessionWhereInputRecursive4']
+
+
+class ChatSessionWhereInputRecursive4(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    machine: 'MachineRelationFilter'
+    messages: 'ChatMessageListRelationFilter'
+    simulations: 'WhatIfSimulationListRelationFilter'
+
+
+
+# aggregate ChatSession types
+
+
+    
+
+class ChatSessionScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['ChatSessionScalarWhereWithAggregatesInputRecursive1']
+    OR: List['ChatSessionScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['ChatSessionScalarWhereWithAggregatesInputRecursive1']
+
+
+class ChatSessionScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['ChatSessionScalarWhereWithAggregatesInputRecursive2']
+    OR: List['ChatSessionScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['ChatSessionScalarWhereWithAggregatesInputRecursive2']
+
+
+class ChatSessionScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['ChatSessionScalarWhereWithAggregatesInputRecursive3']
+    OR: List['ChatSessionScalarWhereWithAggregatesInputRecursive3']
+    NOT: List['ChatSessionScalarWhereWithAggregatesInputRecursive3']
+
+
+class ChatSessionScalarWhereWithAggregatesInputRecursive3(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['ChatSessionScalarWhereWithAggregatesInputRecursive4']
+    OR: List['ChatSessionScalarWhereWithAggregatesInputRecursive4']
+    NOT: List['ChatSessionScalarWhereWithAggregatesInputRecursive4']
+
+
+class ChatSessionScalarWhereWithAggregatesInputRecursive4(TypedDict, total=False):
+    """ChatSession arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+
+
+class ChatSessionGroupByOutput(TypedDict, total=False):
+    id: _str
+    machineId: _str
+    createdAt: datetime.datetime
+    _sum: 'ChatSessionSumAggregateOutput'
+    _avg: 'ChatSessionAvgAggregateOutput'
+    _min: 'ChatSessionMinAggregateOutput'
+    _max: 'ChatSessionMaxAggregateOutput'
+    _count: 'ChatSessionCountAggregateOutput'
+
+
+class ChatSessionAvgAggregateOutput(TypedDict, total=False):
+    """ChatSession output for aggregating averages"""
+
+
+class ChatSessionSumAggregateOutput(TypedDict, total=False):
+    """ChatSession output for aggregating sums"""
+
+
+class ChatSessionScalarAggregateOutput(TypedDict, total=False):
+    """ChatSession output including scalar fields"""
+    id: _str
+    machineId: _str
+    createdAt: datetime.datetime
+
+
+ChatSessionMinAggregateOutput = ChatSessionScalarAggregateOutput
+ChatSessionMaxAggregateOutput = ChatSessionScalarAggregateOutput
+
+
+class ChatSessionMaxAggregateInput(TypedDict, total=False):
+    """ChatSession input for aggregating by max"""
+    id: bool
+    machineId: bool
+    createdAt: bool
+
+
+class ChatSessionMinAggregateInput(TypedDict, total=False):
+    """ChatSession input for aggregating by min"""
+    id: bool
+    machineId: bool
+    createdAt: bool
+
+
+class ChatSessionNumberAggregateInput(TypedDict, total=False):
+    """ChatSession input for aggregating numbers"""
+
+
+ChatSessionAvgAggregateInput = ChatSessionNumberAggregateInput
+ChatSessionSumAggregateInput = ChatSessionNumberAggregateInput
+
+
+ChatSessionCountAggregateInput = TypedDict(
+    'ChatSessionCountAggregateInput',
+    {
+        'id': bool,
+        'machineId': bool,
+        'createdAt': bool,
+        '_all': bool,
+    },
+    total=False,
+)
+
+ChatSessionCountAggregateOutput = TypedDict(
+    'ChatSessionCountAggregateOutput',
+    {
+        'id': int,
+        'machineId': int,
+        'createdAt': int,
+        '_all': int,
+    },
+    total=False,
+)
+
+
+ChatSessionKeys = Literal[
+    'id',
+    'machineId',
+    'createdAt',
+    'machine',
+    'messages',
+    'simulations',
+]
+ChatSessionScalarFieldKeys = Literal[
+    'id',
+    'machineId',
+    'createdAt',
+]
+ChatSessionScalarFieldKeysT = TypeVar('ChatSessionScalarFieldKeysT', bound=ChatSessionScalarFieldKeys)
+
+ChatSessionRelationalFieldKeys = Literal[
+        'machine',
+        'messages',
+        'simulations',
+    ]
+
+# ChatMessage types
+
+class ChatMessageOptionalCreateInput(TypedDict, total=False):
+    """Optional arguments to the ChatMessage create method"""
+    id: _str
+    sessionId: _str
+    createdAt: datetime.datetime
+    simulationId: Optional[_str]
+    session: 'ChatSessionCreateNestedWithoutRelationsInput'
+
+
+class ChatMessageCreateInput(ChatMessageOptionalCreateInput):
+    """Required arguments to the ChatMessage create method"""
+    role: _str
+    content: _str
+
+
+# TODO: remove this in favour of without explicit relations
+# e.g. PostCreateWithoutAuthorInput
+
+class ChatMessageOptionalCreateWithoutRelationsInput(TypedDict, total=False):
+    """Optional arguments to the ChatMessage create method, without relations"""
+    id: _str
+    sessionId: _str
+    createdAt: datetime.datetime
+    simulationId: Optional[_str]
+
+
+class ChatMessageCreateWithoutRelationsInput(ChatMessageOptionalCreateWithoutRelationsInput):
+    """Required arguments to the ChatMessage create method, without relations"""
+    role: _str
+    content: _str
+
+class ChatMessageConnectOrCreateWithoutRelationsInput(TypedDict):
+    create: 'ChatMessageCreateWithoutRelationsInput'
+    where: 'ChatMessageWhereUniqueInput'
+
+class ChatMessageCreateNestedWithoutRelationsInput(TypedDict, total=False):
+    create: 'ChatMessageCreateWithoutRelationsInput'
+    connect: 'ChatMessageWhereUniqueInput'
+    connect_or_create: 'ChatMessageConnectOrCreateWithoutRelationsInput'
+
+
+class ChatMessageCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Union['ChatMessageCreateWithoutRelationsInput', List['ChatMessageCreateWithoutRelationsInput']]
+    connect: Union['ChatMessageWhereUniqueInput', List['ChatMessageWhereUniqueInput']]
+    connect_or_create: Union['ChatMessageConnectOrCreateWithoutRelationsInput', List['ChatMessageConnectOrCreateWithoutRelationsInput']]
+
+_ChatMessageWhereUnique_id_Input = TypedDict(
+    '_ChatMessageWhereUnique_id_Input',
+    {
+        'id': '_str',
+    },
+    total=True
+)
+
+ChatMessageWhereUniqueInput = _ChatMessageWhereUnique_id_Input
+
+
+class ChatMessageUpdateInput(TypedDict, total=False):
+    """Optional arguments for updating a record"""
+    id: _str
+    role: _str
+    content: _str
+    createdAt: datetime.datetime
+    simulationId: Optional[_str]
+    session: 'ChatSessionUpdateOneWithoutRelationsInput'
+
+
+class ChatMessageUpdateManyMutationInput(TypedDict, total=False):
+    """Arguments for updating many records"""
+    id: _str
+    role: _str
+    content: _str
+    createdAt: datetime.datetime
+    simulationId: Optional[_str]
+
+
+class ChatMessageUpdateManyWithoutRelationsInput(TypedDict, total=False):
+    create: List['ChatMessageCreateWithoutRelationsInput']
+    connect: List['ChatMessageWhereUniqueInput']
+    connect_or_create: List['ChatMessageConnectOrCreateWithoutRelationsInput']
+    set: List['ChatMessageWhereUniqueInput']
+    disconnect: List['ChatMessageWhereUniqueInput']
+    delete: List['ChatMessageWhereUniqueInput']
+
+    # TODO
+    # update: List['ChatMessageUpdateWithWhereUniqueWithoutRelationsInput']
+    # updateMany: List['ChatMessageUpdateManyWithWhereUniqueWithoutRelationsInput']
+    # deleteMany: List['ChatMessageScalarWhereInput']
+    # upsert: List['ChatMessageUpserteWithWhereUniqueWithoutRelationsInput']
+
+
+class ChatMessageUpdateOneWithoutRelationsInput(TypedDict, total=False):
+    create: 'ChatMessageCreateWithoutRelationsInput'
+    connect: 'ChatMessageWhereUniqueInput'
+    connect_or_create: 'ChatMessageConnectOrCreateWithoutRelationsInput'
+    disconnect: bool
+    delete: bool
+
+    # TODO
+    # update: 'ChatMessageUpdateInput'
+    # upsert: 'ChatMessageUpsertWithoutRelationsInput'
+
+
+class ChatMessageUpsertInput(TypedDict):
+    create: 'ChatMessageCreateInput'
+    update: 'ChatMessageUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
+
+
+_ChatMessage_id_OrderByInput = TypedDict(
+    '_ChatMessage_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatMessage_sessionId_OrderByInput = TypedDict(
+    '_ChatMessage_sessionId_OrderByInput',
+    {
+        'sessionId': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatMessage_role_OrderByInput = TypedDict(
+    '_ChatMessage_role_OrderByInput',
+    {
+        'role': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatMessage_content_OrderByInput = TypedDict(
+    '_ChatMessage_content_OrderByInput',
+    {
+        'content': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatMessage_createdAt_OrderByInput = TypedDict(
+    '_ChatMessage_createdAt_OrderByInput',
+    {
+        'createdAt': 'SortOrder',
+    },
+    total=True
+)
+
+_ChatMessage_simulationId_OrderByInput = TypedDict(
+    '_ChatMessage_simulationId_OrderByInput',
+    {
+        'simulationId': 'SortOrder',
+    },
+    total=True
+)
+
+ChatMessageOrderByInput = Union[
+    '_ChatMessage_id_OrderByInput',
+    '_ChatMessage_sessionId_OrderByInput',
+    '_ChatMessage_role_OrderByInput',
+    '_ChatMessage_content_OrderByInput',
+    '_ChatMessage_createdAt_OrderByInput',
+    '_ChatMessage_simulationId_OrderByInput',
+]
+
+
+
+# recursive ChatMessage types
+# TODO: cleanup these types
+
+
+# Dict[str, Any] is a mypy limitation
+# see https://github.com/RobertCraigie/prisma-client-py/issues/45
+# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
+
+ChatMessageRelationFilter = TypedDict(
+    'ChatMessageRelationFilter',
+    {
+        'is': 'Dict[str, Any]',
+        'is_not': 'Dict[str, Any]',
+    },
+    total=False,
+)
+
+
+class ChatMessageListRelationFilter(TypedDict, total=False):
+    some: 'Dict[str, Any]'
+    none: 'Dict[str, Any]'
+    every: 'Dict[str, Any]'
+
+
+class ChatMessageInclude(TypedDict, total=False):
+    """ChatMessage relational arguments"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessage']
+
+
+    
+
+class MachineIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatMessageRecursive1']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatMessageRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatMessageRecursive1']
+
+
+class MachineIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatMessageRecursive2']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatMessageRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatMessageRecursive2']
+
+
+class MachineIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatMessageRecursive3']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatMessageRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatMessageRecursive3']
+
+
+class MachineIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromChatMessageRecursive4']
+    alerts: Union[bool, 'FindManyAlertArgsFromChatMessageRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromChatMessageRecursive4']
+
+
+class MachineIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class MachineArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'MachineIncludeFromMachineRecursive1'
+
+
+class MachineArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'MachineIncludeFromMachineRecursive2'
+
+
+class MachineArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'MachineIncludeFromMachineRecursive3'
+
+
+class MachineArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'MachineIncludeFromMachineRecursive4'
+
+
+class MachineArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManyMachineArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive1'
+
+
+class FindManyMachineArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive2'
+
+
+class FindManyMachineArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive3'
+
+
+class FindManyMachineArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive4'
+
+
+class FindManyMachineArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    
+    
+
+class SensorReadingIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive1']
+
+
+class SensorReadingIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive2']
+
+
+class SensorReadingIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive3']
+
+
+class SensorReadingIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive4']
+
+
+class SensorReadingIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class SensorReadingArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive1'
+
+
+class SensorReadingArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive2'
+
+
+class SensorReadingArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive3'
+
+
+class SensorReadingArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive4'
+
+
+class SensorReadingArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManySensorReadingArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive1'
+
+
+class FindManySensorReadingArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive2'
+
+
+class FindManySensorReadingArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive3'
+
+
+class FindManySensorReadingArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive4'
+
+
+class FindManySensorReadingArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    
+    
+
+class FailureFingerprintIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+
+class FailureFingerprintIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+
+class FailureFingerprintIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+
+class FailureFingerprintIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+
+class FailureFingerprintIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class FailureFingerprintArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive1'
+
+
+class FailureFingerprintArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive2'
+
+
+class FailureFingerprintArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive3'
+
+
+class FailureFingerprintArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive4'
+
+
+class FailureFingerprintArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManyFailureFingerprintArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive1'
+
+
+class FindManyFailureFingerprintArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive2'
+
+
+class FindManyFailureFingerprintArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive3'
+
+
+class FindManyFailureFingerprintArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive4'
+
+
+class FindManyFailureFingerprintArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    
+    
+
+class AlertIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive1']
+
+
+class AlertIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive2']
+
+
+class AlertIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive3']
+
+
+class AlertIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive4']
+
+
+class AlertIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class AlertArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'AlertIncludeFromAlertRecursive1'
+
+
+class AlertArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'AlertIncludeFromAlertRecursive2'
+
+
+class AlertArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'AlertIncludeFromAlertRecursive3'
+
+
+class AlertArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'AlertIncludeFromAlertRecursive4'
+
+
+class AlertArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManyAlertArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive1'
+
+
+class FindManyAlertArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive2'
+
+
+class FindManyAlertArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive3'
+
+
+class FindManyAlertArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive4'
+
+
+class FindManyAlertArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    
+    
+
+class ChatSessionIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatMessageRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatMessageRecursive1']
+
+
+class ChatSessionIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatMessageRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatMessageRecursive2']
+
+
+class ChatSessionIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatMessageRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatMessageRecursive3']
+
+
+class ChatSessionIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    machine: Union[bool, 'MachineArgsFromChatMessageRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromChatMessageRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromChatMessageRecursive4']
+
+
+class ChatSessionIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class ChatSessionArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManyChatSessionArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive1']
+
+
+class ChatMessageIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive2']
+
+
+class ChatMessageIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive3']
+
+
+class ChatMessageIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive4']
+
+
+class ChatMessageIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class ChatMessageArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManyChatMessageArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromChatMessage(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive1']
+
+
+class WhatIfSimulationIncludeFromChatMessageRecursive1(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive2']
+
+
+class WhatIfSimulationIncludeFromChatMessageRecursive2(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive3']
+
+
+class WhatIfSimulationIncludeFromChatMessageRecursive3(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+    session: Union[bool, 'ChatSessionArgsFromChatMessageRecursive4']
+
+
+class WhatIfSimulationIncludeFromChatMessageRecursive4(TypedDict, total=False):
+    """Relational arguments for ChatMessage"""
+
+    
+
+class WhatIfSimulationArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromChatMessage(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromChatMessageRecursive1(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromChatMessageRecursive2(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromChatMessageRecursive3(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromChatMessageRecursive4(TypedDict, total=False):
+    """Arguments for ChatMessage"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    
+
+
+FindManyChatMessageArgs = FindManyChatMessageArgsFromChatMessage
+FindFirstChatMessageArgs = FindManyChatMessageArgsFromChatMessage
+
+
+    
+
+class ChatMessageWhereInput(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    sessionId: Union[_str, 'types.StringFilter']
+    role: Union[_str, 'types.StringFilter']
+    content: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    simulationId: Union[None, _str, 'types.StringFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatMessageWhereInputRecursive1', List['ChatMessageWhereInputRecursive1']]
+    # but this causes mypy to hang :/
+    AND: List['ChatMessageWhereInputRecursive1']
+    OR: List['ChatMessageWhereInputRecursive1']
+    NOT: List['ChatMessageWhereInputRecursive1']
+
+
+class ChatMessageWhereInputRecursive1(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    sessionId: Union[_str, 'types.StringFilter']
+    role: Union[_str, 'types.StringFilter']
+    content: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    simulationId: Union[None, _str, 'types.StringFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatMessageWhereInputRecursive2', List['ChatMessageWhereInputRecursive2']]
+    # but this causes mypy to hang :/
+    AND: List['ChatMessageWhereInputRecursive2']
+    OR: List['ChatMessageWhereInputRecursive2']
+    NOT: List['ChatMessageWhereInputRecursive2']
+
+
+class ChatMessageWhereInputRecursive2(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    sessionId: Union[_str, 'types.StringFilter']
+    role: Union[_str, 'types.StringFilter']
+    content: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    simulationId: Union[None, _str, 'types.StringFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatMessageWhereInputRecursive3', List['ChatMessageWhereInputRecursive3']]
+    # but this causes mypy to hang :/
+    AND: List['ChatMessageWhereInputRecursive3']
+    OR: List['ChatMessageWhereInputRecursive3']
+    NOT: List['ChatMessageWhereInputRecursive3']
+
+
+class ChatMessageWhereInputRecursive3(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    sessionId: Union[_str, 'types.StringFilter']
+    role: Union[_str, 'types.StringFilter']
+    content: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    simulationId: Union[None, _str, 'types.StringFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['ChatMessageWhereInputRecursive4', List['ChatMessageWhereInputRecursive4']]
+    # but this causes mypy to hang :/
+    AND: List['ChatMessageWhereInputRecursive4']
+    OR: List['ChatMessageWhereInputRecursive4']
+    NOT: List['ChatMessageWhereInputRecursive4']
+
+
+class ChatMessageWhereInputRecursive4(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    sessionId: Union[_str, 'types.StringFilter']
+    role: Union[_str, 'types.StringFilter']
+    content: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    simulationId: Union[None, _str, 'types.StringFilter']
+    session: 'ChatSessionRelationFilter'
+
+
+
+# aggregate ChatMessage types
+
+
+    
+
+class ChatMessageScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    role: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    simulationId: Union[_str, 'types.StringWithAggregatesFilter']
+
+    AND: List['ChatMessageScalarWhereWithAggregatesInputRecursive1']
+    OR: List['ChatMessageScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['ChatMessageScalarWhereWithAggregatesInputRecursive1']
+
+
+class ChatMessageScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    role: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    simulationId: Union[_str, 'types.StringWithAggregatesFilter']
+
+    AND: List['ChatMessageScalarWhereWithAggregatesInputRecursive2']
+    OR: List['ChatMessageScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['ChatMessageScalarWhereWithAggregatesInputRecursive2']
+
+
+class ChatMessageScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    role: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    simulationId: Union[_str, 'types.StringWithAggregatesFilter']
+
+    AND: List['ChatMessageScalarWhereWithAggregatesInputRecursive3']
+    OR: List['ChatMessageScalarWhereWithAggregatesInputRecursive3']
+    NOT: List['ChatMessageScalarWhereWithAggregatesInputRecursive3']
+
+
+class ChatMessageScalarWhereWithAggregatesInputRecursive3(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    role: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    simulationId: Union[_str, 'types.StringWithAggregatesFilter']
+
+    AND: List['ChatMessageScalarWhereWithAggregatesInputRecursive4']
+    OR: List['ChatMessageScalarWhereWithAggregatesInputRecursive4']
+    NOT: List['ChatMessageScalarWhereWithAggregatesInputRecursive4']
+
+
+class ChatMessageScalarWhereWithAggregatesInputRecursive4(TypedDict, total=False):
+    """ChatMessage arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    role: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    simulationId: Union[_str, 'types.StringWithAggregatesFilter']
+
+
+
+class ChatMessageGroupByOutput(TypedDict, total=False):
+    id: _str
+    sessionId: _str
+    role: _str
+    content: _str
+    createdAt: datetime.datetime
+    simulationId: _str
+    _sum: 'ChatMessageSumAggregateOutput'
+    _avg: 'ChatMessageAvgAggregateOutput'
+    _min: 'ChatMessageMinAggregateOutput'
+    _max: 'ChatMessageMaxAggregateOutput'
+    _count: 'ChatMessageCountAggregateOutput'
+
+
+class ChatMessageAvgAggregateOutput(TypedDict, total=False):
+    """ChatMessage output for aggregating averages"""
+
+
+class ChatMessageSumAggregateOutput(TypedDict, total=False):
+    """ChatMessage output for aggregating sums"""
+
+
+class ChatMessageScalarAggregateOutput(TypedDict, total=False):
+    """ChatMessage output including scalar fields"""
+    id: _str
+    sessionId: _str
+    role: _str
+    content: _str
+    createdAt: datetime.datetime
+    simulationId: _str
+
+
+ChatMessageMinAggregateOutput = ChatMessageScalarAggregateOutput
+ChatMessageMaxAggregateOutput = ChatMessageScalarAggregateOutput
+
+
+class ChatMessageMaxAggregateInput(TypedDict, total=False):
+    """ChatMessage input for aggregating by max"""
+    id: bool
+    sessionId: bool
+    role: bool
+    content: bool
+    createdAt: bool
+    simulationId: bool
+
+
+class ChatMessageMinAggregateInput(TypedDict, total=False):
+    """ChatMessage input for aggregating by min"""
+    id: bool
+    sessionId: bool
+    role: bool
+    content: bool
+    createdAt: bool
+    simulationId: bool
+
+
+class ChatMessageNumberAggregateInput(TypedDict, total=False):
+    """ChatMessage input for aggregating numbers"""
+
+
+ChatMessageAvgAggregateInput = ChatMessageNumberAggregateInput
+ChatMessageSumAggregateInput = ChatMessageNumberAggregateInput
+
+
+ChatMessageCountAggregateInput = TypedDict(
+    'ChatMessageCountAggregateInput',
+    {
+        'id': bool,
+        'sessionId': bool,
+        'role': bool,
+        'content': bool,
+        'createdAt': bool,
+        'simulationId': bool,
+        '_all': bool,
+    },
+    total=False,
+)
+
+ChatMessageCountAggregateOutput = TypedDict(
+    'ChatMessageCountAggregateOutput',
+    {
+        'id': int,
+        'sessionId': int,
+        'role': int,
+        'content': int,
+        'createdAt': int,
+        'simulationId': int,
+        '_all': int,
+    },
+    total=False,
+)
+
+
+ChatMessageKeys = Literal[
+    'id',
+    'sessionId',
+    'role',
+    'content',
+    'createdAt',
+    'simulationId',
+    'session',
+]
+ChatMessageScalarFieldKeys = Literal[
+    'id',
+    'sessionId',
+    'role',
+    'content',
+    'createdAt',
+    'simulationId',
+]
+ChatMessageScalarFieldKeysT = TypeVar('ChatMessageScalarFieldKeysT', bound=ChatMessageScalarFieldKeys)
+
+ChatMessageRelationalFieldKeys = Literal[
+        'session',
+    ]
+
+# WhatIfSimulation types
+
+class WhatIfSimulationOptionalCreateInput(TypedDict, total=False):
+    """Optional arguments to the WhatIfSimulation create method"""
+    id: _str
+    sessionId: Optional[_str]
+    createdAt: datetime.datetime
+    session: 'ChatSessionCreateNestedWithoutRelationsInput'
+
+
+class WhatIfSimulationCreateInput(WhatIfSimulationOptionalCreateInput):
+    """Required arguments to the WhatIfSimulation create method"""
+    machineId: _str
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+
+
+# TODO: remove this in favour of without explicit relations
+# e.g. PostCreateWithoutAuthorInput
+
+class WhatIfSimulationOptionalCreateWithoutRelationsInput(TypedDict, total=False):
+    """Optional arguments to the WhatIfSimulation create method, without relations"""
+    id: _str
+    sessionId: Optional[_str]
+    createdAt: datetime.datetime
+
+
+class WhatIfSimulationCreateWithoutRelationsInput(WhatIfSimulationOptionalCreateWithoutRelationsInput):
+    """Required arguments to the WhatIfSimulation create method, without relations"""
+    machineId: _str
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+
+class WhatIfSimulationConnectOrCreateWithoutRelationsInput(TypedDict):
+    create: 'WhatIfSimulationCreateWithoutRelationsInput'
+    where: 'WhatIfSimulationWhereUniqueInput'
+
+class WhatIfSimulationCreateNestedWithoutRelationsInput(TypedDict, total=False):
+    create: 'WhatIfSimulationCreateWithoutRelationsInput'
+    connect: 'WhatIfSimulationWhereUniqueInput'
+    connect_or_create: 'WhatIfSimulationConnectOrCreateWithoutRelationsInput'
+
+
+class WhatIfSimulationCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Union['WhatIfSimulationCreateWithoutRelationsInput', List['WhatIfSimulationCreateWithoutRelationsInput']]
+    connect: Union['WhatIfSimulationWhereUniqueInput', List['WhatIfSimulationWhereUniqueInput']]
+    connect_or_create: Union['WhatIfSimulationConnectOrCreateWithoutRelationsInput', List['WhatIfSimulationConnectOrCreateWithoutRelationsInput']]
+
+_WhatIfSimulationWhereUnique_id_Input = TypedDict(
+    '_WhatIfSimulationWhereUnique_id_Input',
+    {
+        'id': '_str',
+    },
+    total=True
+)
+
+WhatIfSimulationWhereUniqueInput = _WhatIfSimulationWhereUnique_id_Input
+
+
+class WhatIfSimulationUpdateInput(TypedDict, total=False):
+    """Optional arguments for updating a record"""
+    id: _str
+    machineId: _str
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+    createdAt: datetime.datetime
+    session: 'ChatSessionUpdateOneWithoutRelationsInput'
+
+
+class WhatIfSimulationUpdateManyMutationInput(TypedDict, total=False):
+    """Arguments for updating many records"""
+    id: _str
+    machineId: _str
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+    createdAt: datetime.datetime
+
+
+class WhatIfSimulationUpdateManyWithoutRelationsInput(TypedDict, total=False):
+    create: List['WhatIfSimulationCreateWithoutRelationsInput']
+    connect: List['WhatIfSimulationWhereUniqueInput']
+    connect_or_create: List['WhatIfSimulationConnectOrCreateWithoutRelationsInput']
+    set: List['WhatIfSimulationWhereUniqueInput']
+    disconnect: List['WhatIfSimulationWhereUniqueInput']
+    delete: List['WhatIfSimulationWhereUniqueInput']
+
+    # TODO
+    # update: List['WhatIfSimulationUpdateWithWhereUniqueWithoutRelationsInput']
+    # updateMany: List['WhatIfSimulationUpdateManyWithWhereUniqueWithoutRelationsInput']
+    # deleteMany: List['WhatIfSimulationScalarWhereInput']
+    # upsert: List['WhatIfSimulationUpserteWithWhereUniqueWithoutRelationsInput']
+
+
+class WhatIfSimulationUpdateOneWithoutRelationsInput(TypedDict, total=False):
+    create: 'WhatIfSimulationCreateWithoutRelationsInput'
+    connect: 'WhatIfSimulationWhereUniqueInput'
+    connect_or_create: 'WhatIfSimulationConnectOrCreateWithoutRelationsInput'
+    disconnect: bool
+    delete: bool
+
+    # TODO
+    # update: 'WhatIfSimulationUpdateInput'
+    # upsert: 'WhatIfSimulationUpsertWithoutRelationsInput'
+
+
+class WhatIfSimulationUpsertInput(TypedDict):
+    create: 'WhatIfSimulationCreateInput'
+    update: 'WhatIfSimulationUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
+
+
+_WhatIfSimulation_id_OrderByInput = TypedDict(
+    '_WhatIfSimulation_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_machineId_OrderByInput = TypedDict(
+    '_WhatIfSimulation_machineId_OrderByInput',
+    {
+        'machineId': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_sessionId_OrderByInput = TypedDict(
+    '_WhatIfSimulation_sessionId_OrderByInput',
+    {
+        'sessionId': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_userQuestion_OrderByInput = TypedDict(
+    '_WhatIfSimulation_userQuestion_OrderByInput',
+    {
+        'userQuestion': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_scenarioJson_OrderByInput = TypedDict(
+    '_WhatIfSimulation_scenarioJson_OrderByInput',
+    {
+        'scenarioJson': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_resultJson_OrderByInput = TypedDict(
+    '_WhatIfSimulation_resultJson_OrderByInput',
+    {
+        'resultJson': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_riskLevel_OrderByInput = TypedDict(
+    '_WhatIfSimulation_riskLevel_OrderByInput',
+    {
+        'riskLevel': 'SortOrder',
+    },
+    total=True
+)
+
+_WhatIfSimulation_createdAt_OrderByInput = TypedDict(
+    '_WhatIfSimulation_createdAt_OrderByInput',
+    {
+        'createdAt': 'SortOrder',
+    },
+    total=True
+)
+
+WhatIfSimulationOrderByInput = Union[
+    '_WhatIfSimulation_id_OrderByInput',
+    '_WhatIfSimulation_machineId_OrderByInput',
+    '_WhatIfSimulation_sessionId_OrderByInput',
+    '_WhatIfSimulation_userQuestion_OrderByInput',
+    '_WhatIfSimulation_scenarioJson_OrderByInput',
+    '_WhatIfSimulation_resultJson_OrderByInput',
+    '_WhatIfSimulation_riskLevel_OrderByInput',
+    '_WhatIfSimulation_createdAt_OrderByInput',
+]
+
+
+
+# recursive WhatIfSimulation types
+# TODO: cleanup these types
+
+
+# Dict[str, Any] is a mypy limitation
+# see https://github.com/RobertCraigie/prisma-client-py/issues/45
+# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
+
+WhatIfSimulationRelationFilter = TypedDict(
+    'WhatIfSimulationRelationFilter',
+    {
+        'is': 'Dict[str, Any]',
+        'is_not': 'Dict[str, Any]',
+    },
+    total=False,
+)
+
+
+class WhatIfSimulationListRelationFilter(TypedDict, total=False):
+    some: 'Dict[str, Any]'
+    none: 'Dict[str, Any]'
+    every: 'Dict[str, Any]'
+
+
+class WhatIfSimulationInclude(TypedDict, total=False):
+    """WhatIfSimulation relational arguments"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulation']
+
+
+    
+
+class MachineIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromWhatIfSimulationRecursive1']
+    alerts: Union[bool, 'FindManyAlertArgsFromWhatIfSimulationRecursive1']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromWhatIfSimulationRecursive1']
+
+
+class MachineIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromWhatIfSimulationRecursive2']
+    alerts: Union[bool, 'FindManyAlertArgsFromWhatIfSimulationRecursive2']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromWhatIfSimulationRecursive2']
+
+
+class MachineIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromWhatIfSimulationRecursive3']
+    alerts: Union[bool, 'FindManyAlertArgsFromWhatIfSimulationRecursive3']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromWhatIfSimulationRecursive3']
+
+
+class MachineIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    sensorReadings: Union[bool, 'FindManySensorReadingArgsFromWhatIfSimulationRecursive4']
+    alerts: Union[bool, 'FindManyAlertArgsFromWhatIfSimulationRecursive4']
+    chatSessions: Union[bool, 'FindManyChatSessionArgsFromWhatIfSimulationRecursive4']
+
+
+class MachineIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class MachineArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'MachineIncludeFromMachineRecursive1'
+
+
+class MachineArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'MachineIncludeFromMachineRecursive2'
+
+
+class MachineArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'MachineIncludeFromMachineRecursive3'
+
+
+class MachineArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'MachineIncludeFromMachineRecursive4'
+
+
+class MachineArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManyMachineArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive1'
+
+
+class FindManyMachineArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive2'
+
+
+class FindManyMachineArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive3'
+
+
+class FindManyMachineArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    include: 'MachineIncludeFromMachineRecursive4'
+
+
+class FindManyMachineArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['MachineOrderByInput', List['MachineOrderByInput']]
+    where: 'MachineWhereInput'
+    cursor: 'MachineWhereUniqueInput'
+    distinct: List['MachineScalarFieldKeys']
+    
+    
+
+class SensorReadingIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive1']
+
+
+class SensorReadingIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive2']
+
+
+class SensorReadingIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive3']
+
+
+class SensorReadingIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive4']
+
+
+class SensorReadingIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class SensorReadingArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive1'
+
+
+class SensorReadingArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive2'
+
+
+class SensorReadingArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive3'
+
+
+class SensorReadingArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'SensorReadingIncludeFromSensorReadingRecursive4'
+
+
+class SensorReadingArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManySensorReadingArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive1'
+
+
+class FindManySensorReadingArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive2'
+
+
+class FindManySensorReadingArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive3'
+
+
+class FindManySensorReadingArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    include: 'SensorReadingIncludeFromSensorReadingRecursive4'
+
+
+class FindManySensorReadingArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['SensorReadingOrderByInput', List['SensorReadingOrderByInput']]
+    where: 'SensorReadingWhereInput'
+    cursor: 'SensorReadingWhereUniqueInput'
+    distinct: List['SensorReadingScalarFieldKeys']
+    
+    
+
+class FailureFingerprintIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+
+class FailureFingerprintIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+
+class FailureFingerprintIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+
+class FailureFingerprintIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+
+class FailureFingerprintIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class FailureFingerprintArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive1'
+
+
+class FailureFingerprintArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive2'
+
+
+class FailureFingerprintArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive3'
+
+
+class FailureFingerprintArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive4'
+
+
+class FailureFingerprintArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManyFailureFingerprintArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive1'
+
+
+class FindManyFailureFingerprintArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive2'
+
+
+class FindManyFailureFingerprintArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive3'
+
+
+class FindManyFailureFingerprintArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    include: 'FailureFingerprintIncludeFromFailureFingerprintRecursive4'
+
+
+class FindManyFailureFingerprintArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['FailureFingerprintOrderByInput', List['FailureFingerprintOrderByInput']]
+    where: 'FailureFingerprintWhereInput'
+    cursor: 'FailureFingerprintWhereUniqueInput'
+    distinct: List['FailureFingerprintScalarFieldKeys']
+    
+    
+
+class AlertIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive1']
+
+
+class AlertIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive2']
+
+
+class AlertIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive3']
+
+
+class AlertIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive4']
+
+
+class AlertIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class AlertArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'AlertIncludeFromAlertRecursive1'
+
+
+class AlertArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'AlertIncludeFromAlertRecursive2'
+
+
+class AlertArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'AlertIncludeFromAlertRecursive3'
+
+
+class AlertArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'AlertIncludeFromAlertRecursive4'
+
+
+class AlertArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManyAlertArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive1'
+
+
+class FindManyAlertArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive2'
+
+
+class FindManyAlertArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive3'
+
+
+class FindManyAlertArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    include: 'AlertIncludeFromAlertRecursive4'
+
+
+class FindManyAlertArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['AlertOrderByInput', List['AlertOrderByInput']]
+    where: 'AlertWhereInput'
+    cursor: 'AlertWhereUniqueInput'
+    distinct: List['AlertScalarFieldKeys']
+    
+    
+
+class ChatSessionIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive1']
+    messages: Union[bool, 'FindManyChatMessageArgsFromWhatIfSimulationRecursive1']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive1']
+
+
+class ChatSessionIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive2']
+    messages: Union[bool, 'FindManyChatMessageArgsFromWhatIfSimulationRecursive2']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive2']
+
+
+class ChatSessionIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive3']
+    messages: Union[bool, 'FindManyChatMessageArgsFromWhatIfSimulationRecursive3']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive3']
+
+
+class ChatSessionIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    machine: Union[bool, 'MachineArgsFromWhatIfSimulationRecursive4']
+    messages: Union[bool, 'FindManyChatMessageArgsFromWhatIfSimulationRecursive4']
+    simulations: Union[bool, 'FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive4']
+
+
+class ChatSessionIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class ChatSessionArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class ChatSessionArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class ChatSessionArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class ChatSessionArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class ChatSessionArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManyChatSessionArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive1'
+
+
+class FindManyChatSessionArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive2'
+
+
+class FindManyChatSessionArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive3'
+
+
+class FindManyChatSessionArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    include: 'ChatSessionIncludeFromChatSessionRecursive4'
+
+
+class FindManyChatSessionArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatSessionOrderByInput', List['ChatSessionOrderByInput']]
+    where: 'ChatSessionWhereInput'
+    cursor: 'ChatSessionWhereUniqueInput'
+    distinct: List['ChatSessionScalarFieldKeys']
+    
+    
+
+class ChatMessageIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive1']
+
+
+class ChatMessageIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive2']
+
+
+class ChatMessageIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive3']
+
+
+class ChatMessageIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive4']
+
+
+class ChatMessageIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class ChatMessageArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class ChatMessageArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class ChatMessageArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class ChatMessageArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class ChatMessageArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManyChatMessageArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive1'
+
+
+class FindManyChatMessageArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive2'
+
+
+class FindManyChatMessageArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive3'
+
+
+class FindManyChatMessageArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    include: 'ChatMessageIncludeFromChatMessageRecursive4'
+
+
+class FindManyChatMessageArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['ChatMessageOrderByInput', List['ChatMessageOrderByInput']]
+    where: 'ChatMessageWhereInput'
+    cursor: 'ChatMessageWhereUniqueInput'
+    distinct: List['ChatMessageScalarFieldKeys']
+    
+    
+
+class WhatIfSimulationIncludeFromWhatIfSimulation(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive1']
+
+
+class WhatIfSimulationIncludeFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive2']
+
+
+class WhatIfSimulationIncludeFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive3']
+
+
+class WhatIfSimulationIncludeFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+    session: Union[bool, 'ChatSessionArgsFromWhatIfSimulationRecursive4']
+
+
+class WhatIfSimulationIncludeFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Relational arguments for WhatIfSimulation"""
+
+    
+
+class WhatIfSimulationArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class WhatIfSimulationArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class WhatIfSimulationArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class WhatIfSimulationArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class WhatIfSimulationArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    
+    
+
+class FindManyWhatIfSimulationArgsFromWhatIfSimulation(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive1'
+
+
+class FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive1(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive2'
+
+
+class FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive2(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive3'
+
+
+class FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive3(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    include: 'WhatIfSimulationIncludeFromWhatIfSimulationRecursive4'
+
+
+class FindManyWhatIfSimulationArgsFromWhatIfSimulationRecursive4(TypedDict, total=False):
+    """Arguments for WhatIfSimulation"""
+    take: int
+    skip: int
+    order_by: Union['WhatIfSimulationOrderByInput', List['WhatIfSimulationOrderByInput']]
+    where: 'WhatIfSimulationWhereInput'
+    cursor: 'WhatIfSimulationWhereUniqueInput'
+    distinct: List['WhatIfSimulationScalarFieldKeys']
+    
+
+
+FindManyWhatIfSimulationArgs = FindManyWhatIfSimulationArgsFromWhatIfSimulation
+FindFirstWhatIfSimulationArgs = FindManyWhatIfSimulationArgsFromWhatIfSimulation
+
+
+    
+
+class WhatIfSimulationWhereInput(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    sessionId: Union[None, _str, 'types.StringFilter']
+    userQuestion: Union[_str, 'types.StringFilter']
+    scenarioJson: Union[_str, 'types.StringFilter']
+    resultJson: Union[_str, 'types.StringFilter']
+    riskLevel: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['WhatIfSimulationWhereInputRecursive1', List['WhatIfSimulationWhereInputRecursive1']]
+    # but this causes mypy to hang :/
+    AND: List['WhatIfSimulationWhereInputRecursive1']
+    OR: List['WhatIfSimulationWhereInputRecursive1']
+    NOT: List['WhatIfSimulationWhereInputRecursive1']
+
+
+class WhatIfSimulationWhereInputRecursive1(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    sessionId: Union[None, _str, 'types.StringFilter']
+    userQuestion: Union[_str, 'types.StringFilter']
+    scenarioJson: Union[_str, 'types.StringFilter']
+    resultJson: Union[_str, 'types.StringFilter']
+    riskLevel: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['WhatIfSimulationWhereInputRecursive2', List['WhatIfSimulationWhereInputRecursive2']]
+    # but this causes mypy to hang :/
+    AND: List['WhatIfSimulationWhereInputRecursive2']
+    OR: List['WhatIfSimulationWhereInputRecursive2']
+    NOT: List['WhatIfSimulationWhereInputRecursive2']
+
+
+class WhatIfSimulationWhereInputRecursive2(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    sessionId: Union[None, _str, 'types.StringFilter']
+    userQuestion: Union[_str, 'types.StringFilter']
+    scenarioJson: Union[_str, 'types.StringFilter']
+    resultJson: Union[_str, 'types.StringFilter']
+    riskLevel: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['WhatIfSimulationWhereInputRecursive3', List['WhatIfSimulationWhereInputRecursive3']]
+    # but this causes mypy to hang :/
+    AND: List['WhatIfSimulationWhereInputRecursive3']
+    OR: List['WhatIfSimulationWhereInputRecursive3']
+    NOT: List['WhatIfSimulationWhereInputRecursive3']
+
+
+class WhatIfSimulationWhereInputRecursive3(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    sessionId: Union[None, _str, 'types.StringFilter']
+    userQuestion: Union[_str, 'types.StringFilter']
+    scenarioJson: Union[_str, 'types.StringFilter']
+    resultJson: Union[_str, 'types.StringFilter']
+    riskLevel: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    session: 'ChatSessionRelationFilter'
+
+    # should be noted that AND and NOT should be Union['WhatIfSimulationWhereInputRecursive4', List['WhatIfSimulationWhereInputRecursive4']]
+    # but this causes mypy to hang :/
+    AND: List['WhatIfSimulationWhereInputRecursive4']
+    OR: List['WhatIfSimulationWhereInputRecursive4']
+    NOT: List['WhatIfSimulationWhereInputRecursive4']
+
+
+class WhatIfSimulationWhereInputRecursive4(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringFilter']
+    machineId: Union[_str, 'types.StringFilter']
+    sessionId: Union[None, _str, 'types.StringFilter']
+    userQuestion: Union[_str, 'types.StringFilter']
+    scenarioJson: Union[_str, 'types.StringFilter']
+    resultJson: Union[_str, 'types.StringFilter']
+    riskLevel: Union[_str, 'types.StringFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeFilter']
+    session: 'ChatSessionRelationFilter'
+
+
+
+# aggregate WhatIfSimulation types
+
+
+    
+
+class WhatIfSimulationScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    userQuestion: Union[_str, 'types.StringWithAggregatesFilter']
+    scenarioJson: Union[_str, 'types.StringWithAggregatesFilter']
+    resultJson: Union[_str, 'types.StringWithAggregatesFilter']
+    riskLevel: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive1']
+    OR: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive1']
+
+
+class WhatIfSimulationScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    userQuestion: Union[_str, 'types.StringWithAggregatesFilter']
+    scenarioJson: Union[_str, 'types.StringWithAggregatesFilter']
+    resultJson: Union[_str, 'types.StringWithAggregatesFilter']
+    riskLevel: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive2']
+    OR: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive2']
+
+
+class WhatIfSimulationScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    userQuestion: Union[_str, 'types.StringWithAggregatesFilter']
+    scenarioJson: Union[_str, 'types.StringWithAggregatesFilter']
+    resultJson: Union[_str, 'types.StringWithAggregatesFilter']
+    riskLevel: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive3']
+    OR: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive3']
+    NOT: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive3']
+
+
+class WhatIfSimulationScalarWhereWithAggregatesInputRecursive3(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    userQuestion: Union[_str, 'types.StringWithAggregatesFilter']
+    scenarioJson: Union[_str, 'types.StringWithAggregatesFilter']
+    resultJson: Union[_str, 'types.StringWithAggregatesFilter']
+    riskLevel: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive4']
+    OR: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive4']
+    NOT: List['WhatIfSimulationScalarWhereWithAggregatesInputRecursive4']
+
+
+class WhatIfSimulationScalarWhereWithAggregatesInputRecursive4(TypedDict, total=False):
+    """WhatIfSimulation arguments for searching"""
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    machineId: Union[_str, 'types.StringWithAggregatesFilter']
+    sessionId: Union[_str, 'types.StringWithAggregatesFilter']
+    userQuestion: Union[_str, 'types.StringWithAggregatesFilter']
+    scenarioJson: Union[_str, 'types.StringWithAggregatesFilter']
+    resultJson: Union[_str, 'types.StringWithAggregatesFilter']
+    riskLevel: Union[_str, 'types.StringWithAggregatesFilter']
+    createdAt: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+
+
+class WhatIfSimulationGroupByOutput(TypedDict, total=False):
+    id: _str
+    machineId: _str
+    sessionId: _str
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+    createdAt: datetime.datetime
+    _sum: 'WhatIfSimulationSumAggregateOutput'
+    _avg: 'WhatIfSimulationAvgAggregateOutput'
+    _min: 'WhatIfSimulationMinAggregateOutput'
+    _max: 'WhatIfSimulationMaxAggregateOutput'
+    _count: 'WhatIfSimulationCountAggregateOutput'
+
+
+class WhatIfSimulationAvgAggregateOutput(TypedDict, total=False):
+    """WhatIfSimulation output for aggregating averages"""
+
+
+class WhatIfSimulationSumAggregateOutput(TypedDict, total=False):
+    """WhatIfSimulation output for aggregating sums"""
+
+
+class WhatIfSimulationScalarAggregateOutput(TypedDict, total=False):
+    """WhatIfSimulation output including scalar fields"""
+    id: _str
+    machineId: _str
+    sessionId: _str
+    userQuestion: _str
+    scenarioJson: _str
+    resultJson: _str
+    riskLevel: _str
+    createdAt: datetime.datetime
+
+
+WhatIfSimulationMinAggregateOutput = WhatIfSimulationScalarAggregateOutput
+WhatIfSimulationMaxAggregateOutput = WhatIfSimulationScalarAggregateOutput
+
+
+class WhatIfSimulationMaxAggregateInput(TypedDict, total=False):
+    """WhatIfSimulation input for aggregating by max"""
+    id: bool
+    machineId: bool
+    sessionId: bool
+    userQuestion: bool
+    scenarioJson: bool
+    resultJson: bool
+    riskLevel: bool
+    createdAt: bool
+
+
+class WhatIfSimulationMinAggregateInput(TypedDict, total=False):
+    """WhatIfSimulation input for aggregating by min"""
+    id: bool
+    machineId: bool
+    sessionId: bool
+    userQuestion: bool
+    scenarioJson: bool
+    resultJson: bool
+    riskLevel: bool
+    createdAt: bool
+
+
+class WhatIfSimulationNumberAggregateInput(TypedDict, total=False):
+    """WhatIfSimulation input for aggregating numbers"""
+
+
+WhatIfSimulationAvgAggregateInput = WhatIfSimulationNumberAggregateInput
+WhatIfSimulationSumAggregateInput = WhatIfSimulationNumberAggregateInput
+
+
+WhatIfSimulationCountAggregateInput = TypedDict(
+    'WhatIfSimulationCountAggregateInput',
+    {
+        'id': bool,
+        'machineId': bool,
+        'sessionId': bool,
+        'userQuestion': bool,
+        'scenarioJson': bool,
+        'resultJson': bool,
+        'riskLevel': bool,
+        'createdAt': bool,
+        '_all': bool,
+    },
+    total=False,
+)
+
+WhatIfSimulationCountAggregateOutput = TypedDict(
+    'WhatIfSimulationCountAggregateOutput',
+    {
+        'id': int,
+        'machineId': int,
+        'sessionId': int,
+        'userQuestion': int,
+        'scenarioJson': int,
+        'resultJson': int,
+        'riskLevel': int,
+        'createdAt': int,
+        '_all': int,
+    },
+    total=False,
+)
+
+
+WhatIfSimulationKeys = Literal[
+    'id',
+    'machineId',
+    'sessionId',
+    'userQuestion',
+    'scenarioJson',
+    'resultJson',
+    'riskLevel',
+    'createdAt',
+    'session',
+]
+WhatIfSimulationScalarFieldKeys = Literal[
+    'id',
+    'machineId',
+    'sessionId',
+    'userQuestion',
+    'scenarioJson',
+    'resultJson',
+    'riskLevel',
+    'createdAt',
+]
+WhatIfSimulationScalarFieldKeysT = TypeVar('WhatIfSimulationScalarFieldKeysT', bound=WhatIfSimulationScalarFieldKeys)
+
+WhatIfSimulationRelationalFieldKeys = Literal[
+        'session',
     ]
 
 

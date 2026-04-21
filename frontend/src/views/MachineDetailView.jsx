@@ -12,7 +12,9 @@ import { useSensorFeed } from '../hooks/useSensorFeed'
 import { useMachines } from '../hooks/useMachines'
 import { useMachineHistory } from '../hooks/useMachineHistory'
 
-const TABS = ['Overview', 'Sensor History', 'Agent Trace', 'Maintenance Log', 'What-If Sim']
+import { ChatPanel } from '../components/chat/ChatPanel'
+
+const TABS = ['Overview', 'Sensor History', 'Agent Trace', 'Maintenance Log', 'What-If Sim', 'Ask AI']
 const SCADA_THRESHOLD = 100
 
 const MAINTENANCE_LOG = [
@@ -413,7 +415,7 @@ export function MachineDetailView() {
   const [activeTab, setActiveTab] = useState('Overview')
   const { machines, isLoading: machinesLoading } = useMachines()
   const { history } = useMachineHistory(machineId, 200)
-  const { alertData, stats, diagnosisRaw, chartData } = useSensorFeed(machineId)
+  const { alertData, stats, diagnosisRaw, chartData, isRunning, startFeed } = useSensorFeed(machineId)
 
   const machine = machines.find(m => m.id === machineId)
   if (machinesLoading) {
@@ -456,6 +458,14 @@ export function MachineDetailView() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {!isRunning && (
+            <button 
+              onClick={startFeed} 
+              style={{ background: 'var(--accent-info)', color: '#fff', border: 'none', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, cursor: 'pointer' }}
+            >
+              ▶ Start Feed
+            </button>
+          )}
           <HealthBar value={machine.health - (stats?.cusum_score > 10 ? 15 : 0)} />
           <StatusBadge status={stats?.drift_detected ? 'DRIFT' : (stats?.cusum_score > 4 ? 'WARN' : machine.status)} />
         </div>
@@ -481,9 +491,13 @@ export function MachineDetailView() {
               cursor: 'pointer',
               transition: 'all 0.15s',
               marginBottom: -2,
+              position: 'relative'
             }}
           >
             {tab}
+            {tab === 'Ask AI' && stats?.cusum_score > 4 && (
+              <span style={{position:'absolute', top: 6, right: 6, width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-info)'}} />
+            )}
           </button>
         ))}
       </div>
@@ -495,6 +509,7 @@ export function MachineDetailView() {
         {activeTab === 'Agent Trace'     && <AgentTraceTab alertData={alertData} stats={stats} diagnosisRaw={diagnosisRaw} />}
         {activeTab === 'Maintenance Log' && <MaintenanceLogTab />}
         {activeTab === 'What-If Sim'     && <WhatIfTab machine={machine} />}
+        {activeTab === 'Ask AI'          && <ChatPanel machineId={machineId} stats={stats} />}
       </div>
     </div>
   )

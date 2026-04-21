@@ -42,6 +42,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
 from prisma_client import Prisma
+from chat_orchestrator import run_chat_turn
 
 # Configure logging
 logging.basicConfig(
@@ -52,9 +53,10 @@ logger = logging.getLogger("driftveil")
 
 # ── Load environment variables ────────────────────────────────────────────────
 load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-if not OPENAI_API_KEY:
-    print("[WARNING] OPENAI_API_KEY not found in .env - AI agents will not work!")
+if not GEMINI_API_KEY:
+    print("[WARNING] GEMINI_API_KEY not found in .env - AI narrative will use offline demo mode.")
 
 # ── Config ────────────────────────────────────────────────────────────────────
 MCP_BASE_URL   = "http://127.0.0.1:8001"
@@ -144,6 +146,11 @@ class MachineAutoCreateRequest(BaseModel):
     location: Optional[str] = None
     scenario: str = "NORMAL"
     points: int = Field(default=200, ge=50, le=1000)
+
+
+class ChatMessageRequest(BaseModel):
+    machine_id: str
+    message: str
 
 
 def _generate_stream_rows(machine_type: str, scenario: str, points: int) -> list:
@@ -688,6 +695,79 @@ async def health(machine_id: str = "MCH-03"):
         "running": st["running"],
         "cursor":  st["cursor"],
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  CHAT ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/api/chat/sessions")
+async def create_chat_session(payload: dict):
+    machine_id = payload.get("machine_id")
+    session = await db.chatsession.create(data={"machineId": machine_id})
+    return {"session_id": session.id}
+
+@app.get("/api/chat/sessions/{session_id}/messages")
+async def get_chat_messages(session_id: str):
+    messages = await db.chatmessage.find_many(where={"sessionId": session_id}, order={"createdAt": "asc"})
+    return {"messages": [{"role": m.role, "content": m.content, "simulationId": m.simulationId} for m in messages]}
+
+@app.post("/api/chat/sessions/{session_id}/message")
+async def send_chat_message(session_id: str, req: ChatMessageRequest):
+    # 1. Save user message
+    await db.chatmessage.create(data={
+        "sessionId": session_id,
+        "role": "user",
+        "content": req.message
+    })
+    
+    # 2. Get local context
+    st = get_state(req.machine_id)
+    detection_stats = agent_detection(st["sent_rows"][-30:] if st["sent_rows"] else [])
+    
+    context = {
+        "moving_avg_temp": detection_stats.get("moving_avg_temp", 60.5),
+        "latest_vib": st["sent_rows"][-1]["vibration"] if st["sent_rows"] else 0.3,
+        "slope_temp": detection_stats.get("slope_temp", 0),
+        "slope_vib": detection_stats.get("slope_vib", 0),
+        "cusum_score": detection_stats.get("cusum_score", 0)
+    }
+
+    # 3. Orchestrate 
+    answers, sim_obj, recommendation = await run_chat_turn(session_id, req.message, context)
+    
+    # 4. Save simulation
+    sim_record = await db.whatifsimulation.create(data={
+        "machineId": req.machine_id,
+        "sessionId": session_id,
+        "userQuestion": req.message,
+        "scenarioJson": json.dumps({"intent": req.message}),
+        "resultJson": json.dumps(sim_obj),
+        "riskLevel": sim_obj.get("risk_level", "low")
+    })
+    
+    # 5. Save assistant reply
+    full_reply = answers
+    await db.chatmessage.create(data={
+        "sessionId": session_id,
+        "role": "assistant",
+        "content": full_reply,
+        "simulationId": sim_record.id
+    })
+
+    return {
+        "assistant_message": full_reply,
+        "simulation": sim_obj,
+        "recommendation": recommendation
+    }
+
+@app.post("/api/chat/simulate")
+async def simulate_direct(req: ChatMessageRequest):
+    st = get_state(req.machine_id)
+    detection_stats = agent_detection(st["sent_rows"][-30:] if st["sent_rows"] else [])
+    context = {"slope_temp": detection_stats.get("slope_temp", 0), "slope_vib": detection_stats.get("slope_vib", 0)}
+    answers, sim_obj, recommendation = await run_chat_turn("test", req.message, context)
+    return {"assistant_message": answers, "simulation": sim_obj, "recommendation": recommendation}
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────

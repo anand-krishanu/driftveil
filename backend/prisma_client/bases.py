@@ -114,3 +114,33 @@ class BaseAlert(_PrismaModel):
         return actions.AlertActions[_PrismaModelT](client or get_client(), cls)
 
 
+class BaseChatSession(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['ChatSession']] = 'ChatSession'  # pyright: ignore[reportIncompatibleVariableOverride]
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.ChatSessionActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.ChatSessionActions[_PrismaModelT](client or get_client(), cls)
+
+
+class BaseChatMessage(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['ChatMessage']] = 'ChatMessage'  # pyright: ignore[reportIncompatibleVariableOverride]
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.ChatMessageActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.ChatMessageActions[_PrismaModelT](client or get_client(), cls)
+
+
+class BaseWhatIfSimulation(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['WhatIfSimulation']] = 'WhatIfSimulation'  # pyright: ignore[reportIncompatibleVariableOverride]
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.WhatIfSimulationActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.WhatIfSimulationActions[_PrismaModelT](client or get_client(), cls)
+
+
