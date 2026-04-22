@@ -3,6 +3,7 @@ uvicorn[standard]
 pandas
 numpy
 openai
+google-genai
 httpx
 python-dotenv
 
