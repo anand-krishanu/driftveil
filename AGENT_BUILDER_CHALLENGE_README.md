@@ -13,6 +13,107 @@ You already have:
 
 Now the goal is to build a strong visual AI workflow (in Superset Agent Builder) that can handle demo scenarios confidently.
 
+## Project Context (Give This To External LLMs)
+
+DriftVeil is an industrial reliability system for early drift detection and what-if decision support.
+
+Core system behavior:
+
+1. Machine telemetry is streamed (temperature, vibration, optional rpm).
+2. Drift detection runs using moving window slope + CUSUM logic.
+3. When drift is detected, root-cause reasoning uses a fingerprint library.
+4. AI converts technical diagnosis into operator-safe action steps.
+5. Users can ask what-if questions (for example, reduce load by 15 percent for 8 hours) and receive simulation-backed recommendations.
+
+Current architecture at a glance:
+
+1. Frontend: React dashboard for operators and engineers.
+2. Backend: FastAPI orchestration, websocket feed, chat and simulation endpoints.
+3. MCP server: tool-style read layer for machine/telemetry/fingerprint data.
+4. DB: SQLite + Prisma models for machines, sensor readings, fingerprints, chat, and what-if simulations.
+
+Operational constraints for hackathon round:
+
+1. Workflow must be explainable to judges in less than 2 minutes.
+2. Flow must be robust under typo-heavy user prompts.
+3. Output must be strict JSON with no hallucinated numeric projections.
+4. Include fallback branches for tool failures and ambiguous user input.
+5. Include a high-risk escalation path (human handoff).
+
+---
+
+## Copy-Paste Prompt For Claude (Build The Agent From This README)
+
+Use this exact prompt with Claude.
+
+```text
+You are a senior AI workflow architect.
+
+I will give you a README that defines my hackathon target architecture and node patterns.
+Your task is to read it and produce a complete, build-ready Agent Builder workflow.
+
+CONTEXT:
+- Project: DriftVeil (industrial drift detection + what-if simulation assistant)
+- Goal: qualify in top 24 out of 1000 teams
+- Platform target: Superset Agent Builder (node-based workflow)
+- Requirements: reliability, safety guardrails, explainability, strict JSON outputs
+
+IMPORTANT INSTRUCTIONS:
+1) First, read and summarize the README constraints and architecture in 10 bullet points.
+2) Then design TWO workflows:
+  A. Basic workflow (fast and reliable demo)
+  B. Advanced workflow (finalist-level with memory, escalation, retry/fallback)
+3) Use node types compatible with Superset style palettes:
+  Input, LLM Step, Classifier/Router, Condition/Branch, Tool Call, Memory/Context,
+  Human Handoff, Output Formatter, Evaluator/Guardrail, Retry/Fallback, Custom Code, Merge/Join.
+4) For each workflow, provide:
+  - Node-by-node build order
+  - Node name
+  - Purpose
+  - Input fields
+  - Output fields
+  - Branch conditions
+  - Failure behavior
+5) Generate Mermaid diagrams for both workflows.
+6) Add an MCP-centric system architecture diagram.
+7) Define strict output JSON schemas for:
+  - status answer
+  - diagnosis answer
+  - what-if simulation answer
+  - high-risk escalation answer
+8) Add guardrail rules that block unsafe recommendations and fabricated numbers.
+9) Add a prompt pack:
+  - Normalize prompt
+  - Router prompt
+  - Response composer prompt
+  - Safety evaluator prompt
+  - Retry repair prompt
+10) Add a demo script with 8 user prompts and expected route/path for each.
+
+OUTPUT FORMAT (MANDATORY):
+- Section 1: README understanding
+- Section 2: Basic workflow
+- Section 3: Advanced workflow
+- Section 4: MCP architecture
+- Section 5: Schemas
+- Section 6: Prompt pack
+- Section 7: Demo script
+- Section 8: Build checklist (time-boxed: 60-minute implementation plan)
+
+Do not give generic advice.
+Produce implementation-ready content with explicit nodes and branch logic.
+If any requirement is ambiguous, propose a default and continue.
+
+Now read the README below and build the final answer accordingly:
+
+[PASTE README CONTENT HERE]
+```
+
+Pro tip:
+
+1. Paste this entire file content where the placeholder says `[PASTE README CONTENT HERE]`.
+2. Ask Claude to optimize for "judge explainability + reliability first, complexity second".
+
 ---
 
 ## Flow Diagrams To Build In Agent Round
