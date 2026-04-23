@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DriftVeil — Agent Workflow Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07091a;
+    --bg-2: #0b1024;
+    --surface: #111731;
+    --surface-2: #161d3d;
+    --surface-3: #1d2650;
+    --border: #242e5a;
+    --border-bright: #3a4a82;
+    --grid: rgba(90, 110, 180, 0.06);
+    --text: #eef1fb;
+    --text-muted: #8791b8;
+    --text-dim: #5a6590;
+    --amber: #f6a93b;
+    --copper: #e37a3c;
+    --cyan: #54dbe8;
+    --teal: #3dd9a4;
+    --red: #ff5a5f;
+    --crimson: #e03c47;
+    --purple: #a996ff;
+    --yellow: #f4d35e;
+    --green: #5dd498;
+
+    --node-input: #54dbe8;
+    --node-llm: #f6a93b;
+    --node-router: #e37a3c;
+    --node-tool: #3dd9a4;
+    --node-memory: #a996ff;
+    --node-guardrail: #ff5a5f;
+    --node-output: #5dd498;
+    --node-fallback: #7a849e;
+    --node-handoff: #ff4757;
+    --node-evaluator: #f4d35e;
+    --node-condition: #ffffff;
+    --node-aggregator: #54dbe8;
+    --node-custom: #a996ff;
+
+    --pulse: #f6a93b;
+    --shadow-1: 0 4px 24px -8px rgba(0, 0, 0, 0.6);
+    --shadow-2: 0 8px 40px -12px rgba(0, 0, 0, 0.7);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(246, 169, 59, 0.06), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(84, 219, 232, 0.06), transparent 50%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    background-attachment: fixed;
+    position: relative;
+  }
+
+  /* grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------------------- Layout ---------------------- */
+  .app {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    min-height: 100vh;
+    padding: 20px 28px 24px;
+    gap: 16px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ---------------------- Header ---------------------- */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .brand-block { display: flex; flex-direction: column; gap: 4px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--amber);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 22px; height: 1px;
+    background: var(--amber);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 42px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--text);
+  }
+  h1 .accent {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--amber);
+  }
+
+  .tagline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin-top: 6px;
+  }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+
+  .system-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 10px var(--teal);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  .mode-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .mode-toggle button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px 18px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+  }
+  .mode-toggle button.active {
+    background: var(--surface-3);
+    color: var(--amber);
+    box-shadow: inset 0 0 0 1px var(--border-bright);
+  }
+  .mode-toggle button:hover:not(.active) { color: var(--text); }
+
+  /* ---------------------- Demo strip ---------------------- */
+  .demo-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow-1);
+    flex-wrap: wrap;
+  }
+  .demo-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+  .demo-chip {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: inherit;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .demo-chip .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    opacity: 0.8;
+  }
+  .demo-chip:hover {
+    border-color: var(--amber);
+    background: var(--surface-3);
+    transform: translateY(-1px);
+  }
+  .demo-chip.active {
+    border-color: var(--amber);
+    background: rgba(246, 169, 59, 0.08);
+    color: var(--amber);
+  }
+  .demo-chip.active .num { color: var(--amber); opacity: 1; }
+
+  .reset-btn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .reset-btn:hover { color: var(--amber); border-color: var(--amber); }
+
+  /* ---------------------- Main ---------------------- */
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 16px;
+    min-height: 640px;
+  }
+
+  .canvas-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-2);
+  }
+
+  /* grid background */
+  .canvas-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 100%);
+  }
+
+  .canvas-header {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+  .canvas-header .flow-meta {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .canvas-header .flow-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .canvas-header .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--amber);
+  }
+  .canvas-header .dot.active { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+
+  .canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 640px;
+    overflow: auto;
+  }
+
+  .canvas-inner {
+    position: relative;
+    width: 1320px;
+    height: 640px;
+  }
+  .canvas-inner.advanced {
+    width: 1380px;
+    height: 760px;
+  }
+
+  /* SVG edges */
+  .edges {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .edge-path {
+    fill: none;
+    stroke: var(--border-bright);
+    stroke-width: 1.5;
+    opacity: 0.65;
+    transition: all 0.3s;
+  }
+  .edge-path.active {
+    stroke: var(--amber);
+    stroke-width: 2;
+    opacity: 1;
+    filter: drop-shadow(0 0 4px var(--amber));
+  }
+  .edge-path.dimmed { opacity: 0.15; }
+
+  .edge-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    fill: var(--text-dim);
+    pointer-events: none;
+  }
+  .edge-label.active { fill: var(--amber); }
+
+  .edge-label-bg {
+    fill: var(--bg-2);
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+  .edge-label-bg.active { stroke: var(--amber); }
+
+  /* pulse particle */
+  .pulse-particle {
+    fill: var(--pulse);
+    filter: drop-shadow(0 0 8px var(--pulse)) drop-shadow(0 0 16px var(--pulse));
+  }
+
+  /* Nodes */
+  .node {
+    position: absolute;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 140px;
+    min-height: 62px;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    user-select: none;
+  }
+  .node::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--node-color, var(--text-muted));
+    box-shadow: 0 0 6px var(--node-color, var(--text-muted));
+    opacity: 0.9;
+  }
+  .node:hover {
+    border-color: var(--node-color, var(--border-bright));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--node-color, var(--border-bright));
+  }
+  .node.selected {
+    border-color: var(--node-color, var(--amber));
+    box-shadow: 0 0 0 1px var(--node-color, var(--amber)), 0 8px 24px -4px rgba(0, 0, 0, 0.8);
+  }
+  .node.active {
+    border-color: var(--amber);
+    background: var(--surface-3);
+    box-shadow:
+      0 0 0 1px var(--amber),
+      0 0 20px rgba(246, 169, 59, 0.4),
+      0 0 40px rgba(246, 169, 59, 0.2);
+    animation: nodeFlash 0.6s ease-out;
+  }
+  .node.visited {
+    border-color: rgba(246, 169, 59, 0.5);
+  }
+  .node.dimmed { opacity: 0.35; }
+
+  @keyframes nodeFlash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  .node-id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--node-color, var(--text-dim));
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+  .node-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .node-type {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-top: auto;
+  }
+
+  /* Diamond (condition) styling */
+  .node.condition {
+    border-radius: 6px;
+    width: 120px;
+    background: var(--surface);
+  }
+  .node.condition .node-label { font-style: italic; }
+
+  /* Subgraph groups (visual labels behind nodes) */
+  .group-label {
+    position: absolute;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .group-rect {
+    position: absolute;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ---------------------- Detail panel ---------------------- */
+  .detail-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: var(--shadow-2);
+    overflow-y: auto;
+    max-height: 760px;
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-head h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 22px;
+  }
+  .panel-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--surface-3);
+    color: var(--amber);
+    border: 1px solid var(--border);
+  }
+
+  .panel-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .panel-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .panel-body { font-size: 13px; line-height: 1.55; color: var(--text); }
+  .panel-body.mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip-list span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--text);
+  }
+
+  .failure-box {
+    background: rgba(255, 90, 95, 0.06);
+    border: 1px solid rgba(255, 90, 95, 0.25);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #ffb8ba;
+  }
+
+  /* ---------------------- Trace console ---------------------- */
+  .console-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .console, .json-output {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-1);
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .console-head {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface-2);
+  }
+  .console-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .console-title .led {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-dim);
+  }
+  .console-title.live .led {
+    background: var(--teal);
+    box-shadow: 0 0 8px var(--teal);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  .console-body {
+    padding: 14px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    overflow-y: auto;
+    flex: 1;
+    max-height: 260px;
+  }
+  .console-body .line { display: flex; gap: 10px; }
+  .console-body .ts { color: var(--text-dim); }
+  .console-body .tag { color: var(--amber); min-width: 72px; }
+  .console-body .msg { color: var(--text); }
+  .console-body .msg.dim { color: var(--text-muted); }
+  .console-body .msg.ok { color: var(--teal); }
+  .console-body .msg.warn { color: var(--amber); }
+  .console-body .msg.err { color: var(--red); }
+
+  .json-body {
+    padding: 14px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--text);
+    overflow: auto;
+    flex: 1;
+    max-height: 260px;
+    white-space: pre;
+  }
+  .json-key { color: var(--cyan); }
+  .json-string { color: var(--teal); }
+  .json-number { color: var(--amber); }
+  .json-bool { color: var(--purple); }
+  .json-null { color: var(--text-dim); }
+
+  .placeholder {
+    color: var(--text-dim);
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+  }
+
+  /* ---------------------- Legend ---------------------- */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr; }
+    .console-wrap { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand-block">
+      <div class="eyebrow">Agent Workflow Console · Build 0.4.2</div>
+      <h1><span>Drift</span><span class="accent">Veil</span></h1>
+      <div class="tagline">industrial reliability · drift detection · what-if simulation · operator copilot</div>
+    </div>
+    <div class="header-right">
+      <div class="system-pill">
+        <span class="status-dot"></span>
+        <span>all systems nominal</span>
+      </div>
+      <div class="mode-toggle" role="tablist">
+        <button class="active" data-mode="basic" role="tab">Basic Flow</button>
+        <button data-mode="advanced" role="tab">Advanced Flow</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Demo strip -->
+  <div class="demo-strip" id="demoStrip">
+    <span class="demo-label">Run a demo prompt →</span>
+    <!-- chips injected -->
+    <button class="reset-btn" id="resetBtn">Reset</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="canvas-wrap">
+      <div class="canvas-header">
+        <span id="canvasTitle">Basic Workflow · 12 nodes</span>
+        <div class="flow-meta">
+          <span><span class="dot" id="routeDot"></span><span id="routeLabel">idle</span></span>
+          <span id="latencyLabel">—</span>
+        </div>
+      </div>
+      <div class="canvas" id="canvasScroll">
+        <div class="canvas-inner" id="canvasInner">
+          <svg class="edges" id="edges"></svg>
+          <!-- nodes injected -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail panel -->
+    <aside class="detail-panel" id="detailPanel">
+      <div class="panel-head">
+        <h3 id="panelTitle">Select a node</h3>
+        <span class="panel-tag" id="panelTag">—</span>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">Purpose</div>
+        <div class="panel-body" id="panelPurpose">
+          <span class="placeholder">Click any node to inspect its contract — purpose, inputs, outputs, and failure behavior. Or run a demo prompt above to watch a query trace through the graph.</span>
+        </div>
+      </div>
+      <div class="panel-section" id="panelInputsSection" style="display:none;">
+        <div class="panel-label">Inputs</div>
+        <div class="chip-list" id="panelInputs"></div>
+      </div>
+      <div class="panel-section" id="panelOutputsSection" style="display:none;">
+        <div class="panel-label">Outputs</div>
+        <div class="chip-list" id="panelOutputs"></div>
+      </div>
+      <div class="panel-section" id="panelBranchesSection" style="display:none;">
+        <div class="panel-label">Branch Conditions</div>
+        <div class="panel-body mono" id="panelBranches"></div>
+      </div>
+      <div class="panel-section" id="panelFailureSection" style="display:none;">
+        <div class="panel-label">Failure Behavior</div>
+        <div class="failure-box" id="panelFailure"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" id="legend"></div>
+
+  <!-- Bottom console -->
+  <div class="console-wrap">
+    <div class="console">
+      <div class="console-head">
+        <div class="console-title" id="consoleTitle"><span class="led"></span>Trace Console</div>
+        <div class="console-title" id="traceIntent">—</div>
+      </div>
+      <div class="console-body" id="consoleBody">
+        <div class="line"><span class="msg dim">[awaiting query · pick a demo prompt to begin]</span></div>
+      </div>
+    </div>
+    <div class="json-output">
+      <div class="console-head">
+        <div class="console-title"><span class="led"></span>Terminal Response · strict JSON</div>
+        <div class="console-title" id="jsonMeta">—</div>
+      </div>
+      <div class="json-body" id="jsonBody"><span class="placeholder">No response yet.</span></div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    deterministic simulation for truth · LLM for explanation · guardrail for safety
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   DATA
+   ===================================================================== */
+
+const TYPES = {
+  input:      { label: 'INPUT',       color: 'var(--node-input)' },
+  llm:        { label: 'LLM STEP',    color: 'var(--node-llm)' },
+  router:     { label: 'CLASSIFIER',  color: 'var(--node-router)' },
+  tool:       { label: 'TOOL CALL',   color: 'var(--node-tool)' },
+  memory:     { label: 'MEMORY',      color: 'var(--node-memory)' },
+  guardrail:  { label: 'EVALUATOR',   color: 'var(--node-guardrail)' },
+  output:     { label: 'FORMATTER',   color: 'var(--node-output)' },
+  fallback:   { label: 'FALLBACK',    color: 'var(--node-fallback)' },
+  handoff:    { label: 'HANDOFF',     color: 'var(--node-handoff)' },
+  evaluator:  { label: 'EVALUATOR',   color: 'var(--node-evaluator)' },
+  condition:  { label: 'BRANCH',      color: 'var(--node-condition)' },
+  aggregator: { label: 'MERGE/JOIN',  color: 'var(--node-aggregator)' },
+  custom:     { label: 'CUSTOM CODE', color: 'var(--node-custom)' },
+  final:      { label: 'OUTPUT',      color: 'var(--node-output)' },
+};
+
+/* BASIC WORKFLOW (12 nodes) */
+const basicNodes = [
+  { id:'N1',  label:'Input',           type:'input',      x:40,   y:290,
+    purpose:'Capture the raw user turn and session handle.',
+    inputs:['message','machine_id?','session_id?'],
+    outputs:['raw payload forward'],
+    failure:'If machine_id missing, inject configured DEMO_MACHINE_ID downstream and surface in assumptions[].' },
+
+  { id:'N2',  label:'Normalize Query', type:'llm',        x:220,  y:290,
+    purpose:'Fix typos, shorthand, extract machine reference, emit an intent hint.',
+    inputs:['message'],
+    outputs:['normalized_query','machine_id_resolved','intent_hint','confidence'],
+    failure:'On LLM error, pass raw message through unchanged with confidence=0.3.' },
+
+  { id:'N3',  label:'Router',          type:'router',     x:405,  y:290,
+    purpose:'Classify intent into one of four routes.',
+    inputs:['normalized_query','intent_hint'],
+    outputs:['intent ∈ {status,diagnosis,what_if,ambiguous}','route_confidence'],
+    branches:'status → N4 · diagnosis → N5 · what_if → N6 · ambiguous / conf<0.55 → N7',
+    failure:'Confidence below 0.55 is forced to ambiguous — never guess.' },
+
+  { id:'N4',  label:'Tool · Status',      type:'tool', x:610,  y:80,
+    purpose:'Fetch live fleet state. Hard timeout 3s.',
+    inputs:['—'],
+    outputs:['machines[]','drift flags','latest metrics'],
+    failure:'Non-200 or timeout → route to N11 with cause="status_unavailable".' },
+
+  { id:'N5',  label:'Tool · Diagnosis',    type:'tool', x:610, y:200,
+    purpose:'Pull history + fingerprint match for a single machine.',
+    inputs:['machine_id_resolved'],
+    outputs:['history[]','matched_fingerprint','likely_cause'],
+    failure:'Non-200 or timeout → N11 with cause="history_unavailable".' },
+
+  { id:'N6',  label:'Tool · Simulate',     type:'tool', x:610, y:320,
+    purpose:'Run deterministic projection. This is the ONLY source of numbers.',
+    inputs:['machine_id','action{load_delta,rpm_delta,horizon_minutes}'],
+    outputs:['projected_max_temperature','projected_max_vibration','projected_cusum_delta','horizon_minutes'],
+    failure:'Non-200 or timeout → N11 with cause="simulation_unavailable".' },
+
+  { id:'N7',  label:'Clarify Builder',  type:'custom',    x:610,  y:440,
+    purpose:'Build a clarifying question plus quick-reply chips (deterministic).',
+    inputs:['normalized_query'],
+    outputs:['clarify_question','quick_options[]'],
+    failure:'Never fails — pure code, canned template.' },
+
+  { id:'N8',  label:'Compose Answer',   type:'llm',       x:810,  y:200,
+    purpose:'Translate tool payload into operator-safe language. May NOT invent numbers.',
+    inputs:['intent','evidence','machine_id'],
+    outputs:['summary','recommended_action','assumptions[]'],
+    failure:'LLM error → N11.' },
+
+  { id:'N9',  label:'Guardrail',        type:'guardrail', x:810,  y:320,
+    purpose:'Reject fabricated numbers, unsafe verbs, schema drift.',
+    inputs:['candidate response','raw tool payload','scorer risk_level'],
+    outputs:['pass:bool','reason','offending_field'],
+    branches:'pass → N10 · fail → N11',
+    failure:'If the evaluator itself errors, treat as fail and route to N11.' },
+
+  { id:'N10', label:'Output Formatter', type:'output',    x:1010, y:260,
+    purpose:'Shape strict JSON matching status / diagnosis / what_if schema.',
+    inputs:['composed response','intent','machine_id'],
+    outputs:['final JSON'],
+    failure:'Schema shape error → N11.' },
+
+  { id:'N11', label:'Safe Fallback',    type:'fallback',  x:1010, y:400,
+    purpose:'Canned safe template with risk_level="unknown", confidence="low", next-step suggestion.',
+    inputs:['error cause'],
+    outputs:['fallback JSON'],
+    failure:'Always succeeds — this is the floor.' },
+
+  { id:'N12', label:'Final Response',   type:'final',     x:1180, y:330,
+    purpose:'Terminal. Emit HTTP body.',
+    inputs:['validated JSON'],
+    outputs:['response body'],
+    failure:'—' },
+];
+
+const basicEdges = [
+  { from:'N1', to:'N2' },
+  { from:'N2', to:'N3' },
+  { from:'N3', to:'N4', label:'status' },
+  { from:'N3', to:'N5', label:'diagnosis' },
+  { from:'N3', to:'N6', label:'what_if' },
+  { from:'N3', to:'N7', label:'ambiguous' },
+  { from:'N4', to:'N8' },
+  { from:'N5', to:'N8' },
+  { from:'N6', to:'N8' },
+  { from:'N7', to:'N10' },
+  { from:'N8', to:'N9' },
+  { from:'N9', to:'N10', label:'pass' },
+  { from:'N9', to:'N11', label:'fail' },
+  { from:'N10', to:'N12' },
+  { from:'N11', to:'N12' },
+];
+
+/* ADVANCED WORKFLOW (17 nodes) */
+const advNodes = [
+  { id:'W1', label:'Normalize',       type:'llm',        x:40,  y:50,
+    purpose:'Typo fix, intent hint, machine reference extraction. Session-aware.',
+    inputs:['message','session_context'],
+    outputs:['normalized_query','machine_ref'],
+    failure:'Fallback = raw input, confidence=low.' },
+
+  { id:'W2', label:'Router',          type:'router',     x:220, y:50,
+    purpose:'Intent classification across 4 buckets.',
+    inputs:['normalized_query'],
+    outputs:['intent','route_confidence'],
+    failure:'Conf < 0.55 → ambiguous.' },
+
+  { id:'W3', label:'Entity Extractor',type:'llm',        x:400, y:50,
+    purpose:'Pull load_delta, rpm_delta, horizon_minutes from text.',
+    inputs:['normalized_query'],
+    outputs:['entities{}'],
+    failure:'Missing entity → default value + mark assumption.' },
+
+  { id:'W4', label:'Memory',          type:'memory',     x:580, y:50,
+    purpose:'Attach last 3 turns + prior assumptions keyed by session.',
+    inputs:['session_id','entities'],
+    outputs:['enriched_context'],
+    failure:'Empty memory → fresh context.' },
+
+  { id:'P1', label:'Tool · Machines',     type:'tool', x:790, y:50,
+    purpose:'Parallel: GET /api/machines. Timeout 4s.',
+    inputs:['—'],
+    outputs:['machines[]'],
+    failure:'Mark degraded=true and continue.' },
+
+  { id:'P2', label:'Tool · History',      type:'tool', x:790, y:140,
+    purpose:'Parallel: GET /api/machines/{id}/history. Timeout 4s.',
+    inputs:['machine_id'],
+    outputs:['history[]'],
+    failure:'Mark degraded=true and continue.' },
+
+  { id:'P3', label:'Tool · Fingerprints', type:'tool', x:790, y:230,
+    purpose:'Parallel: GET /tools/get_fingerprints. Timeout 4s.',
+    inputs:['—'],
+    outputs:['fingerprint_library'],
+    failure:'Mark degraded=true and continue.' },
+
+  { id:'P4', label:'Tool · Simulate',     type:'tool', x:790, y:320,
+    purpose:'Parallel: POST /api/chat/simulate. Deterministic. Required for what_if.',
+    inputs:['machine_id','entities'],
+    outputs:['projected_* metrics'],
+    failure:'If required and fails → W15.' },
+
+  { id:'W5', label:'Aggregator',      type:'aggregator', x:990, y:180,
+    purpose:'Merge all tool payloads into a unified evidence blob.',
+    inputs:['P1..P4 outputs'],
+    outputs:['evidence','degraded:bool'],
+    failure:'If all tools failed → W15.' },
+
+  { id:'W6', label:'Risk Scorer',     type:'custom',     x:990, y:300,
+    purpose:'Deterministic score from fingerprint severity + slope + horizon pressure.',
+    inputs:['evidence'],
+    outputs:['risk_level','risk_factors[]'],
+    failure:'Never fails — defaults to unknown.' },
+
+  { id:'W7', label:'risk ≥ high?',    type:'condition',  x:990, y:420,
+    purpose:'Branch on critical risk → human handoff path.',
+    inputs:['risk_level'],
+    outputs:['yes → W17','no → W8'] },
+
+  { id:'W17',label:'Human Handoff',   type:'handoff',    x:790, y:500,
+    purpose:'Build escalation payload + ticket stub. Short-circuit recommendation.',
+    inputs:['evidence','risk_factors'],
+    outputs:['escalation JSON'],
+    failure:'Always succeeds.' },
+
+  { id:'W8', label:'Recommendation',  type:'llm',        x:1180,y:360,
+    purpose:'Operator-safe steps. NO numbers unless from evidence.',
+    inputs:['evidence','risk_level'],
+    outputs:['summary','recommended_action','assumptions[]'],
+    failure:'LLM error → W15.' },
+
+  { id:'W9', label:'Policy Guardrail',type:'guardrail',  x:1180,y:470,
+    purpose:'Block unsafe verbs + fabricated numbers + schema drift.',
+    inputs:['candidate','evidence','scorer_risk'],
+    outputs:['pass:bool','reason'],
+    branches:'pass → W11 · fail → W15',
+    failure:'If evaluator errors, treat as fail.' },
+
+  { id:'W11',label:'Formatter',       type:'output',     x:990, y:570,
+    purpose:'Shape intent-specific strict JSON.',
+    inputs:['composed or handoff'],
+    outputs:['candidate JSON'],
+    failure:'Shape error caught by W12.' },
+
+  { id:'W12',label:'Schema Evaluator',type:'evaluator',  x:790, y:630,
+    purpose:'JSON Schema + factual cross-check (numbers traceable to evidence).',
+    inputs:['candidate JSON','evidence'],
+    outputs:['valid:bool','errors[]'],
+    branches:'valid → W16 · invalid → W14 (one retry)',
+    failure:'—' },
+
+  { id:'W14',label:'Repair Retry',    type:'fallback',   x:590, y:630,
+    purpose:'One-shot repair using evaluator errors in prompt.',
+    inputs:['candidate','errors[]','evidence'],
+    outputs:['repaired JSON'],
+    failure:'Exhausted (max 1) → W15.' },
+
+  { id:'W15',label:'Safe Fallback',   type:'fallback',   x:390, y:630,
+    purpose:'Canned safe template. Risk=unknown, confidence=low.',
+    inputs:['cause'],
+    outputs:['fallback JSON'],
+    failure:'Always succeeds.' },
+
+  { id:'W16',label:'Final Response',  type:'final',      x:190, y:630,
+    purpose:'Terminal. Emit validated HTTP body.',
+    inputs:['valid JSON'],
+    outputs:['response body'],
+    failure:'—' },
+];
+
+const advEdges = [
+  { from:'W1', to:'W2' },
+  { from:'W2', to:'W3' },
+  { from:'W3', to:'W4' },
+  { from:'W4', to:'P1' },
+  { from:'W4', to:'P2' },
+  { from:'W4', to:'P3' },
+  { from:'W4', to:'P4' },
+  { from:'P1', to:'W5' },
+  { from:'P2', to:'W5' },
+  { from:'P3', to:'W5' },
+  { from:'P4', to:'W5' },
+  { from:'W5', to:'W6' },
+  { from:'W6', to:'W7' },
+  { from:'W7', to:'W17', label:'yes' },
+  { from:'W7', to:'W8',  label:'no' },
+  { from:'W17',to:'W11' },
+  { from:'W8', to:'W9' },
+  { from:'W9', to:'W11', label:'pass' },
+  { from:'W9', to:'W15', label:'fail' },
+  { from:'W11',to:'W12' },
+  { from:'W12',to:'W16', label:'valid' },
+  { from:'W12',to:'W14', label:'invalid' },
+  { from:'W14',to:'W12' },
+  { from:'W14',to:'W15', label:'exhausted' },
+  { from:'W15',to:'W16' },
+];
+
+/* DEMO PROMPTS */
+const DEMO_PROMPTS = [
+  {
+    num:'01',
+    text:'Why is MCH-03 drifting right now?',
+    intent:'diagnosis',
+    basicRoute:['N1','N2','N3','N5','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P2','P3','W5','W6','W7','W8','W9','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "Why is MCH-03 drifting right now?"' },
+      { tag:'NORMALIZE', msg:'→ "why is MCH-03 drifting right now" · machine_ref=MCH-03 · intent_hint=diagnosis' },
+      { tag:'ROUTE',     msg:'intent=diagnosis · confidence=0.91', cls:'ok' },
+      { tag:'TOOL',      msg:'GET /api/machines/MCH-03/history · 210ms · 60-min window' },
+      { tag:'TOOL',      msg:'matched_fingerprint=FP-BEARING-WEAR-01 · cusum_delta=11.4' },
+      { tag:'COMPOSE',   msg:'drafting operator-safe summary' },
+      { tag:'GUARDRAIL', msg:'pass · all numbers sourced from evidence', cls:'ok' },
+      { tag:'FORMAT',    msg:'diagnosis_answer schema · 7 fields · valid', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · 612ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'diagnosis', machine_id:'MCH-03',
+      summary:'Temperature slope and vibration pattern match bearing-wear fingerprint.',
+      what_happens:{
+        observed_window_minutes:60,
+        slope_temperature_c_per_min:0.42,
+        slope_vibration_mm_s_per_min:0.012,
+        cusum_delta:11.4,
+        matched_fingerprint_id:'FP-BEARING-WEAR-01',
+        likely_cause:'Progressive bearing wear on drive-end'
+      },
+      risk_level:'medium',
+      recommended_action:'Reduce load 10%, schedule bearing inspection this shift, re-check in 30 minutes.',
+      assumptions:['No concurrent lubrication fault','Ambient temperature within normal range'],
+      confidence:'medium'
+    }
+  },
+  {
+    num:'02',
+    text:'If I reduce load by 15 percent for 8 hours, what happens?',
+    intent:'what_if',
+    basicRoute:['N1','N2','N3','N6','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P4','P2','W5','W6','W7','W8','W9','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "If I reduce load by 15 percent for 8 hours, what happens?"' },
+      { tag:'NORMALIZE', msg:'intent_hint=what_if · entities{load_delta=-15, horizon_minutes=480}' },
+      { tag:'ROUTE',     msg:'intent=what_if · confidence=0.94', cls:'ok' },
+      { tag:'TOOL',      msg:'POST /api/chat/simulate · load_delta=-15 · horizon=480' },
+      { tag:'TOOL',      msg:'projected_max_temp=84.2 · projected_max_vib=0.61 · cusum_delta=12.7' },
+      { tag:'COMPOSE',   msg:'composing projection narrative (LLM)' },
+      { tag:'GUARDRAIL', msg:'pass · every number traces to simulation payload', cls:'ok' },
+      { tag:'FORMAT',    msg:'what_if_answer schema · valid', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · 784ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'what_if', machine_id:'MCH-03',
+      summary:'Reducing load by 15% for 8 hours lowers short-term drift acceleration but does not eliminate fault risk.',
+      what_happens:{
+        action:{ load_delta_percent:-15, rpm_delta_percent:0, horizon_minutes:480 },
+        projected_max_temperature:84.2,
+        projected_max_vibration:0.61,
+        projected_cusum_delta:12.7,
+        projected_risk_trajectory:'decelerating'
+      },
+      risk_level:'medium',
+      recommended_action:'Apply the load reduction, inspect bearing within this shift, re-check simulation at T+30 min.',
+      assumptions:['Load reduction sustained over full horizon','No additional mechanical fault','Ambient conditions stable'],
+      confidence:'medium'
+    }
+  },
+  {
+    num:'03',
+    text:'Can we run this machine till tomorrow morning?',
+    intent:'what_if',
+    basicRoute:['N1','N2','N3','N6','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P4','P2','W5','W6','W7','W8','W9','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "Can we run this machine till tomorrow morning?"' },
+      { tag:'NORMALIZE', msg:'machine_ref=null → injecting DEMO_MACHINE_ID=MCH-03', cls:'warn' },
+      { tag:'ROUTE',     msg:'intent=what_if · horizon inferred=720min', cls:'ok' },
+      { tag:'TOOL',      msg:'POST /api/chat/simulate · horizon=720 · no deltas' },
+      { tag:'COMPOSE',   msg:'assumption: default machine logged' },
+      { tag:'GUARDRAIL', msg:'pass', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · confidence=medium', cls:'ok' },
+    ],
+    json: {
+      intent:'what_if', machine_id:'MCH-03',
+      summary:'Projected 12-hour operation shows trajectory into high-risk zone without intervention.',
+      what_happens:{
+        action:{ load_delta_percent:0, rpm_delta_percent:0, horizon_minutes:720 },
+        projected_max_temperature:91.8,
+        projected_max_vibration:0.74,
+        projected_cusum_delta:22.1,
+        projected_risk_trajectory:'accelerating'
+      },
+      risk_level:'high',
+      recommended_action:'Do not continue without load reduction. Reduce load ≥10% or plan shutdown before 06:00.',
+      assumptions:['Default machine MCH-03 assumed (none specified)','No intervention applied'],
+      confidence:'medium'
+    }
+  },
+  {
+    num:'04',
+    text:'What is the safest action in next 30 minutes?',
+    intent:'diagnosis',
+    basicRoute:['N1','N2','N3','N5','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P2','P3','W5','W6','W7','W8','W9','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "What is the safest action in next 30 minutes?"' },
+      { tag:'NORMALIZE', msg:'intent_hint=diagnosis (recommendation-leaning)' },
+      { tag:'ROUTE',     msg:'intent=diagnosis · confidence=0.78', cls:'ok' },
+      { tag:'TOOL',      msg:'history + fingerprints retrieved · 240ms' },
+      { tag:'COMPOSE',   msg:'single concrete action with 30-min check interval' },
+      { tag:'GUARDRAIL', msg:'pass · no unsafe verbs', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · 540ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'diagnosis', machine_id:'MCH-03',
+      summary:'Drift pattern stable but trending up. Short-term load reduction is safest first action.',
+      what_happens:{
+        observed_window_minutes:30,
+        matched_fingerprint_id:'FP-BEARING-WEAR-01',
+        check_interval_minutes:30
+      },
+      risk_level:'medium',
+      recommended_action:'Reduce load 10% now and re-check telemetry in 30 minutes before any further action.',
+      assumptions:['Load reduction is feasible on this line'],
+      confidence:'medium'
+    }
+  },
+  {
+    num:'05',
+    text:'Compare MCH-03 and MCH-04 risk now.',
+    intent:'status',
+    basicRoute:['N1','N2','N3','N4','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P1','P2','W5','W6','W7','W8','W9','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "Compare MCH-03 and MCH-04 risk now."' },
+      { tag:'NORMALIZE', msg:'machine_refs=[MCH-03,MCH-04] · intent_hint=status' },
+      { tag:'ROUTE',     msg:'intent=status · confidence=0.97', cls:'ok' },
+      { tag:'TOOL',      msg:'GET /api/machines · 2 machines · 120ms' },
+      { tag:'COMPOSE',   msg:'ranked risk list + metric deltas' },
+      { tag:'GUARDRAIL', msg:'pass', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · 398ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'status', machine_id:'MCH-03',
+      summary:'MCH-03 shows rising temperature and above-baseline vibration; MCH-04 nominal.',
+      what_happens:{
+        machines:[
+          { machine_id:'MCH-03', temperature_c:82.1, vibration_mm_s:0.58, drift_flag:true,  cusum:11.4 },
+          { machine_id:'MCH-04', temperature_c:71.3, vibration_mm_s:0.22, drift_flag:false, cusum:1.1 }
+        ],
+        ranked_risk:['MCH-03','MCH-04']
+      },
+      risk_level:'medium',
+      recommended_action:'Investigate MCH-03 within this shift; MCH-04 continue monitoring.',
+      assumptions:['Latest telemetry window is representative'],
+      confidence:'high'
+    }
+  },
+  {
+    num:'06',
+    text:'I changed rpm by 20 percent, now what?',
+    intent:'what_if',
+    basicRoute:['N1','N2','N3','N6','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P4','W5','W6','W7','W17','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "I changed rpm by 20 percent, now what?"' },
+      { tag:'NORMALIZE', msg:'entities{rpm_delta=+20} · action already applied' },
+      { tag:'ROUTE',     msg:'intent=what_if · post-intervention forecast', cls:'ok' },
+      { tag:'TOOL',      msg:'POST /api/chat/simulate · rpm_delta=+20' },
+      { tag:'RISK',      msg:'risk_level=high · projected_temp crosses threshold', cls:'warn' },
+      { tag:'HANDOFF',   msg:'risk ≥ high → short-circuit to escalation path', cls:'warn' },
+      { tag:'FORMAT',    msg:'escalation_answer schema · valid', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · ticket P2 created · 612ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'escalation', machine_id:'MCH-03',
+      summary:'RPM increase of 20% pushes projected metrics into high-risk band. Human review required.',
+      what_happens:{
+        action:{ load_delta_percent:0, rpm_delta_percent:20, horizon_minutes:60 },
+        projected_max_temperature:93.4,
+        projected_max_vibration:0.82,
+        projected_cusum_delta:18.6,
+        handoff:{ required:true, channel:'on_call_reliability_engineer',
+                  ticket_stub:{ title:'MCH-03 RPM+20% risk breach', priority:'P2' } }
+      },
+      risk_level:'high',
+      recommended_action:'Revert RPM change or reduce load immediately. Await reliability engineer confirmation before further changes.',
+      assumptions:['RPM change already applied at t=0'],
+      confidence:'high'
+    }
+  },
+  {
+    num:'07',
+    text:'Tell me root cause in simple words.',
+    intent:'diagnosis',
+    basicRoute:['N1','N2','N3','N5','N8','N9','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','P2','P3','W5','W6','W7','W8','W9','W11','W12','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "Tell me root cause in simple words."' },
+      { tag:'NORMALIZE', msg:'machine_ref=null → DEMO_MACHINE_ID=MCH-03', cls:'warn' },
+      { tag:'ROUTE',     msg:'intent=diagnosis · plain-language flag set', cls:'ok' },
+      { tag:'TOOL',      msg:'history + fingerprint retrieved' },
+      { tag:'COMPOSE',   msg:'no jargon · short sentences · operator-first' },
+      { tag:'GUARDRAIL', msg:'pass', cls:'ok' },
+      { tag:'DONE',      msg:'200 OK · 520ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'diagnosis', machine_id:'MCH-03',
+      summary:'Most likely the drive-end bearing is wearing out. Heat and shaking are slowly rising.',
+      what_happens:{
+        matched_fingerprint_id:'FP-BEARING-WEAR-01',
+        likely_cause:'Drive-end bearing wear'
+      },
+      risk_level:'medium',
+      recommended_action:'Run a little slower, plan a bearing check this shift, check again in 30 minutes.',
+      assumptions:['Default machine MCH-03 assumed'],
+      confidence:'medium'
+    }
+  },
+  {
+    num:'08',
+    text:'what now',
+    intent:'ambiguous',
+    basicRoute:['N1','N2','N3','N7','N10','N12'],
+    advRoute:  ['W1','W2','W3','W4','W15','W16'],
+    trace: [
+      { tag:'INPUT',     msg:'received: "what now"' },
+      { tag:'NORMALIZE', msg:'normalized_query="what now" · intent_hint=ambiguous' },
+      { tag:'ROUTE',     msg:'confidence=0.22 → forced to ambiguous', cls:'warn' },
+      { tag:'CLARIFY',   msg:'building quick-reply chips' },
+      { tag:'FORMAT',    msg:'ambiguous response with 4 options' },
+      { tag:'DONE',      msg:'200 OK · 210ms total', cls:'ok' },
+    ],
+    json: {
+      intent:'ambiguous', machine_id:'MCH-03',
+      summary:'I need a bit more detail. Which of these would you like?',
+      what_happens:{
+        clarify_question:'What would you like to check?',
+        quick_options:[
+          'Status of all machines',
+          'Diagnose MCH-03 right now',
+          'Simulate a 10% load reduction',
+          'Safest action in the next 30 minutes'
+        ]
+      },
+      risk_level:'unknown',
+      recommended_action:'Pick one of the quick options above or rephrase your question.',
+      assumptions:['Defaulting to MCH-03 for clarify context'],
+      confidence:'low'
+    }
+  },
+];
+
+/* LEGEND */
+const LEGEND = [
+  { color:'var(--node-input)',     label:'Input' },
+  { color:'var(--node-llm)',       label:'LLM Step' },
+  { color:'var(--node-router)',    label:'Router' },
+  { color:'var(--node-tool)',      label:'Tool Call' },
+  { color:'var(--node-memory)',    label:'Memory' },
+  { color:'var(--node-aggregator)',label:'Merge/Join' },
+  { color:'var(--node-custom)',    label:'Custom Code' },
+  { color:'var(--node-guardrail)', label:'Guardrail' },
+  { color:'var(--node-evaluator)', label:'Evaluator' },
+  { color:'#ffffff',               label:'Branch' },
+  { color:'var(--node-handoff)',   label:'Human Handoff' },
+  { color:'var(--node-output)',    label:'Formatter / Output' },
+  { color:'var(--node-fallback)',  label:'Fallback / Retry' },
+];
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const state = {
+  mode: 'basic',
+  selectedNodeId: null,
+  running: false,
+  activeDemo: null,
+};
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+const NODE_W = 140;
+const NODE_H = 62;
+const COND_W = 120;
+const COND_H = 56;
+
+function getNodes() { return state.mode === 'basic' ? basicNodes : advNodes; }
+function getEdges() { return state.mode === 'basic' ? basicEdges : advEdges; }
+
+function nodeById(id) { return getNodes().find(n => n.id === id); }
+
+function nodeSize(n) {
+  return n.type === 'condition' ? { w: COND_W, h: COND_H } : { w: NODE_W, h: NODE_H };
+}
+
+function nodeCenter(n) {
+  const s = nodeSize(n);
+  return { x: n.x + s.w / 2, y: n.y + s.h / 2 };
+}
+
+function edgePoints(from, to) {
+  const sf = nodeSize(from), st = nodeSize(to);
+  const sx = from.x + sf.w;           // right middle
+  const sy = from.y + sf.h / 2;
+  const tx = to.x;                     // left middle
+  const ty = to.y + st.h / 2;
+
+  // If target is above or below significantly, use a different anchor
+  if (tx < from.x) {
+    // going left → exit left, enter right
+    return {
+      sx: from.x, sy: from.y + sf.h / 2,
+      tx: to.x + st.w, ty: to.y + st.h / 2,
+      dir: 'left'
+    };
+  }
+  return { sx, sy, tx, ty, dir: 'right' };
+}
+
+function bezierPath(p) {
+  const dx = Math.max(40, Math.abs(p.tx - p.sx) / 2);
+  if (p.dir === 'left') {
+    return `M ${p.sx} ${p.sy} C ${p.sx - dx} ${p.sy} ${p.tx + dx} ${p.ty} ${p.tx} ${p.ty}`;
+  }
+  return `M ${p.sx} ${p.sy} C ${p.sx + dx} ${p.sy} ${p.tx - dx} ${p.ty} ${p.tx} ${p.ty}`;
+}
+
+function renderCanvas() {
+  const canvasInner = document.getElementById('canvasInner');
+  canvasInner.classList.toggle('advanced', state.mode === 'advanced');
+
+  // Clear
+  canvasInner.querySelectorAll('.node, .group-rect, .group-label').forEach(el => el.remove());
+  const svg = document.getElementById('edges');
+  svg.innerHTML = '';
+
+  const nodes = getNodes();
+  const edges = getEdges();
+
+  const dims = state.mode === 'basic' ? { w:1320, h:640 } : { w:1380, h:760 };
+  canvasInner.style.width = dims.w + 'px';
+  canvasInner.style.height = dims.h + 'px';
+  svg.setAttribute('viewBox', `0 0 ${dims.w} ${dims.h}`);
+  svg.setAttribute('width', dims.w);
+  svg.setAttribute('height', dims.h);
+
+  // Edges
+  edges.forEach((e, i) => {
+    const from = nodeById(e.from), to = nodeById(e.to);
+    if (!from || !to) return;
+    const p = edgePoints(from, to);
+    const d = bezierPath(p);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('class', 'edge-path');
+    path.setAttribute('data-edge', `${e.from}→${e.to}`);
+    svg.appendChild(path);
+
+    if (e.label) {
+      const mx = (p.sx + p.tx) / 2;
+      const my = (p.sy + p.ty) / 2 - 2;
+      const pad = 4;
+      const txtW = e.label.length * 5.5 + pad * 2;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', mx - txtW / 2);
+      rect.setAttribute('y', my - 8);
+      rect.setAttribute('width', txtW);
+      rect.setAttribute('height', 14);
+      rect.setAttribute('rx', 3);
+      rect.setAttribute('class', 'edge-label-bg');
+      rect.setAttribute('data-edge-label', `${e.from}→${e.to}`);
+      svg.appendChild(rect);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', mx);
+      txt.setAttribute('y', my + 2);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('class', 'edge-label');
+      txt.setAttribute('data-edge-label', `${e.from}→${e.to}`);
+      txt.textContent = e.label;
+      svg.appendChild(txt);
+    }
+  });
+
+  // Pulse particle placeholder
+  const pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  pulse.setAttribute('id', 'pulseParticle');
+  pulse.setAttribute('r', '5');
+  pulse.setAttribute('class', 'pulse-particle');
+  pulse.setAttribute('cx', '-50');
+  pulse.setAttribute('cy', '-50');
+  svg.appendChild(pulse);
+
+  // Nodes
+  nodes.forEach(n => {
+    const div = document.createElement('div');
+    div.className = `node ${n.type === 'condition' ? 'condition' : ''}`;
+    div.dataset.id = n.id;
+    div.style.left = n.x + 'px';
+    div.style.top = n.y + 'px';
+    div.style.setProperty('--node-color', TYPES[n.type].color);
+    div.innerHTML = `
+      <span class="node-id">${n.id}</span>
+      <span class="node-label">${n.label}</span>
+      <span class="node-type">${TYPES[n.type].label}</span>
+    `;
+    div.addEventListener('click', () => selectNode(n.id));
+    canvasInner.appendChild(div);
+  });
+
+  // Update canvas header
+  document.getElementById('canvasTitle').textContent =
+    state.mode === 'basic' ? 'Basic Workflow · 12 nodes' : 'Advanced Workflow · 19 nodes';
+}
+
+/* =====================================================================
+   DETAIL PANEL
+   ===================================================================== */
+function selectNode(id) {
+  state.selectedNodeId = id;
+  document.querySelectorAll('.node').forEach(el => {
+    el.classList.toggle('selected', el.dataset.id === id);
+  });
+  const n = nodeById(id);
+  if (!n) return;
+
+  document.getElementById('panelTitle').textContent = n.label;
+  document.getElementById('panelTag').textContent = TYPES[n.type].label;
+  document.getElementById('panelTag').style.color = TYPES[n.type].color;
+  document.getElementById('panelPurpose').innerHTML = n.purpose || '—';
+
+  const inputsSec = document.getElementById('panelInputsSection');
+  if (n.inputs && n.inputs.length) {
+    inputsSec.style.display = '';
+    document.getElementById('panelInputs').innerHTML =
+      n.inputs.map(i => `<span>${i}</span>`).join('');
+  } else inputsSec.style.display = 'none';
+
+  const outSec = document.getElementById('panelOutputsSection');
+  if (n.outputs && n.outputs.length) {
+    outSec.style.display = '';
+    document.getElementById('panelOutputs').innerHTML =
+      n.outputs.map(o => `<span>${o}</span>`).join('');
+  } else outSec.style.display = 'none';
+
+  const brSec = document.getElementById('panelBranchesSection');
+  if (n.branches) {
+    brSec.style.display = '';
+    document.getElementById('panelBranches').textContent = n.branches;
+  } else brSec.style.display = 'none';
+
+  const failSec = document.getElementById('panelFailureSection');
+  if (n.failure && n.failure !== '—') {
+    failSec.style.display = '';
+    document.getElementById('panelFailure').textContent = n.failure;
+  } else failSec.style.display = 'none';
+}
+
+/* =====================================================================
+   DEMO STRIP
+   ===================================================================== */
+function renderDemoStrip() {
+  const strip = document.getElementById('demoStrip');
+  // Remove existing chips (preserve label + reset button)
+  strip.querySelectorAll('.demo-chip').forEach(el => el.remove());
+  const reset = document.getElementById('resetBtn');
+
+  DEMO_PROMPTS.forEach((p, i) => {
+    const chip = document.createElement('button');
+    chip.className = 'demo-chip';
+    chip.dataset.idx = i;
+    chip.innerHTML = `<span class="num">${p.num}</span><span>${p.text}</span>`;
+    chip.addEventListener('click', () => runDemo(i));
+    strip.insertBefore(chip, reset);
+  });
+}
+
+/* =====================================================================
+   LEGEND
+   ===================================================================== */
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = LEGEND.map(l =>
+    `<span class="legend-item"><span class="legend-dot" style="background:${l.color};color:${l.color};"></span>${l.label}</span>`
+  ).join('');
+}
+
+/* =====================================================================
+   DEMO RUNNER
+   ===================================================================== */
+function resetFlow() {
+  state.running = false;
+  state.activeDemo = null;
+  document.querySelectorAll('.demo-chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active','visited','dimmed'));
+  document.querySelectorAll('.edge-path').forEach(p => p.classList.remove('active','dimmed'));
+  document.querySelectorAll('[data-edge-label]').forEach(el => el.classList.remove('active'));
+  document.getElementById('consoleBody').innerHTML =
+    '<div class="line"><span class="msg dim">[awaiting query · pick a demo prompt to begin]</span></div>';
+  document.getElementById('jsonBody').innerHTML = '<span class="placeholder">No response yet.</span>';
+  document.getElementById('consoleTitle').classList.remove('live');
+  document.getElementById('routeDot').classList.remove('active');
+  document.getElementById('routeLabel').textContent = 'idle';
+  document.getElementById('latencyLabel').textContent = '—';
+  document.getElementById('traceIntent').textContent = '—';
+  document.getElementById('jsonMeta').textContent = '—';
+
+  const p = document.getElementById('pulseParticle');
+  if (p) { p.setAttribute('cx', '-50'); p.setAttribute('cy', '-50'); }
+}
+
+async function runDemo(idx) {
+  if (state.running) return;
+  resetFlow();
+  const demo = DEMO_PROMPTS[idx];
+  state.running = true;
+  state.activeDemo = idx;
+
+  document.querySelectorAll('.demo-chip').forEach((c, i) => c.classList.toggle('active', i === idx));
+  document.getElementById('consoleTitle').classList.add('live');
+  document.getElementById('routeDot').classList.add('active');
+  document.getElementById('routeLabel').textContent = `route: ${demo.intent}`;
+  document.getElementById('traceIntent').textContent = `intent: ${demo.intent}`;
+
+  const route = state.mode === 'basic' ? demo.basicRoute : demo.advRoute;
+
+  // Dim all nodes + edges initially
+  document.querySelectorAll('.node').forEach(n => n.classList.add('dimmed'));
+  document.querySelectorAll('.edge-path').forEach(p => p.classList.add('dimmed'));
+
+  // Un-dim nodes on the route
+  route.forEach(id => {
+    const el = document.querySelector(`.node[data-id="${id}"]`);
+    if (el) el.classList.remove('dimmed');
+  });
+
+  // Activate edges on the route
+  for (let i = 0; i < route.length - 1; i++) {
+    const key = `${route[i]}→${route[i+1]}`;
+    const edgeEl = document.querySelector(`.edge-path[data-edge="${key}"]`);
+    if (edgeEl) {
+      edgeEl.classList.remove('dimmed');
+      edgeEl.classList.add('active');
+    }
+    const labelBg = document.querySelector(`.edge-label-bg[data-edge-label="${key}"]`);
+    const labelTxt = document.querySelector(`text.edge-label[data-edge-label="${key}"]`);
+    if (labelBg) labelBg.classList.add('active');
+    if (labelTxt) labelTxt.classList.add('active');
+  }
+
+  // Traverse
+  const pulse = document.getElementById('pulseParticle');
+  const startTime = performance.now();
+  const consoleBody = document.getElementById('consoleBody');
+  consoleBody.innerHTML = '';
+
+  let traceIdx = 0;
+
+  for (let i = 0; i < route.length; i++) {
+    if (!state.running || state.activeDemo !== idx) return;
+    const node = nodeById(route[i]);
+    if (!node) continue;
+
+    // Move pulse to node center
+    const c = nodeCenter(node);
+    if (i === 0) {
+      pulse.setAttribute('cx', c.x);
+      pulse.setAttribute('cy', c.y);
+    } else {
+      const prevNode = nodeById(route[i-1]);
+      const prevC = nodeCenter(prevNode);
+      await animatePulse(pulse, prevC.x, prevC.y, c.x, c.y, 420);
+    }
+
+    // Activate node
+    const el = document.querySelector(`.node[data-id="${node.id}"]`);
+    if (el) {
+      el.classList.remove('dimmed');
+      el.classList.add('active');
+      setTimeout(() => { el.classList.remove('active'); el.classList.add('visited'); }, 650);
+    }
+
+    // Emit trace lines near entries that map to this step
+    while (traceIdx < demo.trace.length && traceIdx <= i) {
+      appendTrace(demo.trace[traceIdx]);
+      traceIdx++;
+    }
+
+    await sleep(180);
+  }
+
+  // Flush any remaining trace
+  while (traceIdx < demo.trace.length) {
+    appendTrace(demo.trace[traceIdx]);
+    traceIdx++;
+    await sleep(100);
+  }
+
+  // Render JSON
+  document.getElementById('jsonBody').innerHTML = syntaxHighlight(demo.json);
+  const total = Math.round(performance.now() - startTime);
+  document.getElementById('latencyLabel').textContent = `${total}ms`;
+  document.getElementById('jsonMeta').textContent =
+    `${demo.intent}_answer · ${Object.keys(demo.json).length} fields`;
+
+  state.running = false;
+}
+
+function animatePulse(el, x1, y1, x2, y2, duration) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      const x = x1 + (x2 - x1) * eased;
+      const y = y1 + (y2 - y1) * eased;
+      el.setAttribute('cx', x);
+      el.setAttribute('cy', y);
+      if (t < 1) requestAnimationFrame(step);
+      else resolve();
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function appendTrace(entry) {
+  const body = document.getElementById('consoleBody');
+  const ts = new Date().toLocaleTimeString('en-US', { hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const line = document.createElement('div');
+  line.className = 'line';
+  const cls = entry.cls ? ` ${entry.cls}` : '';
+  line.innerHTML = `
+    <span class="ts">${ts}</span>
+    <span class="tag">${entry.tag}</span>
+    <span class="msg${cls}">${entry.msg}</span>
+  `;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+/* JSON syntax highlight */
+function syntaxHighlight(obj) {
+  const json = JSON.stringify(obj, null, 2);
+  return json
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    (m) => {
+      let cls = 'json-number';
+      if (/^"/.test(m)) {
+        cls = /:$/.test(m) ? 'json-key' : 'json-string';
+      } else if (/true|false/.test(m)) {
+        cls = 'json-bool';
+      } else if (/null/.test(m)) {
+        cls = 'json-null';
+      }
+      return `<span class="${cls}">${m}</span>`;
+    });
+}
+
+/* =====================================================================
+   MODE TOGGLE
+   ===================================================================== */
+document.querySelectorAll('.mode-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (state.running) return;
+    const mode = btn.dataset.mode;
+    if (mode === state.mode) return;
+    document.querySelectorAll('.mode-toggle button').forEach(b => b.classList.toggle('active', b === btn));
+    state.mode = mode;
+    state.selectedNodeId = null;
+    renderCanvas();
+    resetFlow();
+    // reset detail panel
+    document.getElementById('panelTitle').textContent = 'Select a node';
+    document.getElementById('panelTag').textContent = '—';
+    document.getElementById('panelTag').style.color = '';
+    document.getElementById('panelPurpose').innerHTML =
+      '<span class="placeholder">Click any node to inspect its contract — purpose, inputs, outputs, and failure behavior. Or run a demo prompt above to watch a query trace through the graph.</span>';
+    ['panelInputsSection','panelOutputsSection','panelBranchesSection','panelFailureSection']
+      .forEach(id => document.getElementById(id).style.display = 'none');
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (state.running) { state.running = false; }
+  resetFlow();
+});
+
+/* INIT */
+renderCanvas();
+renderDemoStrip();
+renderLegend();
+</script>
+</body>
+</html>

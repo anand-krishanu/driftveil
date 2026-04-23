@@ -256,3 +256,4 @@ See ARCHITECTURE.md for system design details.
 For chatbot plus what-if simulation design, see CHATBOT_SIMULATION_README.md.
 For Agent Builder hackathon prep and workflow strategy, see AGENT_BUILDER_CHALLENGE_README.md.
 For data lifecycle, retention policy, agent context mapping, and fingerprint library design, see DATA_RETENTION_AND_AGENT_CONTEXT_README.md.
+For likely challenge question patterns and workflow-console mapping, see AGENT_QUESTION_PLAYBOOK_README.md.
