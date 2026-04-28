@@ -33,15 +33,18 @@ function GfPanel({ title, subtitle, controls, children, className = '' }) {
 export function OperatorView() {
   const navigate = useNavigate()
   const { machines, isLoading } = useMachines()
-  const [activeId, setActiveId] = useState(null)
-  const { chartData, isRunning, alertVisible, alertData, startFeed, resetFeed, stats } = useSensorFeed(activeId)
+  const { 
+    activeMachineId: activeId, 
+    setActiveMachineId: setActiveId, 
+    chartData, isRunning, alertVisible, alertData, startFeed, resetFeed, stats, clearAlert
+  } = useSensorFeed()
   const BASELINE_TEMP = 60.5
 
   useEffect(() => {
     if (!activeId && machines.length > 0) {
       setActiveId(machines[0].id)
     }
-  }, [activeId, machines])
+  }, [activeId, machines, setActiveId])
 
   const activeStatus = stats?.drift_detected ? 'DRIFT' : (stats?.cusum_score > 4 ? 'WARN' : 'NORMAL')
 
@@ -228,7 +231,15 @@ export function OperatorView() {
           {/* Alert slot */}
           {alertVisible && alertData && (
             <div style={{ borderTop: '1px solid var(--border)' }}>
-              <AlertCard alert={alertData} />
+              <AlertCard 
+                alert={alertData}
+                onAcknowledge={() => clearAlert()}
+                onEscalate={() => {
+                  alert(`Ticket Created for ${alertData.machine}`)
+                  clearAlert()
+                  navigate(`/machine/${activeId}`)
+                }}
+              />
             </div>
           )}
         </div>

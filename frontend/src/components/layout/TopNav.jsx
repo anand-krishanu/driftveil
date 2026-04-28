@@ -4,7 +4,6 @@ import { useMachines } from '../../hooks/useMachines'
 
 const NAV_LINKS = [
   { to: '/',             label: 'Plant Operator',       icon: '⬡' },
-  { to: '/engineer',     label: 'Engineer View',         icon: '⚙' },
   { to: '/machines/new', label: 'Add Machine',           icon: '+' },
   { to: '/architecture', label: 'Architecture',          icon: '◈' },
   { to: '/features',     label: 'Why DriftVeil',         icon: '✦' },
@@ -38,8 +37,8 @@ export function TopNav({ theme, onToggleTheme }) {
         className="flex items-center gap-2 px-4 shrink-0 border-r h-full"
         style={{ borderColor: 'var(--border)', minWidth: 160 }}
       >
-        <span style={{ color: 'var(--accent-info)', fontSize: 14 }}>◈</span>
-        <span style={{ color: 'var(--text-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.05em' }}>
+        <img src="/favicon.png" alt="DriftVeil" style={{ width: 18, height: 18, objectFit: 'contain', filter: 'drop-shadow(0 0 4px rgba(87,148,242,0.4))' }} />
+        <span style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: 14, letterSpacing: '0.08em', marginLeft: 4 }}>
           DRIFT<span style={{ color: 'var(--accent-warn)' }}>VEIL</span>
         </span>
       </div>

@@ -5,29 +5,34 @@ import {
 import { CustomTooltip } from './CustomTooltip'
 
 const SCADA_THRESHOLD = 100
+const SCADA_THRESHOLD_VIB = 1.0
 
-function buildDomain(data, key, floor = 0) {
+function buildDomain(data, key, floor = 0, minimumMax = null) {
   if (!data || data.length === 0) {
-    return [floor, floor + 1]
+    return [floor, minimumMax !== null ? minimumMax + 1 : floor + 1]
   }
   const values = data
     .map((d) => Number(d[key]))
     .filter((v) => Number.isFinite(v))
 
   if (values.length === 0) {
-    return [floor, floor + 1]
+    return [floor, minimumMax !== null ? minimumMax + 1 : floor + 1]
   }
 
   const min = Math.min(...values)
-  const max = Math.max(...values)
+  let max = Math.max(...values)
+  if (minimumMax !== null) {
+    max = Math.max(max, minimumMax)
+  }
+  
   const spread = Math.max(max - min, 0.01)
   const pad = spread * 0.2
   return [Math.max(floor, min - pad), max + pad]
 }
 
 export function SensorChart({ data, height = 320, showScada = true }) {
-  const tempDomain = buildDomain(data, 'temperature', 0)
-  const vibDomain = buildDomain(data, 'vibration', 0)
+  const tempDomain = buildDomain(data, 'temperature', 0, showScada ? SCADA_THRESHOLD : null)
+  const vibDomain = buildDomain(data, 'vibration', 0, showScada ? SCADA_THRESHOLD_VIB : null)
 
   return (
     <div style={{ height, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -103,6 +108,21 @@ export function SensorChart({ data, height = 320, showScada = true }) {
               width={40}
             />
             <Tooltip content={<CustomTooltip />} />
+            {showScada && (
+              <ReferenceLine
+                y={SCADA_THRESHOLD_VIB}
+                stroke="var(--accent-critical)"
+                strokeDasharray="6 3"
+                strokeWidth={1}
+                label={{
+                  value: 'SCADA THRESHOLD',
+                  fill: 'var(--accent-critical)',
+                  fontSize: 9,
+                  fontFamily: 'JetBrains Mono',
+                  position: 'insideTopRight',
+                }}
+              />
+            )}
             <Line
               type="monotone"
               dataKey="vibration"

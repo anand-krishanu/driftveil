@@ -5,10 +5,12 @@ from typing import Dict, Any, Tuple
 from google import genai
 from google.genai import types
 import os
+import httpx
 
 from simulation_engine import simulate_what_if
 from prompt_templates import SYSTEM_PROMPT, build_context_prompt, REPAIR_PROMPT, FALLBACK_RESPONSE_TEMPLATE
 from dotenv import load_dotenv
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 load_dotenv()
 logger = logging.getLogger("driftveil.chat")
@@ -70,29 +72,71 @@ def parse_user_intent(message: str) -> Dict[str, Any]:
         "is_conversational": is_conversational
     }
 
+async def get_sensor_data_tool(machine_id: str, start: int = -1, limit: int = 10) -> list:
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get(f"http://127.0.0.1:8001/tools/get_sensor_data", params={"start": start, "limit": limit, "machine_id": machine_id})
+            if resp.status_code == 200:
+                return resp.json().get("data", [])
+        except Exception as e:
+            logger.error(f"MCP tool error: {e}")
+    return []
+
+async def get_machines_tool() -> list:
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get(f"http://127.0.0.1:8001/tools/get_machines")
+            if resp.status_code == 200:
+                return resp.json().get("machines", [])
+        except Exception as e:
+            logger.error(f"MCP tool error: {e}")
+    return []
+
+MCP_TOOLS = [
+    types.Tool(
+        function_declarations=[
+            types.FunctionDeclaration(
+                name="get_sensor_data",
+                description="Fetch raw historical telemetry sensor data for a machine.",
+                parameters=types.Schema(
+                    type=types.Type.OBJECT,
+                    properties={
+                        "machine_id": types.Schema(type=types.Type.STRING),
+                        "start": types.Schema(type=types.Type.INTEGER, description="-1 for latest data, 0 for oldest"),
+                        "limit": types.Schema(type=types.Type.INTEGER)
+                    },
+                    required=["machine_id"]
+                )
+            ),
+            types.FunctionDeclaration(
+                name="get_machines",
+                description="Fetch the latest live status, temperature, and vibration of all machines.",
+            )
+        ]
+    )
+]
+
+@retry(wait=wait_exponential(multiplier=1, min=2, max=10), stop=stop_after_attempt(3))
+async def call_gemini(messages):
+    return await gemini_client.aio.models.generate_content(
+        model='gemini-3-flash-preview',
+        contents=messages,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            temperature=0.2,
+            tools=MCP_TOOLS
+        )
+    )
+
 async def run_chat_turn(session_id: str, message: str, machine_context: dict) -> Tuple[str, dict, str]:
     """
     Returns (assistant_message, simulation_object, recommendation_text)
     """
     # 1. Parse rules 
     intent = parse_user_intent(message)
-    
     msg_lower = message.lower()
     
-    # ── 1. Conversational Short-Circuit Responses ──
-    # If the user asks a non-simulation question, answer directly like an AI!
-    if "hello" in msg_lower or "hi" == msg_lower.strip():
-        return "Hello! I am your DriftVeil AI operator assistant. How can I help you mitigate this equipment issue today?", {}, ""
-    elif "name" in msg_lower and ("machine" in msg_lower or "my" in msg_lower):
-        m_id = machine_context.get('machine_id', 'this machine')
-        return f"You are currently analyzing {m_id}, generating live telemetry.", {}, "Please ask me to simulate an intervention."
-    elif "who are you" in msg_lower or "what are you" in msg_lower:
-        return "I am an industrial reliability AI. I run math simulations to project how your interventions will affect machine temperature and vibration before you actually perform them.", {}, ""
-    elif "thank" in msg_lower:
-        return "You're very welcome! Let me know if you need to run any more simulations.", {}, ""
-    elif intent.get("is_conversational", False):
-        # Fallback conversational response for general questions 
-        return "I am focused entirely on preventing equipment failure right now. Please ask me to simulate a specific intervention like 'reduce load by 20%' or ask 'what is the safest action?' to proceed.", {}, ""
+
 
     # ── 2. Run Mathematical Simulation Engine ──
     sim_result = simulate_what_if(machine_context, intent)
@@ -105,18 +149,37 @@ async def run_chat_turn(session_id: str, message: str, machine_context: dict) ->
         
     prompt_payload = build_context_prompt(machine_context, sim_result, message)
     
+    messages = [{"role": "user", "parts": [types.Part.from_text(text=prompt_payload)]}]
+    
     try:
-        response = await gemini_client.aio.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt_payload,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                temperature=0.2,
-                response_mime_type="application/json",
-            )
-        )
-        
-        raw_output = response.text.strip()
+        while True:
+            response = await call_gemini(messages)
+            
+            if response.function_calls:
+                # Append model's function calls to history
+                messages.append({"role": "model", "parts": response.parts})
+                
+                func_responses = []
+                for fc in response.function_calls:
+                    logger.info(f"LLM called tool: {fc.name} with args {fc.args}")
+                    if fc.name == "get_sensor_data":
+                        args = {k: v for k, v in fc.args.items()}
+                        res = await get_sensor_data_tool(**args)
+                    elif fc.name == "get_machines":
+                        res = await get_machines_tool()
+                    else:
+                        res = {"error": "unknown function"}
+                        
+                    func_responses.append(
+                        types.Part.from_function_response(name=fc.name, response={"result": res})
+                    )
+                
+                # Append tool results back to history
+                messages.append({"role": "user", "parts": func_responses})
+            else:
+                # LLM finished with final JSON string
+                raw_output = response.text.strip()
+                break
         
         # Cleanup potential markdown fences
         if raw_output.startswith("```"):

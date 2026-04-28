@@ -1,0 +1,81 @@
+1 © 2025–2027 Cognizant | Private
+DriftVeil - AI Driven Machinery Drift Detection System | Business Plan (1/2)
+Problem Description & Business Scenario : Manufacturing downtime costs $50B annually, and factories lose about $125,000 
+per hour when machines fail. Most plants use threshold-based systems that alert only after damage starts.
+Small daily changes (e.g., a motor rising 0.3°C/day) go unnoticed until sudden failure, this is the silent drift problem.
+Problem Scope: Slow, hidden performance decline in machines like motors, pumps, conveyors, and bottling lines.
+Multiple sensors degrade slightly together, but no single alarm triggers.
+Target: While tailored for mid-size SME manufacturing lines, it natively scales to enterprise-level.
+Target Users/Stakeholders: Plant Operators, Maintenance Engineers, Factory Owners, Production Managers
+WHY
+Explain the 
+Problem
+How
+Explain the 
+Solve
+WHAT
+Value 
+proposition
+© 2026–2027 Cognizant | Private2
+Solution Overview: DriftVeil is an AI platform that continuously calculates telemetry drift to identify hidden machine degradation before 
+sudden failure. It utilizes What-If simulations to test corrective actions predicting exactly how specific machine adjustments will impact 
+time-to-failure, long before SCADA threshold alarms ever trigger.
+Technical Details: The MVP operates natively within an AWS environment, streaming TimescaleDB telemetry via secure, 
+edge-encrypted OT network gateways. CUSUM algorithms and z-scores track the drift slope with executing live cross-machine 
+correlation. Four specialized AWS Strands Agents (powered by Amazon Bedrock) autonomously process these metrics via a secure 
+MCP-native architecture, grounded by a continuous fingerprint library feedback loop. After aggregating 6 months (~1TB) of 
+operational data per facility, our continuous feedback loop will safely upgrade to Deep Learning LSTMs.
+Innovation: Crucially, we augment, rather than replace, incumbent SCADA infrastructure from legacy vendors like Siemens and 
+Rockwell. Driven by design thinking, our differentiator eliminates black-box AI by catching the continuous slope rather than just the 
+traditional SCADA anomaly spike. Pipeline: [Live Telemetry] → [CUSUM Score] → [Bedrock Root-Cause Reasoning] → 
+[Predictive ETA]. Bedrock Guardrails guarantee zero hallucinations.
+Market Potential: Validated by McKinsey’s $8B Predictive Maintenance TAM, our scalable B2B SaaS architecture targets critical 
+industry domains. Capturing an initial 2% SOM drives high recurring revenue. By preventing an $80K manufacturing stoppage with a $2K 
+scheduled repair, clients immediately realize our validated 4,000% ROI for every early drift event caught.
+Primary benefits: Early drift detection; prevention of sudden breakdowns; proactive maintenance; improved equipment reliability; 
+explainable insights that improve decision support, reduced disruption to operations; higher uptime
+Efficiency and flexibility: Real-time monitoring; continuous sensor-based analysis; adaptable across machine types; flexible 
+deployment across plants; easy integration with industrial systems; no replacement of existing hardware
+Time and cost saving: Reduced downtime; lower repair costs; fewer emergency interventions; optimized maintenance scheduling; 
+reduced manual inspection effort; lower production loss; extended machine lifespan
+Scalability: Multi-machine deployment; line-level scalability; plant-wide adoption; modular architecture; enterprise-ready monitoring 
+framework; future expansion across industries
+Social Impact: Safer industrial operations; reduced resource wastage; improved sustainability; support for smart manufacturing
+
+Financials & Timelines | Business Plan (2/2)
+Investments
+What does it take & How 
+much does it cost to solve?
+Returns
+Quantify the benefits 
+&
+What if I don’t solve?
+Timelines
+Time to realize 
+benefits
+© 2026–2027 Cognizant | Private3
+Cloud: Amazon EC2, RDS, ElastiCache, Kinesis (~$2K–$5K/mo per plant)
+AI Agents: AWS Strands, Amazon Bedrock, Amazon Nova, Anthropic Claude API (Pay-per-token 
+API usage)
+No hardware procurement, no SCADA replacement
+Process Re-engg: Predictive maintenance (Zero CapEx), Automated Troubleshooting Workflows
+Tools: MCP architecture, Fingerprint libraries, Next.js UI (Open-source / Included)
+Frameworks: Pandas, NumPy, Scikit-learn, TimescaleDB, Redis, Kafka, Docker, PostgresSQL.
+ROI: Reduced downtime; lower repair costs; better asset utilization
+Revenue Growth: Higher uptime; smoother production; improved delivery reliability
+Happy Customer: Fewer delays; more reliable output; better service consistency
+Margin Improvement: Lower maintenance costs; reduced waste; improved efficiency
+Employee Experience: Explainable alerts; less manual effort; faster decisions
+Returns: 30–50% less downtime; 15–25% maintenance cost savings; higher uptime and efficiency. 
+If not solved: hidden drift; sudden failures; rising costs; lower productivity
+Weeks 1–2: Sensor integration, telemetry setup, dashboard live
+Weeks 3–4: Baselines established, model training, first alerts with root-cause insights
+Month 2: Multi-agent pipeline activated, predictive monitoring starts
+Month 3: Pilot success, first intervention, savings documented
+Month 4–5: Self-improving fingerprint library, expansion to more machines
+Month 6: Scale-up across production lines, measurable ROI and reliability gains
+DriftVeil - AI Driven Machinery Drift Detection System | Architecture Diagram
+© 2026–2027 Cognizant | Private4
+
+Thank you
+5 © 2026–2027 Cognizant | Private

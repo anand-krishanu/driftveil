@@ -1,6 +1,6 @@
 import { Divider } from '../ui/Divider'
 
-export function AlertCard({ alert }) {
+export function AlertCard({ alert, onEscalate, onAcknowledge }) {
   const { eventId, machine, title, confidence, eta, score, sensors, action, fingerprint } = alert
   return (
     <div
@@ -59,6 +59,7 @@ export function AlertCard({ alert }) {
       {/* Action buttons */}
       <div className="flex gap-2">
         <button
+          onClick={onEscalate}
           style={{
             flex: 1,
             padding: '5px 0',
@@ -74,6 +75,7 @@ export function AlertCard({ alert }) {
           Escalate
         </button>
         <button
+          onClick={onAcknowledge}
           style={{
             flex: 1,
             padding: '5px 0',

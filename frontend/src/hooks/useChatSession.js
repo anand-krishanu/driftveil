@@ -55,7 +55,8 @@ export function useChatSession(machineId) {
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: data.assistant_message,
-        simulation: data.simulation
+        recommendation: data.recommendation,
+        simulation: data.simulation && Object.keys(data.simulation).length > 0 ? data.simulation : null
       }])
     } catch (err) {
       console.error("Chat failure", err)

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { TopNav } from './components/layout/TopNav'
 import { OperatorView }      from './views/OperatorView'
-import { EngineerView }      from './views/EngineerView'
 import { MachineDetailView } from './views/MachineDetailView'
 import { ArchitectureView }  from './views/ArchitectureView'
 import { FeaturesView }      from './views/FeaturesView'
@@ -20,7 +19,6 @@ function AppShell({ theme, onToggleTheme }) {
       <main className="flex-1 overflow-auto bg-bgBase">
         <Routes>
           <Route path="/"                    element={<OperatorView />} />
-          <Route path="/engineer"            element={<EngineerView />} />
           <Route path="/machine/:machineId"  element={<MachineDetailView />} />
           <Route path="/machines/new"        element={<AddMachineView />} />
           <Route path="/architecture"        element={<ArchitectureView />} />
@@ -31,13 +29,17 @@ function AppShell({ theme, onToggleTheme }) {
   )
 }
 
+import { SensorFeedProvider } from './hooks/useSensorFeed'
+
 export default function App() {
   const [theme, setTheme] = useState('dark')
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
 
   return (
-    <BrowserRouter>
-      <AppShell theme={theme} onToggleTheme={toggleTheme} />
-    </BrowserRouter>
+    <SensorFeedProvider>
+      <BrowserRouter>
+        <AppShell theme={theme} onToggleTheme={toggleTheme} />
+      </BrowserRouter>
+    </SensorFeedProvider>
   )
 }

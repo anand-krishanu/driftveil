@@ -1,219 +1,138 @@
-const PIPELINE_STEPS = [
-  { step: '01', label: 'Sensors',       tech: 'MQTT · PLCs',          desc: 'Temperature, vibration & RPM stream live from factory floor over encrypted edge gateway.', color: 'var(--text-subtle)' },
-  { step: '02', label: 'Drift Math',    tech: 'CUSUM · z-score',      desc: 'Python calculates drift slope every second. Flags when cumulative deviation S_t > 10.', color: 'var(--accent-warn)' },
-  { step: '03', label: 'AI Agents',     tech: 'AWS Strands · Bedrock', desc: '4 specialized agents pass signal through MCP, match fingerprint library, diagnose root cause.', color: 'var(--accent-critical)' },
-  { step: '04', label: 'Operator Alert',tech: 'Plain English',         desc: 'Agent 4 formats diagnosis into human-readable alert with failure ETA and prescribed action.', color: 'var(--accent-safe)' },
-]
+import React from 'react';
 
-const AGENTS = [
-  { n: '1', name: 'Monitor Agent',    tag: 'Data Collector',    color: 'var(--text-subtle)',     input: 'Scheduled time tick (every 3 seconds)', tool: 'MCP: get_sensor_snapshot(machine_id)', output: '{ temp, vibration, rpm, timestamp }', detail: 'Polls MCP server for latest sensor bundle. Passes raw snapshot to Detection Agent without modification.', llm: false },
-  { n: '2', name: 'Detection Agent',  tag: 'Math Engine',       color: 'var(--accent-warn)',     input: 'Raw sensor JSON from Agent 1', tool: 'MCP: get_baseline_profile(machine_id)', output: '{ drift_detected: true, cusum_score: 14.7 }', detail: 'Applies CUSUM and z-score formulas. Raises drift flag when S_t > h (threshold = 10).', llm: false },
-  { n: '3', name: 'Root Cause Agent', tag: '⚡ LLM Connected', color: 'var(--accent-critical)', input: 'Drift flag + anomaly data from Agent 2', tool: 'MCP: get_fingerprints() → Amazon Bedrock (Claude 3.5)', output: '{ root_cause: "bearing_wear", confidence: 0.89 }', detail: 'Fetches fingerprint library via MCP, sends data to Bedrock. Guardrails enforce reasoning from tool data only.', llm: true },
-  { n: '4', name: 'Explanation Agent',tag: '⚡ LLM Connected', color: 'var(--accent-safe)',     input: 'Raw diagnosis JSON from Agent 3', tool: 'Amazon Bedrock (Claude 3.5) — formatting prompt', output: '{ title, eta_days, action, confidence_pct }', detail: 'Sends diagnosis back to Bedrock with strict format prompt. Returns human-readable JSON for operator UI.', llm: true },
-]
+const NODE_WIDTH = 280;
+const NODE_HEIGHT = 130;
 
-const STACK = [
-  { layer: 'Data',     items: ['TimescaleDB (sensor history)', 'Redis (live cache)', 'SQLite (fingerprint library)'] },
-  { layer: 'AI',       items: ['AWS Strands Agents', 'Amazon Bedrock (Claude 3.5)', 'Bedrock Guardrails'] },
-  { layer: 'Backend',  items: ['Python 3.12 + FastAPI', 'MCP Python SDK', 'Pandas / NumPy / Scikit-learn'] },
-  { layer: 'Frontend', items: ['React + Vite', 'Recharts (sensor charts)', 'TailwindCSS v4'] },
-]
+const NODES = [
+  { id: 'telemetry', x: 40, y: 160, title: 'Live Telemetry', sub: 'MQTT / SCADA', type: 'trigger', icon: 'TM', status: 'active', desc: 'Continuous stream of temperature, vibration, and RPM data from the physical factory floor.' },
+  { id: 'mcp', x: 380, y: 160, title: 'MCP Server', sub: 'SQLite / TimescaleDB', type: 'mcp', icon: 'DB', status: 'active', desc: 'Standardized Model Context Protocol layer. Secures the DB behind explicit endpoints.' },
+  { id: 'react', x: 740, y: 40, title: 'ReAct Chat Agent', sub: 'Gemini 2.5 Flash', type: 'ai', icon: 'AI', desc: 'Autonomous conversational agent. Intelligently queries the MCP server in real-time to answer operator questions.' },
+  { id: 'monitor', x: 740, y: 280, title: 'Monitor Agent', sub: 'Python Daemon', type: 'mcp', icon: 'CR', desc: 'Background task polling the MCP server every few seconds to grab the latest synchronous sensor snapshot.' },
+  { id: 'detection', x: 1100, y: 280, title: 'Detection Agent', sub: 'CUSUM Algorithm', type: 'math', icon: 'FX', desc: 'Calculates cumulative drift slope. Triggers the LLM diagnostic pipeline ONLY when the math exceeds threshold.' },
+  { id: 'diagnostic', x: 1460, y: 280, title: 'Diagnostic Agent', sub: 'Gemini Structured Output', type: 'ai', icon: 'AG', desc: 'Triggered by math. Fetches known failure fingerprints from MCP. Diagnoses root cause and outputs a strict JSON.' },
+  { id: 'ui', x: 1820, y: 280, title: 'Operator UI', sub: 'React Frontend', type: 'output', icon: 'UI', status: 'active', desc: 'Renders the exact failure type, ETA, and recommended action in plain English for the factory operator.' },
+];
 
-function SectionHeader({ title, sub }) {
+const EDGES = [
+  { from: 'telemetry', to: 'mcp' },
+  { from: 'mcp', to: 'react' },
+  { from: 'mcp', to: 'monitor' },
+  { from: 'monitor', to: 'detection' },
+  { from: 'detection', to: 'diagnostic' },
+  { from: 'diagnostic', to: 'ui' },
+];
+
+const Node = ({ title, sub, icon, type, status, desc, x, y }) => {
+  const getTheme = () => {
+    switch (type) {
+      case 'trigger': return { border: 'var(--accent-info)', bg: 'var(--accent-info-dim)', iconBg: 'var(--accent-info)' };
+      case 'mcp': return { border: 'var(--text-subtle)', bg: 'var(--bg-row-alt)', iconBg: 'var(--text-subtle)' };
+      case 'ai': return { border: 'var(--accent-critical)', bg: 'var(--accent-critical-dim)', iconBg: 'var(--accent-critical)' };
+      case 'math': return { border: 'var(--accent-warn)', bg: '#332a00', iconBg: 'var(--accent-warn)' };
+      case 'output': return { border: 'var(--accent-safe)', bg: 'var(--accent-safe-dim)', iconBg: 'var(--accent-safe)' };
+      default: return { border: 'var(--border)', bg: 'var(--bg-panel)', iconBg: 'var(--border)' };
+    }
+  };
+
+  const theme = getTheme();
+
   return (
-    <div className="px-6 py-3" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-heading)' }}>{title}</span>
-      {sub && <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 10 }}>{sub}</span>}
-    </div>
-  )
-}
+    <div className="absolute group" style={{ left: x, top: y, width: NODE_WIDTH, height: NODE_HEIGHT, background: 'var(--bg-panel)', borderRadius: 8, border: `1px solid var(--border)`, boxShadow: '0 4px 20px rgba(0,0,0,0.4)', overflow: 'hidden', zIndex: 10 }}>
 
-export function ArchitectureView() {
-  return (
-    <div style={{ background: 'var(--bg-base)', minHeight: '100%' }}>
-
-      {/* Page title */}
-      <div
-        className="px-6 py-4"
-        style={{ borderBottom: '2px solid var(--border)', background: 'var(--bg-header)' }}
-      >
-        <div style={{ fontSize: 11, color: 'var(--accent-info)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 600, marginBottom: 4 }}>
-          System Architecture
+      {/* Node Header */}
+      <div className="flex items-center gap-3 px-3 py-2" style={{ borderBottom: `1px solid var(--border)`, background: theme.bg }}>
+        <div style={{ width: 24, height: 24, borderRadius: 4, background: theme.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--bg-panel)', fontSize: 10, fontWeight: 800, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em' }}>
+          {icon}
         </div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-heading)', letterSpacing: '-0.01em', marginBottom: 4 }}>
-          How DriftVeil Works
-        </h1>
-        <p style={{ fontSize: 12, color: 'var(--text-subtle)', maxWidth: 580 }}>
-          A 4-step pipeline from raw sensor data to plain-English operator alert — running in under 3 seconds.
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-heading)' }}>{title}</div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{sub}</div>
+        </div>
+        {status && (
+          <div className="ml-auto" style={{ width: 6, height: 6, borderRadius: '50%', background: status === 'active' ? 'var(--accent-safe)' : 'var(--text-muted)', boxShadow: status === 'active' ? '0 0 8px var(--accent-safe)' : 'none' }} />
+        )}
+      </div>
+
+      {/* Node Body */}
+      <div className="p-3">
+        <p style={{ fontSize: 11, color: 'var(--text-body)', lineHeight: 1.5 }}>
+          {desc}
         </p>
       </div>
 
-      <div className="flex flex-col gap-0 p-0">
+      {/* Input/Output Ports */}
+      <div className="absolute -left-1.5 w-3 h-3 rounded-full border-2" style={{ top: NODE_HEIGHT / 2 - 6, background: 'var(--bg-panel)', borderColor: 'var(--border)' }} />
+      <div className="absolute -right-1.5 w-3 h-3 rounded-full border-2" style={{ top: NODE_HEIGHT / 2 - 6, background: 'var(--bg-panel)', borderColor: 'var(--border)' }} />
+    </div>
+  );
+};
 
-        {/* Pipeline steps */}
-        <div style={{ borderBottom: '2px solid var(--border)' }}>
-          <SectionHeader title="4-Step Pipeline" sub="End-to-end data flow" />
-          <div className="grid grid-cols-4">
-            {PIPELINE_STEPS.map((step, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: '20px 24px',
-                  borderRight: i < 3 ? '1px solid var(--border)' : 'none',
-                  background: i % 2 === 0 ? 'var(--bg-panel)' : 'var(--bg-row-alt)',
-                  borderLeft: `3px solid ${step.color}`,
-                }}
-              >
-                <div style={{ fontSize: 10, fontFamily: 'JetBrains Mono', color: step.color, letterSpacing: '0.1em', marginBottom: 6 }}>
-                  STEP {step.step}
-                </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-heading)', marginBottom: 4 }}>
-                  {step.label}
-                </div>
-                <div
-                  style={{
-                    display: 'inline-block', fontSize: 10, fontFamily: 'JetBrains Mono',
-                    color: step.color, border: `1px solid ${step.color}`, padding: '1px 6px', marginBottom: 10,
-                  }}
-                >
-                  {step.tech}
-                </div>
-                <p style={{ fontSize: 11, color: 'var(--text-body)', lineHeight: 1.7 }}>{step.desc}</p>
-              </div>
+const Edge = ({ from, to }) => {
+  const fromNode = NODES.find(n => n.id === from);
+  const toNode = NODES.find(n => n.id === to);
+  
+  if (!fromNode || !toNode) return null;
+
+  const x1 = fromNode.x + NODE_WIDTH;
+  const y1 = fromNode.y + NODE_HEIGHT / 2;
+  const x2 = toNode.x;
+  const y2 = toNode.y + NODE_HEIGHT / 2;
+
+  const offset = Math.max(Math.abs(x2 - x1) / 2, 40);
+  const cp1x = x1 + offset;
+  const cp1y = y1;
+  const cp2x = x2 - offset;
+  const cp2y = y2;
+
+  return (
+    <path 
+      d={`M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`} 
+      stroke="var(--text-subtle)" 
+      strokeWidth="2" 
+      fill="none" 
+      markerEnd="url(#arrow)"
+    />
+  );
+};
+
+export function ArchitectureView() {
+  return (
+    <div className="flex flex-col h-full" style={{ background: 'var(--bg-base)' }}>
+      {/* Header */}
+      <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--accent-info)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 600, marginBottom: 4 }}>
+          Visual Flow
+        </div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-heading)', letterSpacing: '-0.01em', marginBottom: 4 }}>
+          Agent Architecture
+        </h1>
+      </div>
+
+      {/* Canvas Area */}
+      <div className="flex-1 overflow-auto relative" style={{ background: 'var(--bg-row-alt)', backgroundImage: 'radial-gradient(var(--border) 1px, transparent 0)', backgroundSize: '24px 24px' }}>
+        
+        {/* Infinite Canvas Container */}
+        <div style={{ width: 2200, height: 600, position: 'relative' }}>
+          
+          {/* SVG Layer for Edges */}
+          <svg className="absolute inset-0 pointer-events-none" width="100%" height="100%">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--text-subtle)" />
+              </marker>
+            </defs>
+            {EDGES.map((edge, i) => (
+              <Edge key={i} from={edge.from} to={edge.to} />
             ))}
-          </div>
-        </div>
+          </svg>
 
-        {/* MCP Explainer */}
-        <div style={{ borderBottom: '2px solid var(--border)' }}>
-          <SectionHeader title="What is MCP and Why Does It Matter?" sub="Security & reliability backbone" />
-          <div className="grid grid-cols-3">
-            {[
-              { label: 'Without MCP', icon: '✕', color: 'var(--accent-critical)', bg: 'var(--accent-critical-dim)', body: 'The AI agent gets raw database access. It can write, delete, or fabricate data. One hallucination could corrupt sensor history or trigger a false emergency shutdown.' },
-              { label: 'What MCP Does', icon: '⇄', color: 'var(--accent-warn)', bg: 'var(--bg-row-alt)', body: 'MCP wraps the database behind a typed, schema-validated interface. Each tool call is explicitly defined: name, parameters, return shape. Agent cannot call anything outside this contract.' },
-              { label: 'With MCP (DriftVeil)', icon: '✓', color: 'var(--accent-safe)', bg: 'var(--accent-safe-dim)', body: 'Agents are restricted to read-only, structured tool calls: get_sensor_snapshot(), get_baseline_profile(), get_fingerprints(). The SCADA database is physically unreachable from the AI layer.' },
-            ].map((col, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: '20px 24px',
-                  borderRight: i < 2 ? '1px solid var(--border)' : 'none',
-                  background: col.bg,
-                }}
-              >
-                <span style={{ fontSize: 22, color: col.color, display: 'block', marginBottom: 8 }}>{col.icon}</span>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-heading)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
-                  {col.label}
-                </div>
-                <p style={{ fontSize: 11, color: 'var(--text-body)', lineHeight: 1.7 }}>{col.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+          {/* HTML Layer for Nodes */}
+          {NODES.map((node) => (
+            <Node key={node.id} {...node} />
+          ))}
 
-        {/* LLM banner */}
-        <div
-          className="flex items-center gap-3 px-6 py-3"
-          style={{ background: 'var(--accent-critical-dim)', borderBottom: '1px solid var(--accent-critical)', borderTop: '1px solid var(--accent-critical)' }}
-        >
-          <span style={{ fontSize: 11, fontFamily: 'JetBrains Mono', fontWeight: 700, color: 'var(--accent-critical)' }}>⚡ LLM CONNECTED</span>
-          <span style={{ color: 'var(--border)' }}>|</span>
-          <span style={{ fontSize: 11, color: 'var(--text-body)' }}>
-            <strong style={{ color: 'var(--text-heading)' }}>Amazon Bedrock (Claude 3.5 Sonnet)</strong> is called only by Agents 3 and 4. Bedrock Guardrails are active on every call.
-          </span>
         </div>
-
-        {/* 4 Agents */}
-        <div style={{ borderBottom: '2px solid var(--border)' }}>
-          <SectionHeader title="The 4 AI Agents in Detail" sub="Each agent has exactly one job" />
-          <div className="grid grid-cols-2">
-            {AGENTS.map((agent, i) => (
-              <div
-                key={i}
-                style={{
-                  borderRight: i % 2 === 0 ? '1px solid var(--border)' : 'none',
-                  borderBottom: i < 2 ? '1px solid var(--border)' : 'none',
-                  background: 'var(--bg-panel)',
-                  borderLeft: `3px solid ${agent.color}`,
-                }}
-              >
-                {/* Header */}
-                <div
-                  className="flex items-center gap-3 px-4 py-2"
-                  style={{ background: 'var(--bg-header)', borderBottom: '1px solid var(--border)' }}
-                >
-                  <span
-                    style={{
-                      width: 22, height: 22, borderRadius: '50%',
-                      background: agent.color, color: '#111',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700, flexShrink: 0,
-                    }}
-                  >
-                    {agent.n}
-                  </span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-heading)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {agent.name}
-                  </span>
-                  <span style={{ marginLeft: 'auto', fontSize: 10, color: agent.color, border: `1px solid ${agent.color}`, padding: '1px 6px', fontFamily: 'JetBrains Mono' }}>
-                    {agent.tag}
-                  </span>
-                </div>
-                {/* Body */}
-                <div style={{ padding: '14px 16px' }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-body)', lineHeight: 1.7, marginBottom: 10 }}>{agent.detail}</p>
-                  <div
-                    style={{
-                      background: 'var(--bg-input)', border: '1px solid var(--border)',
-                      padding: '10px 12px',
-                      display: 'flex', flexDirection: 'column', gap: 6,
-                    }}
-                  >
-                    {[
-                      { label: 'Input', value: agent.input },
-                      { label: 'Tool',  value: agent.tool  },
-                      { label: 'Output',value: agent.output },
-                    ].map(row => (
-                      <div key={row.label} className="flex gap-3">
-                        <span style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', width: 44, flexShrink: 0, paddingTop: 1 }}>{row.label}</span>
-                        <span style={{ fontSize: 11, fontFamily: 'JetBrains Mono', color: 'var(--text-body)', lineHeight: 1.5 }}>{row.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tech Stack */}
-        <div>
-          <SectionHeader title="Full Tech Stack" />
-          <div className="grid grid-cols-4">
-            {STACK.map(({ layer, items }, i) => (
-              <div
-                key={layer}
-                style={{
-                  padding: '16px 20px',
-                  borderRight: i < 3 ? '1px solid var(--border)' : 'none',
-                  background: i % 2 === 0 ? 'var(--bg-panel)' : 'var(--bg-row-alt)',
-                }}
-              >
-                <div style={{ fontSize: 10, color: 'var(--accent-info)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, marginBottom: 10 }}>
-                  {layer}
-                </div>
-                {items.map(item => (
-                  <div key={item} className="flex items-center gap-2 mb-2">
-                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--border)', flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-body)' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
       </div>
     </div>
-  )
+  );
 }

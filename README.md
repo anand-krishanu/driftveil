@@ -34,6 +34,18 @@ Optional:
 
 Run all commands from repository root.
 
+## MCP Integration
+- Exposes a **Model Context Protocol (MCP)** layer that standardises tool‑calling and data‑access for both Python and Java services.
+- Spring Boot provides a `/mcp/**` REST gateway that proxies MCP requests to the Python MCP server.
+- Enables unified tooling for sensor queries, fingerprint lookup, and remote diagnostics.
+
+## AI Agents
+- The Python side runs **Gemini AI agents** via the MCP `run_agent` endpoints.
+- Spring Boot delegates drift‑detection alerts to these agents through `PythonAiClient`.
+- Agents return structured recommendations, risk scores, and optional what‑if simulations that are stored in the `WhatIfSimulation` table.
+- Future work: expose a native Spring AI implementation (Spring AI Gemini starter) for a pure‑Java agent pipeline.
+
+
 1. Create virtual environment
 
 ```powershell

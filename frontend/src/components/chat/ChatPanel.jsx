@@ -91,6 +91,16 @@ export function ChatPanel({ machineId, stats }) {
                 }}
               >
                 {msg.content}
+                {!isUser && msg.recommendation && (
+                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border-subtle)' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-info)', textTransform: 'uppercase', marginBottom: 4, letterSpacing: '0.05em' }}>
+                      Recommended Action
+                    </div>
+                    <div style={{ color: 'var(--text-body)', fontWeight: 500, fontSize: 12 }}>
+                      {msg.recommendation}
+                    </div>
+                  </div>
+                )}
               </div>
               {msg.simulation && <SimCard sim={msg.simulation} />}
             </div>

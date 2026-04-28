@@ -50,7 +50,7 @@ app.add_middleware(
 
 @app.get("/tools/get_sensor_data")
 async def get_sensor_data(
-    start: int = Query(default=0, ge=0, description="Row index to start reading from (0-indexed)"),
+    start: int = Query(default=0, ge=-1, description="Row index to start reading from. Set to -1 to get the latest `limit` rows."),
     limit: int = Query(default=10, ge=1, le=200, description="Number of rows to return"),
     machine_id: Optional[str] = Query(default=None, description="Industrial machine identifier"),
 ):
@@ -62,17 +62,25 @@ async def get_sensor_data(
         else:
             raise HTTPException(status_code=404, detail="No machines found.")
 
-    readings = await db.sensorreading.find_many(
-        where={"machineId": machine_id},
-        order={"time": "asc"},
-        skip=start,
-        take=limit
-    )
+    if start == -1:
+        readings = await db.sensorreading.find_many(
+            where={"machineId": machine_id},
+            order={"time": "desc"},
+            take=limit
+        )
+        readings.reverse() # chronological order
+    else:
+        readings = await db.sensorreading.find_many(
+            where={"machineId": machine_id},
+            order={"time": "asc"},
+            skip=start,
+            take=limit
+        )
 
     rows = []
     for i, r in enumerate(readings):
         rows.append({
-            "row_index": start + i,
+            "row_index": start + i if start != -1 else -1,
             "timestamp": r.time.strftime('%Y-%m-%d %H:%M:%S'),
             "temperature": r.temperature,
             "vibration": r.vibration

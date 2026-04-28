@@ -11,15 +11,15 @@ Endpoints:
 Agent Pipeline (runs automatically when drift is detected):
   Agent 1 (Monitor)    → Polls latest 10 rows via MCP
   Agent 2 (Detection)  → CUSUM + moving average to detect drift
-  Agent 3 (Root Cause) → GPT-4o matches drifting data to fingerprints
-  Agent 4 (Explainer)  → GPT-4o formats diagnosis for operator display
+  Agent 3 (Root Cause) → Gemini 2.5 Flash matches drifting data to fingerprints
+  Agent 4 (Explainer)  → Gemini 2.5 Flash formats diagnosis for operator display
 
 How to run:
     uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 
 Prerequisites:
     1. mcp_server.py must be running on port 8001
-    2. .env must contain OPENAI_API_KEY=your_key_here
+    2. .env must contain GEMINI_API_KEY=your_key_here
     3. Database seeded with seed.py first
 """
 
@@ -39,10 +39,20 @@ from dotenv import load_dotenv
 import logging
 from fastapi import FastAPI, BackgroundTasks, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from openai import AsyncOpenAI
+from google import genai
+from google.genai import types
 from pydantic import BaseModel, Field
 from prisma_client import Prisma
 from chat_orchestrator import run_chat_turn
+from tenacity import retry, wait_exponential, stop_after_attempt
+
+class AlertResponseModel(BaseModel):
+    title: str = Field(description="Short title of the fault (max 6 words)")
+    eta_days: int = Field(description="Estimated days until critical failure")
+    action: str = Field(description="The single most important action for the operator (1-2 sentences)")
+    severity: str = Field(description="low, medium, or high")
+    confidence: str = Field(description="low, medium, or high")
+    diagnosis_raw: str = Field(description="Verbose explanation of WHY the fingerprint matches and the technical diagnosis.")
 
 # Configure logging
 logging.basicConfig(
@@ -54,9 +64,9 @@ logger = logging.getLogger("driftveil")
 # ── Load environment variables ────────────────────────────────────────────────
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 if not GEMINI_API_KEY:
     print("[WARNING] GEMINI_API_KEY not found in .env - AI narrative will use offline demo mode.")
+gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
 # ── Config ────────────────────────────────────────────────────────────────────
 MCP_BASE_URL   = "http://127.0.0.1:8001"
@@ -204,9 +214,6 @@ def get_state(machine_id: str) -> dict:
         }
     return states[machine_id]
 
-openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
-
-
 # ═══════════════════════════════════════════════════════════════════════════════
 #  HELPER: Load all rows from MCP server into memory
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -308,17 +315,18 @@ def agent_detection(rows: list) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AGENT 3 — Root Cause: GPT-4o matches drift data to fingerprints
+#  AGENT 3 — Root Cause: Gemini 2.5 Flash matches drift data to fingerprints
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def agent_root_cause(drifting_rows: list, detection_stats: dict) -> str:
+@retry(wait=wait_exponential(multiplier=1, min=2, max=10), stop=stop_after_attempt(3))
+async def agent_root_cause(drifting_rows: list, detection_stats: dict) -> AlertResponseModel:
     """
-    Agent 3: Root Cause Analysis
-    -----------------------------
-    Fetches failure fingerprints from MCP, then asks GPT-4o to match
-    the drifting sensor data against those patterns.
-
-    Returns raw text diagnosis from GPT-4o.
+    Agent 3 & 4 Combined: Root Cause Analysis & Explainer
+    ------------------------------------------------------
+    Fetches failure fingerprints from MCP, asks Gemini 2.5 Flash to match
+    the drifting sensor data against those patterns, and returns
+    a strict JSON object containing both the verbose diagnosis
+    and the clean UI alert fields using Structured Outputs.
     """
     # Fetch fingerprints via MCP
     async with httpx.AsyncClient() as client:
@@ -345,119 +353,73 @@ KNOWN FAILURE FINGERPRINTS (from engineering database):
 Instructions:
 1. Analyze the sensor trends (temperature and vibration over time).
 2. Match the drift pattern to the MOST LIKELY failure fingerprint.
-3. Explain WHY this fingerprint matches (temperature slope, vibration behavior).
+3. Provide a verbose `diagnosis_raw` explaining WHY this fingerprint matches (temperature slope, vibration behavior).
 4. Estimate how many days until critical failure.
-5. Recommend the immediate corrective action.
+5. Provide a short `title` and a recommended `action`.
 
 Be concise but technically precise. This diagnosis goes to a plant operator."""
 
-    response = await openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,    # Low temperature = more deterministic, factual output
-        max_tokens=500,
+    if not gemini_client:
+        return AlertResponseModel(
+            title="Drift Detected (Demo Mode)",
+            eta_days=7,
+            action="Check sensors. No API key provided.",
+            severity="medium",
+            confidence="low",
+            diagnosis_raw="System is running without an API key."
+        )
+
+    response = await gemini_client.aio.models.generate_content(
+        model="gemini-3-flash-preview",
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.2,
+            response_mime_type="application/json",
+            response_schema=AlertResponseModel,
+        )
     )
 
-    return response.choices[0].message.content
+    return AlertResponseModel.model_validate_json(response.text)
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  AGENT 4 — Explainer: Format diagnosis as strict JSON for the UI
-# ═══════════════════════════════════════════════════════════════════════════════
-
-async def agent_explainer(raw_diagnosis: str) -> dict:
-    """
-    Agent 4: Operator Alert Formatter
-    -----------------------------------
-    Takes Agent 3's verbose diagnosis and asks GPT-4o to produce a
-    clean, strict JSON object for the frontend alert card.
-
-    Returns:
-        {
-          "title":   "Early Bearing Wear Detected",
-          "eta_days": 7,
-          "action":  "Schedule bearing inspection within 48 hours.",
-          "severity": "medium",
-          "confidence": "high"
-        }
-    """
-    prompt = f"""You are a formatting assistant. Convert this industrial diagnosis into strict JSON.
-
-DIAGNOSIS:
-{raw_diagnosis}
-
-Return ONLY valid JSON (no markdown, no explanation, no code fences) with exactly these fields:
-{{
-  "title":       "Short title of the fault (max 6 words)",
-  "eta_days":    <integer: estimated days until critical failure>,
-  "action":      "The single most important action for the operator (1-2 sentences)",
-  "severity":    "low" | "medium" | "high",
-  "confidence":  "low" | "medium" | "high"
-}}
-
-Return ONLY the JSON object, nothing else."""
-
-    response = await openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.1,    # Very low — we want strict, consistent JSON output
-        max_tokens=200,
-    )
-
-    raw_text = response.choices[0].message.content.strip()
-
-    # Strip markdown code fences if GPT ignores instructions
-    if raw_text.startswith("```"):
-        raw_text = raw_text.split("```")[1]
-        if raw_text.startswith("json"):
-            raw_text = raw_text[4:]
-        raw_text = raw_text.strip()
-
-    return json.loads(raw_text)
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  AGENT PIPELINE — Runs in background when drift is detected
-# ═══════════════════════════════════════════════════════════════════════════════
 
 async def run_agent_pipeline(drifting_rows: list, detection_stats: dict, machine_id: str, websocket: WebSocket):
     """
-    Orchestrates all 4 agents in sequence.
+    Orchestrates the AI agents.
     Pushes results INSTANTLY to the WebSocket the millisecond they are ready.
     """
     print(f"\n[Agent Pipeline] Triggered for {machine_id}!")
     st = get_state(machine_id)
     
     try:
-        print("   [Agent 3] Root Cause -> calling GPT-4o ...")  
-        raw_diagnosis = await agent_root_cause(drifting_rows, detection_stats)
-        st["diagnosis_raw"] = raw_diagnosis
-        print(f"   [Agent 3] Complete:\n{raw_diagnosis[:200]}...")
+        print("   [Agent] Root Cause + Formatter -> calling Gemini 2.5 Flash with Structured Outputs...")  
+        parsed_diagnosis = await agent_root_cause(drifting_rows, detection_stats)
         
-        # Instantly push diagnosis_raw mid-stream
-        await websocket.send_json({
-            "type": "agent_update",
-            "diagnosis_raw": raw_diagnosis
-        })
-
-        print("   [Agent 4] Explainer -> calling GPT-4o ...")
-        alert_json = await agent_explainer(raw_diagnosis)
+        st["diagnosis_raw"] = parsed_diagnosis.diagnosis_raw
+        alert_json = {
+            "title": parsed_diagnosis.title,
+            "eta_days": parsed_diagnosis.eta_days,
+            "action": parsed_diagnosis.action,
+            "severity": parsed_diagnosis.severity,
+            "confidence": parsed_diagnosis.confidence
+        }
         st["alert"] = alert_json
-        print(f"   [Agent 4] Complete: {alert_json}")
         
-        # Instantly push alert_json
+        print(f"   [Agent] Complete: {alert_json}")
+        
+        # Instantly push combined payload
         await websocket.send_json({
             "type": "agent_update",
+            "diagnosis_raw": st["diagnosis_raw"],
             "alert": alert_json
         })
 
     except Exception as e:
         logger.error(f"   [ERROR] Agent pipeline error: {e}")
         fallback = {
-            "title": "Drift Detected (Missing OpenAI Key)", "eta_days": 7, "action": "Inspect equipment. Configure OPENAI_API_KEY for dynamic AI.", "severity": "medium", "confidence": "medium"
+            "title": "Drift Detected (Static Demo)", "eta_days": 7, "action": "Inspect equipment. Configure GEMINI_API_KEY for dynamic live inference.", "severity": "medium", "confidence": "medium"
         }
         st["alert"] = fallback
-        st["diagnosis_raw"] = "### Mock AI Agent\\n\\n**AI Diagnosis Disabled**: An OpenAI API key was missing or invalid. Add one to your `.env` file to fully use Agents 3 and 4.\\n\\n* Suspected Mode: Early Bearing Wear\\n* Severity: Medium\\n* Confidence: 85%\\n* ETA to Failure: 7-14 days"
+        st["diagnosis_raw"] = "### Offline Heuristics Engine\\n\\n**Live AI Inference Disabled**: A `GEMINI_API_KEY` was missing or invalid. Falling back to static demo heuristics.\\n\\n* Suspected Mode: Early Bearing Wear\\n* Severity: Medium\\n* Confidence: 85%\\n* ETA to Failure: 7-14 days"
         await websocket.send_json({"type": "agent_update", "alert": fallback, "diagnosis_raw": st["diagnosis_raw"]})
     finally:
         st["agent_running"] = False
@@ -726,6 +688,7 @@ async def send_chat_message(session_id: str, req: ChatMessageRequest):
     detection_stats = agent_detection(st["sent_rows"][-30:] if st["sent_rows"] else [])
     
     context = {
+        "machine_id": req.machine_id,
         "moving_avg_temp": detection_stats.get("moving_avg_temp", 60.5),
         "latest_vib": st["sent_rows"][-1]["vibration"] if st["sent_rows"] else 0.3,
         "slope_temp": detection_stats.get("slope_temp", 0),
@@ -765,7 +728,7 @@ async def send_chat_message(session_id: str, req: ChatMessageRequest):
 async def simulate_direct(req: ChatMessageRequest):
     st = get_state(req.machine_id)
     detection_stats = agent_detection(st["sent_rows"][-30:] if st["sent_rows"] else [])
-    context = {"slope_temp": detection_stats.get("slope_temp", 0), "slope_vib": detection_stats.get("slope_vib", 0)}
+    context = {"machine_id": req.machine_id, "slope_temp": detection_stats.get("slope_temp", 0), "slope_vib": detection_stats.get("slope_vib", 0)}
     answers, sim_obj, recommendation = await run_chat_turn("test", req.message, context)
     return {"assistant_message": answers, "simulation": sim_obj, "recommendation": recommendation}
 
