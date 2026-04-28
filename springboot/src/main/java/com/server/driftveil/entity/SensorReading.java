@@ -1,11 +1,13 @@
 package com.server.driftveil.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
  * Maps to Prisma model SensorReading → PostgreSQL table "SensorReading"
  */
+@Data
 @Entity
 @Table(name = "SensorReading")
 public class SensorReading {
@@ -33,22 +35,4 @@ public class SensorReading {
     public void prePersist() {
         if (time == null) time = LocalDateTime.now();
     }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public LocalDateTime getTime() { return time; }
-    public void setTime(LocalDateTime time) { this.time = time; }
-
-    public String getMachineId() { return machineId; }
-    public void setMachineId(String machineId) { this.machineId = machineId; }
-
-    public double getTemperature() { return temperature; }
-    public void setTemperature(double temperature) { this.temperature = temperature; }
-
-    public double getVibration() { return vibration; }
-    public void setVibration(double vibration) { this.vibration = vibration; }
-
-    public Integer getRpm() { return rpm; }
-    public void setRpm(Integer rpm) { this.rpm = rpm; }
 }

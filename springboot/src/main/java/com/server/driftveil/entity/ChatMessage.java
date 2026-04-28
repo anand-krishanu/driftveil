@@ -1,11 +1,13 @@
 package com.server.driftveil.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
  * Maps to Prisma model ChatMessage → PostgreSQL table "ChatMessage"
  */
+@Data
 @Entity
 @Table(name = "ChatMessage")
 public class ChatMessage {
@@ -33,22 +35,4 @@ public class ChatMessage {
     public void prePersist() {
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public String getSessionId() { return sessionId; }
-    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
-
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public String getSimulationId() { return simulationId; }
-    public void setSimulationId(String simulationId) { this.simulationId = simulationId; }
 }
